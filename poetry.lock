@@ -302,6 +302,27 @@ files = [
 ]
 
 [[package]]
+name = "e2slib"
+version = "0.1.0"
+description = ""
+category = "main"
+optional = false
+python-versions = "^3.11"
+files = []
+develop = false
+
+[package.dependencies]
+numpy = "^1.24.3"
+pandas = "^2.0.1"
+seaborn = "^0.12.2"
+
+[package.source]
+type = "git"
+url = "git@github.com:empowering-energy-solutions-ltd/e2slib.git"
+reference = "main"
+resolved_reference = "641420c27e8d04181daa41446489ce8b644e134f"
+
+[[package]]
 name = "executing"
 version = "1.2.0"
 description = "Get the currently executing AST node of a frame, and other information"
@@ -1541,4 +1562,4 @@ tomli = ">=2.0.1"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "3848117249dc6e623dfe0420ead4d6f96bd6da51e96809e04c1beae82ff896df"
+content-hash = "ecaeb9b9af311622aedc8e48249cfb5cc4eac4976ee0a6ef7582315e7c500fc9"
