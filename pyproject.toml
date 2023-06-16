@@ -15,6 +15,7 @@ seaborn = "^0.12.2"
 bokeh = "^3.1.1"
 e2slib = {git = "git@github.com:empowering-energy-solutions-ltd/e2slib.git", rev = "main"}
 nbformat = "^5.9.0"
+pylint = "^2.17.4"
 
 [tool.poetry.group.dev.dependencies]
 yapf = "^0.33.0"
