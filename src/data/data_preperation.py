@@ -4,6 +4,28 @@ import numpy as np
 import pandas as pd
 from typing import Protocol
 
+def convert_data_types(data: np.ndarray |
+                    pd.DataFrame) -> np.ndarray | ValueError:
+  if isinstance(data, pd.DataFrame):
+    return np.ndarray(data.values)
+  elif isinstance(data, np.ndarray):
+    return pd.DataFrame(data)
+  else:
+    raise ValueError(
+      "Unsupported data type. Please provide a NumPy array or DataFrame."
+      )
+
+def retrieve_data(data: np.ndarray |
+                    pd.DataFrame) -> np.ndarray | ValueError:
+  if isinstance(data, pd.DataFrame):
+    return data.values
+  elif isinstance(data, np.ndarray):
+    return data
+  else:
+    raise ValueError(
+      "Unsupported data type. Please provide a NumPy array or DataFrame."
+      )
+
 
 class DataPreparationProtocol(Protocol):
   def data_cleaner(self,
@@ -26,14 +48,7 @@ class OutlierRemover(DataPreparationProtocol):
     Returns:
       Array or Dataframe, whichever you gave it in the first place.
     """
-    if isinstance(data, pd.DataFrame):
-      values = data.values
-    elif isinstance(data, np.ndarray):
-      values = data
-    else:
-      raise ValueError(
-        "Unsupported data type. Please provide a NumPy array or DataFrame."
-        )
+    values = retrieve_data(data)
     outliers = self.find_outliers(values)
     data[outliers] = np.nan
     return data
