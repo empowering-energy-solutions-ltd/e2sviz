@@ -13,11 +13,12 @@ matplotlib = "^3.7.1"
 plotly = "^5.15.0"
 seaborn = "^0.12.2"
 bokeh = "^3.1.1"
+e2slib = {git = "git@github.com:empowering-energy-solutions-ltd/e2slib.git", rev = "main"}
+nbformat = "^5.9.0"
 
 [tool.poetry.group.dev.dependencies]
 yapf = "^0.33.0"
 ipykernel = "^6.23.1"
-pyenv = "^0.0.1"
 pylance = "^0.4.20"
 
 [build-system]
