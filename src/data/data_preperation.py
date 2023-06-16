@@ -5,7 +5,7 @@ import pandas as pd
 
 
 class DataPreparationProtocol:
-  def data_modifier(self,
+  def data_cleaner(self,
                     data: np.ndarray |
                     pd.DataFrame) -> np.ndarray | pd.DataFrame:
     """
@@ -15,7 +15,7 @@ class DataPreparationProtocol:
 
 class OutlierRemover(DataPreparationProtocol):
   """ Removes outliers from array/dataframe """ 
-  def data_modifier(self,
+  def data_cleaner(self,
                     data: np.ndarray |
                     pd.DataFrame) -> np.ndarray | pd.DataFrame:
     """
@@ -59,7 +59,7 @@ class FillMissingData(DataPreparationProtocol):
   """
   Fills missing values in array/dataframe.
   """
-  def data_modifier(self,
+  def data_cleaner(self,
                     data: np.ndarray | pd.DataFrame,
                     func: str) -> np.ndarray | pd.DataFrame:
     """
@@ -112,7 +112,7 @@ class GenerateDatetime(DataPreparationProtocol):
   """
   Creates a datetime for dataset or without one.
   """
-  def data_modifier(self,
+  def data_cleaner(self,
                     data: np.ndarray | pd.DataFrame | None = None,
                     start_date: datetime = datetime(2022,1,1),
                     freq: str = "30T",
