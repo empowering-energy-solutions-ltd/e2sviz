@@ -2,9 +2,10 @@ from datetime import datetime
 import numpy as np
 # import numpy.typing as npt
 import pandas as pd
+from typing import Protocol
 
 
-class DataPreparationProtocol:
+class DataPreparationProtocol(Protocol):
   def data_cleaner(self,
                     data: np.ndarray |
                     pd.DataFrame) -> np.ndarray | pd.DataFrame:
