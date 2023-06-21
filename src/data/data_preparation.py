@@ -1,20 +1,28 @@
 from copy import deepcopy
 from datetime import datetime
-from typing import Callable, Protocol
+from typing import Protocol
 
 import numpy as np
-# import numpy.typing as npt
 import pandas as pd
 
 from src.data import viz_schema
 
 
-def convert_data_types(
-    data: np.ndarray | pd.DataFrame) -> np.ndarray | ValueError:
+def convert_data_types(data: np.ndarray | pd.DataFrame,
+                       columns: list[str]) -> np.ndarray | ValueError:
   if isinstance(data, pd.DataFrame):
     return np.ndarray(data.values)
   elif isinstance(data, np.ndarray):
-    return pd.DataFrame(data)
+    return pd.DataFrame(data, columns=columns)
+  else:
+    raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
+
+
+def describe_data(data: np.ndarray | pd.DataFrame) -> None | ValueError:
+  if isinstance(data, pd.DataFrame):
+    return data.describe()
+  elif isinstance(data, np.ndarray):
+    return pd.DataFrame(data).describe()
   else:
     raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
@@ -31,12 +39,10 @@ def retrieve_data(data: np.ndarray | pd.DataFrame) -> np.ndarray | ValueError:
 class DataPreparationProtocol(Protocol):
 
   def data_cleaner(self) -> np.ndarray | pd.DataFrame:
-    """
-    Cleans the data for manipulation and visualisation.
-    """
+    ...
 
 
-class OutlierRemover(DataPreparationProtocol):
+class OutlierRemover():
   """ Removes outliers from array/dataframe """
 
   def __init__(self, data) -> None:
@@ -74,7 +80,7 @@ class OutlierRemover(DataPreparationProtocol):
     return outliers
 
 
-class FillMissingData(DataPreparationProtocol):
+class FillMissingData():
   """
   Fills missing values in array/dataframe.
   """
@@ -126,7 +132,7 @@ class FillMissingData(DataPreparationProtocol):
       raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
 
-class GenerateDatetime(DataPreparationProtocol):
+class GenerateDatetime():
   """
   Creates a datetime for dataset or without one.
   """
@@ -158,6 +164,7 @@ class GenerateDatetime(DataPreparationProtocol):
                                    periods=num_steps,
                                    freq=freq)
     if isinstance(self.data, np.ndarray):
-      return np.insert(data_copy, 0, datetime_array, axis=1)
+      df = pd.DataFrame(index=datetime_array)
+      return np.insert(data_copy, 0, df.index, axis=1)
     elif isinstance(self.data, pd.DataFrame):
       return data_copy.set_index(datetime_array)

@@ -6,6 +6,8 @@ import pandas as pd
 from e2slib.structures import datetime_schema, enums
 from e2slib.utillib import functions
 
+from src.data import viz_schema
+
 # from data_preperation import retrieve_data
 
 
@@ -129,7 +131,7 @@ class GroupbyManipulator(DataFormattingProtocol):
       return data_copy.groupby(groupby).agg({target: agg})
 
 
-class EquationManipulator(DataFormattingProtocol):
+class EquationManipulator():
   """
   Returns data with new column of some aggregation.
   """
@@ -148,11 +150,96 @@ class EquationManipulator(DataFormattingProtocol):
     """
     data_copy = deepcopy(self.data)
     if isinstance(data_copy, np.ndarray):
-      # data_copy = pd.DataFrame(data_copy[:, 1:],
-      #                          index=pd.DatetimeIndex(data_copy[:, 0]))
       new_col = eval(f'data_copy[:,target_col] {func}')
       return np.insert(data_copy, data_copy.shape[1], new_col, axis=1)
     else:
       data_copy[new_col] = data_copy[target_col].apply(
           lambda x: eval(f'x {func}'))
       return data_copy
+
+
+class CombineColumnManipulator():
+  """
+  Combine given columns and return as a new dataframe or array.
+  """
+
+  def __init__(self, data: np.ndarray | pd.DataFrame, col_1: str | int,
+               col_2: str | int) -> None:
+    self.data = data
+    self.col_1 = col_1
+    self.col_2 = col_2
+
+  def data_formatter(self) -> np.ndarray | pd.DataFrame:
+    data_copy = deepcopy(self.data)
+    if isinstance(data_copy, np.ndarray):
+      return np.insert(data_copy,
+                       data_copy.shape[1],
+                       data_copy[:, self.col_1] + data_copy[:, self.col_2],
+                       axis=1)
+    else:
+      data_copy[viz_schema.ManipulationSchema.
+                NEW_COL] = data_copy[self.col_1] + data_copy[self.col_2]
+      return data_copy
+
+
+class SeasonalWeekManipulator():
+  """
+  Creates a new dataframe/array of the data for 1 week of each season.
+  Datetime column/index must be in the data. For array, it must be the first column.
+  """
+
+  def __init__(self, data: np.ndarray | pd.DataFrame,
+               datetime_col: int | str | None) -> None:
+    self.data = data
+    self.datetime_col = datetime_col
+
+  def datetime_check(self) -> None:
+    """
+    Checks if datetime column/index is in the data.
+    """
+    if isinstance(self.data, np.ndarray):
+      if self.datetime_col is None:
+        raise ValueError(
+            'Datetime column/index must be specified for array data.')
+    else:
+      if isinstance(self.data, pd.DataFrame):
+        index = self.data.index
+        if not isinstance(index, pd.DatetimeIndex):
+          raise ValueError(
+              'Index must be pd.DatetimeIndex for dataframe data.')
+
+  def data_formatter(self) -> list[np.ndarray] | list[pd.DataFrame]:
+    self.datetime_check()
+    data_copy = deepcopy(self.data)
+    is_array = False
+    if isinstance(self.data, np.ndarray):
+      is_array = True
+      data_copy = pd.DataFrame(self.data[:, 1:],
+                               index=pd.DatetimeIndex(
+                                   self.data[:, self.datetime_col]))
+    data_copy = functions.add_time_features(data_copy)
+    output = []
+    frames = []
+    if isinstance(data_copy, np.ndarray):
+      data_copy = pd.DataFrame(data_copy[:, 1:],
+                               index=pd.DatetimeIndex(data_copy[:, 0]))
+    for seasons in data_copy['season'].unique():
+      found_week = False
+      week_counter = 0
+      for week in data_copy['Week'][data_copy['season'] == seasons].unique():
+        if len(data_copy[(data_copy['season'] == seasons)
+                         & (data_copy['Week'] == week)]) == 336:
+          week_counter += 1
+          if week_counter == 3:
+            frames = data_copy[(data_copy['season'] == seasons)
+                               & (data_copy['Week'] == week)]
+            found_week = True  # Set the flag to True
+            break  # Stop searching for additional weeks
+
+      if not found_week:
+        output.append(None)
+      else:
+        output.append(frames)
+    if is_array:
+      return np.array(output)
+    return output
