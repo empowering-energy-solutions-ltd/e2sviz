@@ -21,6 +21,8 @@ class VizType:
 
 class ManipulationSchema:
   NEW_COL = 'new_col'
+  ENERGY = 'Site energy [kWh]'
+  POWER = 'Site power [kW]'
 
 
 class ErrorSchema:

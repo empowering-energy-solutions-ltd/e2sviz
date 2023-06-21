@@ -67,14 +67,25 @@ class OutlierRemover():
     """
     Find outliers in the data.
     """
+    # outliers = np.zeros_like(values, dtype=bool)
+    # for column_idx in range(values.shape[1]):
+    #   column_data = values[:, column_idx]
+    #   q1 = np.percentile(column_data, 25)
+    #   q3 = np.percentile(column_data, 75)
+    #   iqr = q3 - q1
+    #   lower_bound = q1 - (1.5 * iqr)
+    #   upper_bound = q3 + (1.5 * iqr)
+    #   outliers[:, column_idx] = (column_data < lower_bound) | (column_data
+    #                                                            > upper_bound)
+    # return outliers
+
     outliers = np.zeros_like(values, dtype=bool)
     for column_idx in range(values.shape[1]):
       column_data = values[:, column_idx]
-      q1 = np.percentile(column_data, 25)
-      q3 = np.percentile(column_data, 75)
-      iqr = q3 - q1
-      lower_bound = q1 - (1.5 * iqr)
-      upper_bound = q3 + (1.5 * iqr)
+      mean = np.mean(column_data)
+      std_dev = np.std(column_data)
+      lower_bound = mean - (2 * std_dev)  # Adjust the multiplier as needed
+      upper_bound = mean + (2 * std_dev)  # Adjust the multiplier as needed
       outliers[:, column_idx] = (column_data < lower_bound) | (column_data
                                                                > upper_bound)
     return outliers

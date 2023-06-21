@@ -17,7 +17,7 @@ def plotly_figure(fig: go.Figure) -> go.Figure:
 
 
 def plt_settings():
-  plt.rcParams['font.family'] = 'Comic Sans MS'
+  plt.rcParams['font.family'] = 'Times New Roman'
   params = {
       'axes.labelsize': font_size + 2,
       'axes.titlesize': font_size + 4,
