@@ -84,35 +84,6 @@ class StandardPlot():
     plt.show()
 
 
-class AvgSeasonPlot():
-  """
-  Creates plot of average values for each season.
-  """
-
-  def viz_type_init(self, data: pd.DataFrame, timeseries: bool,
-                    multiple_y: bool):
-    data = functions.add_time_features(data)
-    timestep = enums.TimeStep.HALFHOUR
-    avg_data = functions.get_avg_week_by_season_df(
-        data, viz_schema.ManipulationSchema.ENERGY, timestep)
-    avg_data.index = functions.format_avg_week_index(avg_data, timestep)
-    max_data = functions.get_avg_week_by_season_df(
-        data, viz_schema.ManipulationSchema.ENERGY, timestep, np.max)
-    min_data = functions.get_avg_week_by_season_df(
-        data, viz_schema.ManipulationSchema.ENERGY, timestep, np.min)
-    x = avg_data.index
-
-    for temp_season in avg_data.columns:
-      fig, ax = plt.subplots(figsize=(10, 6))
-      avg_y = avg_data[temp_season].values
-      max_y = max_data[temp_season].values
-      min_y = min_data[temp_season].values
-      ax = viz_functions.custom_plot(x, avg_y, ax=ax)
-      ax.fill_between(x, y1=min_y, y2=max_y, alpha=0.5)
-      plt.title(f"Average weekly power demand in {temp_season.lower()}")
-      # set_default_avg_week_labels(ax, timestep, physical_quantity)
-
-
 class SubplotPlot():
   """
   Create subplots for each column in data.
@@ -162,6 +133,34 @@ class BarPlot():
     plt.xticks(rotation=90)
     plt.grid()
     plt.show()
+
+
+class AvgSeasonPlot():
+  """
+  Creates plot of average values for each season.
+  """
+
+  def viz_type_init(self, data: pd.DataFrame, timeseries: bool,
+                    multiple_y: bool):
+    data = functions.add_time_features(data)
+    timestep = enums.TimeStep.HALFHOUR
+    avg_data = functions.get_avg_week_by_season_df(
+        data, viz_schema.ManipulationSchema.ENERGY, timestep)
+    avg_data.index = functions.format_avg_week_index(avg_data, timestep)
+    max_data = functions.get_avg_week_by_season_df(
+        data, viz_schema.ManipulationSchema.ENERGY, timestep, np.max)
+    min_data = functions.get_avg_week_by_season_df(
+        data, viz_schema.ManipulationSchema.ENERGY, timestep, np.min)
+    x = avg_data.index
+
+    for temp_season in avg_data.columns:
+      fig, ax = plt.subplots(figsize=(10, 6))
+      avg_y = avg_data[temp_season].values
+      max_y = max_data[temp_season].values
+      min_y = min_data[temp_season].values
+      ax = viz_functions.custom_plot(x, avg_y, ax=ax)
+      ax.fill_between(x, y1=min_y, y2=max_y, alpha=0.5)
+      plt.title(f"Average weekly power demand in {temp_season.lower()}")
 
 
 # ------------------------------------------------------------------------------
