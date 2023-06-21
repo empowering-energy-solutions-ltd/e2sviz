@@ -217,22 +217,23 @@ class SeasonalWeekManipulator():
       data_copy = pd.DataFrame(self.data[:, 1:],
                                index=pd.DatetimeIndex(
                                    self.data[:, self.datetime_col]))
-    data_copy = functions.add_time_features(data_copy)
+    # if isinstance(data_copy, np.ndarray):
+    #   data_copy = pd.DataFrame(data_copy[:, 1:],
+    #                            index=pd.DatetimeIndex(data_copy[:, 0]))
+
+    loop_data = functions.add_time_features(data_copy)
     output = []
     frames = []
-    if isinstance(data_copy, np.ndarray):
-      data_copy = pd.DataFrame(data_copy[:, 1:],
-                               index=pd.DatetimeIndex(data_copy[:, 0]))
-    for seasons in data_copy['season'].unique():
+    for seasons in loop_data['season'].unique():
       found_week = False
       week_counter = 0
-      for week in data_copy['Week'][data_copy['season'] == seasons].unique():
-        if len(data_copy[(data_copy['season'] == seasons)
-                         & (data_copy['Week'] == week)]) == 336:
+      for week in loop_data['Week'][loop_data['season'] == seasons].unique():
+        if len(loop_data[(loop_data['season'] == seasons)
+                         & (loop_data['Week'] == week)]) == 336:
           week_counter += 1
           if week_counter == 3:
-            frames = data_copy[(data_copy['season'] == seasons)
-                               & (data_copy['Week'] == week)]
+            frames = loop_data[(loop_data['season'] == seasons)
+                               & (loop_data['Week'] == week)]
             found_week = True  # Set the flag to True
             break  # Stop searching for additional weeks
 
