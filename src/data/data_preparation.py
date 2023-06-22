@@ -67,28 +67,28 @@ class OutlierRemover():
     """
     Find outliers in the data.
     """
-    # outliers = np.zeros_like(values, dtype=bool)
-    # for column_idx in range(values.shape[1]):
-    #   column_data = values[:, column_idx]
-    #   q1 = np.percentile(column_data, 25)
-    #   q3 = np.percentile(column_data, 75)
-    #   iqr = q3 - q1
-    #   lower_bound = q1 - (1.5 * iqr)
-    #   upper_bound = q3 + (1.5 * iqr)
-    #   outliers[:, column_idx] = (column_data < lower_bound) | (column_data
-    #                                                            > upper_bound)
-    # return outliers
-
     outliers = np.zeros_like(values, dtype=bool)
     for column_idx in range(values.shape[1]):
       column_data = values[:, column_idx]
-      mean = np.mean(column_data)
-      std_dev = np.std(column_data)
-      lower_bound = mean - (2 * std_dev)  # Adjust the multiplier as needed
-      upper_bound = mean + (2 * std_dev)  # Adjust the multiplier as needed
+      q1 = np.percentile(column_data, 25)
+      q3 = np.percentile(column_data, 75)
+      iqr = q3 - q1
+      lower_bound = q1 - (1.5 * iqr)
+      upper_bound = q3 + (1.5 * iqr)
       outliers[:, column_idx] = (column_data < lower_bound) | (column_data
                                                                > upper_bound)
     return outliers
+
+    # outliers = np.zeros_like(values, dtype=bool)
+    # for column_idx in range(values.shape[1]):
+    #   column_data = values[:, column_idx]
+    #   mean = np.mean(column_data)
+    #   std_dev = np.std(column_data)
+    #   lower_bound = mean - (2 * std_dev)  # Adjust the multiplier as needed
+    #   upper_bound = mean + (2 * std_dev)  # Adjust the multiplier as needed
+    #   outliers[:, column_idx] = (column_data < lower_bound) | (column_data
+    #                                                            > upper_bound)
+    # return outliers
 
 
 class FillMissingData():
@@ -154,7 +154,8 @@ class GenerateDatetime():
   def data_cleaner(self,
                    start_date: datetime = datetime(2022, 1, 1),
                    freq: str = "30T",
-                   periods: int = 48) -> np.ndarray | pd.DataFrame:
+                   periods: int = 48,
+                   tz: str = 'UTC') -> np.ndarray | pd.DataFrame:
     """
     Parameters:
       Data: Either numpy array or pandas dataframe
@@ -173,7 +174,8 @@ class GenerateDatetime():
 
     datetime_array = pd.date_range(start=start_date,
                                    periods=num_steps,
-                                   freq=freq)
+                                   freq=freq,
+                                   tz=tz)
     if isinstance(self.data, np.ndarray):
       df = pd.DataFrame(index=datetime_array)
       return np.insert(data_copy, 0, df.index, axis=1)

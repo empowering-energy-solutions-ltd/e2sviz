@@ -73,11 +73,11 @@ class StandardPlot():
     plt.ylabel(ylabel)
     if multiple_y:
       y_label_1 = data.columns[1]
-      plt.plot(x, data.iloc[:, 1], color='red', label=y_label_1)
+      plt.plot(x, data.iloc[:, 1], color='mediumorchid', label=y_label_1)
       plt.title(f"{ylabel}/{y_label_1} v {xlabel}")
       plt.ylabel(f"{ylabel}/{y_label_1}")
 
-    plt.plot(x, data.iloc[:, 0], color='blue', label=ylabel)
+    plt.plot(x, data.iloc[:, 0], color='royalblue', label=ylabel)
     plt.xlabel(xlabel)
     plt.legend()
     plt.grid()
@@ -106,7 +106,7 @@ class SubplotPlot():
 
     for i, column in enumerate(data.columns):
       ax = axes[i] if num_cols > 1 else axes
-      ax.plot(x, data[column])
+      ax.plot(x, data[column], color='royalblue')
       ax.set_ylabel(column)
       ax.grid()
 
@@ -126,7 +126,7 @@ class BarPlot():
     column_names = data.columns
     sum_values = data.sum()
 
-    plt.bar(column_names, sum_values)
+    plt.bar(column_names, sum_values, color='royalblue')
     plt.xlabel("Columns")
     plt.ylabel("Sum Values")
     plt.title("Sum Values of Each Column")
@@ -158,8 +158,8 @@ class AvgSeasonPlot():
       avg_y = avg_data[temp_season].values
       max_y = max_data[temp_season].values
       min_y = min_data[temp_season].values
-      ax = viz_functions.custom_plot(x, avg_y, ax=ax)
-      ax.fill_between(x, y1=min_y, y2=max_y, alpha=0.5)
+      ax = viz_functions.custom_plot(x, avg_y, ax=ax, color='mediumorchid')
+      ax.fill_between(x, y1=min_y, y2=max_y, alpha=0.5, color='royalblue')
       plt.title(f"Average weekly power demand in {temp_season.lower()}")
 
 
