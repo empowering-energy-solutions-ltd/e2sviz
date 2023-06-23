@@ -4,11 +4,11 @@ from typing import Protocol
 
 import numpy as np
 import pandas as pd
-
+import numpy.typing as npt
 from src.data import viz_schema
 
 
-def convert_data_types(data: np.ndarray | pd.DataFrame,
+def convert_data_types(data: npt.NDArray | pd.DataFrame,
                        columns: list[str]) -> np.ndarray | ValueError:
   if isinstance(data, pd.DataFrame):
     return np.ndarray(data.values)
@@ -18,7 +18,7 @@ def convert_data_types(data: np.ndarray | pd.DataFrame,
     raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
 
-def describe_data(data: np.ndarray | pd.DataFrame) -> None | ValueError:
+def describe_data(data: npt.NDArray | pd.DataFrame) -> None | ValueError:
   if isinstance(data, pd.DataFrame):
     return data.describe()
   elif isinstance(data, np.ndarray):
@@ -27,7 +27,7 @@ def describe_data(data: np.ndarray | pd.DataFrame) -> None | ValueError:
     raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
 
-def retrieve_data(data: np.ndarray | pd.DataFrame) -> np.ndarray | ValueError:
+def retrieve_data(data: npt.NDArray | pd.DataFrame) -> np.ndarray | ValueError:
   if isinstance(data, pd.DataFrame):
     return data.values
   elif isinstance(data, np.ndarray):
@@ -35,12 +35,34 @@ def retrieve_data(data: np.ndarray | pd.DataFrame) -> np.ndarray | ValueError:
   else:
     raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
+def check_dataset(data: npt.NDArray | pd.DataFrame) -> dict[str, bool]:
+    """
+    Check the dataset for outliers and NaN values.
+    """
+    result = {
+        'outliers': False,
+        'nan values': False
+    }
+    if isinstance(data, np.ndarray):
+          # Check for outliers
+          outliers_mask = np.abs(data - np.mean(data)) > 3 * np.std(data)
+          result['outliers'] = np.any(outliers_mask)
 
-class DataPreparationProtocol(Protocol):
+          # Check for NaN values
+          result['nan values'] = np.isnan(data).any()
 
-  def data_cleaner(self) -> np.ndarray | pd.DataFrame:
-    ...
+      elif isinstance(data, pd.DataFrame):
+          # Check for outliers
+          outliers_mask = np.abs(data - data.mean()) > 3 * data.std()
+          result['outliers'] = np.any(outliers_mask.values)
 
+          # Check for NaN values
+          result['nan values'] = data.isnull().values.any()
+
+      else:
+          raise ValueError("Input data must be a NumPy array or Pandas DataFrame.")
+
+      return result
 
 class OutlierRemover():
   """ Removes outliers from array/dataframe """
@@ -48,7 +70,7 @@ class OutlierRemover():
   def __init__(self, data) -> None:
     self.data = data
 
-  def data_cleaner(self) -> np.ndarray | pd.DataFrame:
+  def data_cleaner(self) -> npt.NDArray | pd.DataFrame:
     """
     Remove outliers from the data.
     Parameters:
@@ -99,7 +121,7 @@ class FillMissingData():
   def __init__(self, data) -> None:
     self.data = data
 
-  def data_cleaner(self, func: str) -> np.ndarray | pd.DataFrame:
+  def data_cleaner(self, func: str) -> npt.NDArray | pd.DataFrame:
     """
     Fill missing values in the data.
 
@@ -120,7 +142,7 @@ class FillMissingData():
 
     return data
 
-  def dropna(self) -> np.ndarray | pd.DataFrame:
+  def dropna(self) -> npt.NDArray | pd.DataFrame:
     data_copy = deepcopy(self.data)
     if isinstance(data_copy, pd.DataFrame):
       return data_copy.dropna()
@@ -129,7 +151,7 @@ class FillMissingData():
     else:
       raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
-  def fillna(self) -> np.ndarray | pd.DataFrame:
+  def fillna(self) -> npt.NDArray | pd.DataFrame:
     data_copy = deepcopy(self.data)
     if isinstance(data_copy, pd.DataFrame):
       return data_copy.fillna(data_copy.mean())
@@ -155,7 +177,7 @@ class GenerateDatetime():
                    start_date: datetime = datetime(2022, 1, 1),
                    freq: str = "30T",
                    periods: int = 48,
-                   tz: str = 'UTC') -> np.ndarray | pd.DataFrame:
+                   tz: str = 'UTC') -> npt.NDArray | pd.DataFrame:
     """
     Parameters:
       Data: Either numpy array or pandas dataframe

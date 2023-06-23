@@ -3,6 +3,7 @@ from typing import Protocol
 
 import matplotlib.pyplot as plt
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 import plotly.express as px
 from e2slib.structures import enums
@@ -168,7 +169,7 @@ class AvgSeasonPlot():
 
 @dataclass
 class Visualizer:
-  data: np.ndarray | pd.DataFrame
+  data: npt.NDArray | pd.DataFrame
   timeseries: bool = False
   viz_selector: VizSelector = MatPlotLibSelector()
   viz_type: VizType = StandardPlot()

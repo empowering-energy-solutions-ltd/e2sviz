@@ -2,6 +2,7 @@ from copy import deepcopy
 from typing import Protocol
 
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 from e2slib.structures import datetime_schema, enums
 from e2slib.utillib import functions
@@ -32,29 +33,16 @@ def create_seasonal_average_week(season: enums.Season,
   return seasonal_data
 
 
-class DataFormattingProtocol(Protocol):
-  """
-  Formats the data in different ways to allow for various visualisations.
-  Can be skipped for plotting full datasets.
-  """
-
-  def data_formatter(self) -> np.ndarray | pd.DataFrame:
-    """ 
-    Formating function applied to data in either DataFrame 
-    or Array format.
-    """
-
-
 class ResampleManipulator(DataFormattingProtocol):
   """
   Returns resampled data.
   """
 
-  def __init__(self, data: np.ndarray | pd.DataFrame) -> None:
+  def __init__(self, data: npt.NDArray | pd.DataFrame) -> None:
     self.data = data
 
   def data_formatter(self, split_by: str,
-                     aggregation: str) -> np.ndarray | pd.DataFrame:
+                     aggregation: str) -> npt.NDArray | pd.DataFrame:
     """
     Takes all data and returns just for specified year
     Parameters:
@@ -78,10 +66,10 @@ class AddTimeFeatureManipulator(DataFormattingProtocol):
   Adds the e2slib time features to the data.
   """
 
-  def __init__(self, data: np.ndarray | pd.DataFrame) -> None:
+  def __init__(self, data: npt.NDArray | pd.DataFrame) -> None:
     self.data = data
 
-  def data_formatter(self) -> np.ndarray | pd.DataFrame:
+  def data_formatter(self) -> npt.NDArray | pd.DataFrame:
     """ 
     Takes data and applies the e2slib time features to it.
     Parameters:
@@ -104,14 +92,14 @@ class GroupbyManipulator(DataFormattingProtocol):
   Returns data grouped by choosen column.
   """
 
-  def __init__(self, data: np.ndarray | pd.DataFrame) -> None:
+  def __init__(self, data: npt.NDArray | pd.DataFrame) -> None:
     self.data = data
 
   def data_formatter(
       self,
       groupby: list[int | str],
       agg: str,
-      target: int | str | None = None) -> np.ndarray | pd.DataFrame:
+      target: int | str | None = None) -> npt.NDArray | pd.DataFrame:
     """ 
     Groups data by choosen column.
     Parameters:
@@ -136,14 +124,14 @@ class EquationManipulator():
   Returns data with new column of some aggregation.
   """
 
-  def __init__(self, data: np.ndarray | pd.DataFrame) -> None:
+  def __init__(self, data: npt.NDArray | pd.DataFrame) -> None:
     self.data = data
 
   def data_formatter(
       self,
       target_col: str | int,
       func: str,
-      new_col: str | float = 'New column') -> np.ndarray | pd.DataFrame:
+      new_col: str | float = 'New column') -> npt.NDArray | pd.DataFrame:
     """ 
     Formating function applied to data in either DataFrame 
     or Array format.
@@ -163,13 +151,13 @@ class CombineColumnManipulator():
   Combine given columns and return as a new dataframe or array.
   """
 
-  def __init__(self, data: np.ndarray | pd.DataFrame, col_1: str | int,
+  def __init__(self, data: npt.NDArray | pd.DataFrame, col_1: str | int,
                col_2: str | int) -> None:
     self.data = data
     self.col_1 = col_1
     self.col_2 = col_2
 
-  def data_formatter(self) -> np.ndarray | pd.DataFrame:
+  def data_formatter(self) -> npt.NDArray | pd.DataFrame:
     data_copy = deepcopy(self.data)
     if isinstance(data_copy, np.ndarray):
       return np.insert(data_copy,
@@ -188,7 +176,7 @@ class SeasonalWeekManipulator():
   Datetime column/index must be in the data. For array, it must be the first column.
   """
 
-  def __init__(self, data: np.ndarray | pd.DataFrame,
+  def __init__(self, data: npt.NDArray | pd.DataFrame,
                datetime_col: int | str | None) -> None:
     self.data = data
     self.datetime_col = datetime_col
