@@ -45,19 +45,19 @@ class RunVisualisationPreperator:
     return self._data
 
   def prep_outliers(self) -> npt.NDArray | pd.DataFrame:
-    if self._prep_check['outliers'] == True:
+    if self._prep_check['outliers']:
       return self.dataprep_outliers.data_cleaner(self._data)
     else:
       return self._data
 
   def prep_nanvals(self) -> npt.NDArray | pd.DataFrame:
-    if self._prep_check['nan values'] == True:
+    if self._prep_check['nan values']:
       return self.dataprep_nanvals.data_cleaner(self._data, func='fillna')
     else:
       return self._data
 
   def prep_timeseries(self) -> npt.NDArray | pd.DataFrame:
-    if self._prep_check['timeseries'] == False:
+    if not self._prep_check['timeseries']:
       return self.dataprep_timeseries.data_cleaner(self._data)
     else:
       return self._data
