@@ -1,7 +1,3 @@
-import matplotlib.pyplot as plt
-import plotly.express as px
-
-
 class VizSchema:
   PLT = 'plt'
   PLOTLY = 'plotly'

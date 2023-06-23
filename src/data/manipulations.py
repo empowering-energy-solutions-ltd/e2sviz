@@ -33,7 +33,7 @@ def create_seasonal_average_week(season: enums.Season,
   return seasonal_data
 
 
-class ResampleManipulator(DataFormattingProtocol):
+class ResampleManipulator():
   """
   Returns resampled data.
   """
@@ -61,7 +61,7 @@ class ResampleManipulator(DataFormattingProtocol):
       return data_copy.resample(split_by).agg(aggregation)
 
 
-class AddTimeFeatureManipulator(DataFormattingProtocol):
+class AddTimeFeatureManipulator():
   """
   Adds the e2slib time features to the data.
   """
@@ -87,7 +87,7 @@ class AddTimeFeatureManipulator(DataFormattingProtocol):
       return functions.add_time_features(data_copy)
 
 
-class GroupbyManipulator(DataFormattingProtocol):
+class GroupbyManipulator():
   """
   Returns data grouped by choosen column.
   """

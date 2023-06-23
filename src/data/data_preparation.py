@@ -1,10 +1,12 @@
+import warnings
 from copy import deepcopy
 from datetime import datetime
 from typing import Protocol
 
 import numpy as np
-import pandas as pd
 import numpy.typing as npt
+import pandas as pd
+
 from src.data import viz_schema
 
 
@@ -35,42 +37,80 @@ def retrieve_data(data: npt.NDArray | pd.DataFrame) -> np.ndarray | ValueError:
   else:
     raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
+
 def check_dataset(data: npt.NDArray | pd.DataFrame) -> dict[str, bool]:
+  """
+  Check the dataset for outliers and NaN values.
+  """
+  result = {'outliers': False, 'nan values': False, 'timeseries': False}
+  result['timeseries'] = check_datetime(data)
+  if isinstance(data, np.ndarray):
+    # Check for outliers
+    outliers_mask = np.abs(data - np.mean(data)) > 3 * np.std(data)
+    result['outliers'] = np.any(outliers_mask)
+    # Check for NaN values
+    result['nan values'] = np.isnan(data).any()
+  elif isinstance(data, pd.DataFrame):
+    # Check for outliers
+    outliers_mask = np.abs(data - data.mean()) > 3 * data.std()
+    result['outliers'] = np.any(outliers_mask.values)
+    # Check for NaN values
+    result['nan values'] = data.isnull().values.any()
+  else:
+    raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
+  if result['outliers'] == True:
+    result['nan values'] = True
+  return result
+
+
+def check_datetime(data: pd.DataFrame | npt.NDArray) -> bool:
+  """
+    Check if a datetime index or column is present in the given data.
     """
-    Check the dataset for outliers and NaN values.
-    """
-    result = {
-        'outliers': False,
-        'nan values': False
-    }
-    if isinstance(data, np.ndarray):
-          # Check for outliers
-          outliers_mask = np.abs(data - np.mean(data)) > 3 * np.std(data)
-          result['outliers'] = np.any(outliers_mask)
+  if isinstance(data, pd.DataFrame):
+    return _check_dataframe(data)
+  elif isinstance(data, np.ndarray):
+    return _check_ndarray(data)
+  else:
+    raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
-          # Check for NaN values
-          result['nan values'] = np.isnan(data).any()
 
-      elif isinstance(data, pd.DataFrame):
-          # Check for outliers
-          outliers_mask = np.abs(data - data.mean()) > 3 * data.std()
-          result['outliers'] = np.any(outliers_mask.values)
+def _check_dataframe(data: pd.DataFrame) -> bool:
+  """Check if a datetime index or column is present in the pandas DataFrame."""
+  index_type = data.index.dtype
+  if pd.api.types.is_datetime64_dtype(index_type):
+    warnings.warn(
+        'Warning. Your datetime index is not timezone aware. Recommend converting using tz_localize.'
+    )
+    return True
+  if pd.api.types.is_datetime64tz_dtype(data.index.dtype):
+    return True
+  for column in data.columns:
+    column_type = data[column].dtype
+    if pd.api.types.is_datetime64_dtype(column_type):
+      return True
 
-          # Check for NaN values
-          result['nan values'] = data.isnull().values.any()
+  return False
 
-      else:
-          raise ValueError("Input data must be a NumPy array or Pandas DataFrame.")
 
-      return result
+def _check_ndarray(data: npt.NDArray) -> bool:
+  """Check if a datetime column is present in the NumPy array."""
+  # Convert the NumPy array to a pandas DataFrame for easier datetime detection
+  df = pd.DataFrame(data)
+
+  for column in df.columns:
+    column_type = df[column].dtype
+    if pd.api.types.is_datetime64_dtype(column_type):
+      return True
+
+  return False
+
 
 class OutlierRemover():
   """ Removes outliers from array/dataframe """
 
-  def __init__(self, data) -> None:
-    self.data = data
-
-  def data_cleaner(self) -> npt.NDArray | pd.DataFrame:
+  def data_cleaner(
+      self, data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
     """
     Remove outliers from the data.
     Parameters:
@@ -78,7 +118,7 @@ class OutlierRemover():
     Returns:
       Array or Dataframe, whichever you gave it in the first place.
     """
-    data_copy = deepcopy(self.data)
+    data_copy = deepcopy(data)
     values = retrieve_data(data_copy)
     outliers = self.find_outliers(values)
     data_copy = data_copy.astype(float)
@@ -118,10 +158,8 @@ class FillMissingData():
   Fills missing values in array/dataframe.
   """
 
-  def __init__(self, data) -> None:
-    self.data = data
-
-  def data_cleaner(self, func: str) -> npt.NDArray | pd.DataFrame:
+  def data_cleaner(self, data: npt.NDArray | pd.DataFrame,
+                   func: str) -> npt.NDArray | pd.DataFrame:
     """
     Fill missing values in the data.
 
@@ -133,17 +171,18 @@ class FillMissingData():
       Array or Dataframe, whichever you gave it in the first place.
     """
     if func == "dropna":
-      data = self.dropna()
+      data = self.dropna(data)
     elif func == "fillna":
-      data = self.fillna()
+      data = self.fillna(data)
     else:
       raise ValueError(
           "Invalid fill method. Please choose 'dropna' or 'fillna'.")
 
     return data
 
-  def dropna(self) -> npt.NDArray | pd.DataFrame:
-    data_copy = deepcopy(self.data)
+  def dropna(self,
+             data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
+    data_copy = deepcopy(data)
     if isinstance(data_copy, pd.DataFrame):
       return data_copy.dropna()
     elif isinstance(data_copy, np.ndarray):
@@ -151,8 +190,9 @@ class FillMissingData():
     else:
       raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
-  def fillna(self) -> npt.NDArray | pd.DataFrame:
-    data_copy = deepcopy(self.data)
+  def fillna(self,
+             data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
+    data_copy = deepcopy(data)
     if isinstance(data_copy, pd.DataFrame):
       return data_copy.fillna(data_copy.mean())
     elif isinstance(data_copy, np.ndarray):
@@ -170,10 +210,8 @@ class GenerateDatetime():
   Creates a datetime for dataset or without one.
   """
 
-  def __init__(self, data) -> None:
-    self.data = data.astype(float)
-
   def data_cleaner(self,
+                   data: npt.NDArray | pd.DataFrame,
                    start_date: datetime = datetime(2022, 1, 1),
                    freq: str = "30T",
                    periods: int = 48,
@@ -188,9 +226,9 @@ class GenerateDatetime():
     Returns:
       Input data with datetime column, index if Dataframe, column zero if array -> Needs to be converted to datetime.
     """
-    data_copy = deepcopy(self.data)
-    if self.data is not None:
-      num_steps = len(self.data)
+    data_copy = deepcopy(data)
+    if data is not None:
+      num_steps = len(data)
     else:
       num_steps = periods
 
@@ -198,8 +236,8 @@ class GenerateDatetime():
                                    periods=num_steps,
                                    freq=freq,
                                    tz=tz)
-    if isinstance(self.data, np.ndarray):
+    if isinstance(data, np.ndarray):
       df = pd.DataFrame(index=datetime_array)
       return np.insert(data_copy, 0, df.index, axis=1)
-    elif isinstance(self.data, pd.DataFrame):
+    elif isinstance(data, pd.DataFrame):
       return data_copy.set_index(datetime_array)
