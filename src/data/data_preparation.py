@@ -19,7 +19,7 @@ def convert_data_types(
     if columns:
       return pd.DataFrame(data)
     else:
-      return pd.DataFrame(data, columns=columns)d
+      return pd.DataFrame(data, columns=columns)
   else:
     raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
@@ -146,7 +146,7 @@ class OutlierRemover():
     return outliers
 
 
-class d():
+class FillMissingData():
   """
   Fills missing values in array/dataframe.
   """
@@ -171,7 +171,8 @@ class d():
       data = self.fillna_rolling(data)
     else:
       raise ValueError(
-          "Invalid fill method. Please choose 'dropna' or 'fillna'.")
+          "Invalid fill method. Please choose 'dropna', 'meanfill' or 'rollingfill'."
+      )
 
     return data
 
@@ -217,7 +218,7 @@ class d():
       raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
 
-class s():
+class GenerateDatetime():
   """
   Creates a datetime for dataset or without one.
   """

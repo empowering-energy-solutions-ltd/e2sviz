@@ -33,6 +33,21 @@ def create_seasonal_average_week(season: enums.Season,
   return seasonal_data
 
 
+def seasonal_week_plot_data(
+    plot_data: pd.DataFrame
+) -> tuple[pd.Index, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+  timestep = enums.TimeStep.HALFHOUR
+  avg_data = functions.get_avg_week_by_season_df(
+      plot_data, viz_schema.ManipulationSchema.ENERGY, timestep)
+  avg_data.index = functions.format_avg_week_index(avg_data, timestep)
+  max_data = functions.get_avg_week_by_season_df(
+      plot_data, viz_schema.ManipulationSchema.ENERGY, timestep, np.max)
+  min_data = functions.get_avg_week_by_season_df(
+      plot_data, viz_schema.ManipulationSchema.ENERGY, timestep, np.min)
+  x = avg_data.index
+  return x, avg_data, max_data, min_data
+
+
 class ResampleManipulator():
   """
   Returns resampled data.

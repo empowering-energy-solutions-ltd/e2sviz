@@ -6,7 +6,7 @@ from e2slib.structures import enums
 from e2slib.utillib import functions
 from e2slib.visualization import viz_functions
 
-from src.data import viz_schema
+from src.data import manipulations, viz_schema
 
 
 class StandardPlot():
@@ -14,24 +14,18 @@ class StandardPlot():
   Creates single plot of values either single or double y values.
   """
 
-  def viz_type_init(self, data: pd.DataFrame, timeseries: bool,
-                    multiple_y: bool):
+  def viz_type_init(self, data: pd.DataFrame):
     plt.figure(figsize=(12, 6))
-    xlabel = "X"
+    xlabel = "Datetime"
     ylabel = data.columns[0]
-    if timeseries & isinstance(data, np.ndarray):
-      x = pd.to_datetime(data[:, 0])
-    elif timeseries & isinstance(data, pd.DataFrame):
-      x = data.index
-    if timeseries:
-      xlabel = "Datetime"
+    x = data.index
     plt.title(f"{ylabel} v {xlabel}")
     plt.ylabel(ylabel)
-    if multiple_y:
-      y_label_1 = data.columns[1]
-      plt.plot(x, data.iloc[:, 1], color='mediumorchid', label=y_label_1)
-      plt.title(f"{ylabel}/{y_label_1} v {xlabel}")
-      plt.ylabel(f"{ylabel}/{y_label_1}")
+    # if multiple_y:
+    #   y_label_1 = data.columns[1]
+    #   plt.plot(x, data.iloc[:, 1], color='mediumorchid', label=y_label_1)
+    #   plt.title(f"{ylabel}/{y_label_1} v {xlabel}")
+    #   plt.ylabel(f"{ylabel}/{y_label_1}")
 
     plt.plot(x, data.iloc[:, 0], color='royalblue', label=ylabel)
     plt.xlabel(xlabel)
@@ -45,8 +39,7 @@ class SubplotPlot():
   Create subplots for each column in data.
   """
 
-  def viz_type_init(self, data: pd.DataFrame, timeseries: bool,
-                    multiple_y: bool):
+  def viz_type_init(self, data: pd.DataFrame):
 
     num_cols = data.shape[1]
     fig, axes = plt.subplots(num_cols,
@@ -54,11 +47,7 @@ class SubplotPlot():
                              sharex=True,
                              figsize=(10, num_cols * 4))
     fig.suptitle('Subplots')
-
-    if timeseries & isinstance(data, np.ndarray):
-      x = pd.to_datetime(data[:, 0])
-    elif timeseries & isinstance(data, pd.DataFrame):
-      x = data.index
+    x = data.index
 
     for i, column in enumerate(data.columns):
       ax = axes[i] if num_cols > 1 else axes
@@ -77,8 +66,7 @@ class BarPlot():
   Creates bar plot from data.
   """
 
-  def viz_type_init(self, data: pd.DataFrame, timeseries: bool,
-                    multiple_y: bool):
+  def viz_type_init(self, data: pd.DataFrame):
     column_names = data.columns
     sum_values = data.sum()
 
@@ -96,18 +84,11 @@ class AvgSeasonPlot():
   Creates plot of average values for each season.
   """
 
-  def viz_type_init(self, data: pd.DataFrame, timeseries: bool,
-                    multiple_y: bool):
-    data = functions.add_time_features(data)
-    timestep = enums.TimeStep.HALFHOUR
-    avg_data = functions.get_avg_week_by_season_df(
-        data, viz_schema.ManipulationSchema.ENERGY, timestep)
-    avg_data.index = functions.format_avg_week_index(avg_data, timestep)
-    max_data = functions.get_avg_week_by_season_df(
-        data, viz_schema.ManipulationSchema.ENERGY, timestep, np.max)
-    min_data = functions.get_avg_week_by_season_df(
-        data, viz_schema.ManipulationSchema.ENERGY, timestep, np.min)
-    x = avg_data.index
+  def viz_type_init(self, data: pd.DataFrame):
+
+    plot_data = functions.add_time_features(data)
+    x, avg_data, max_data, min_data = manipulations.seasonal_week_plot_data(
+        plot_data)
 
     for temp_season in avg_data.columns:
       fig, ax = plt.subplots(figsize=(10, 6))

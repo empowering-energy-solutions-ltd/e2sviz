@@ -49,8 +49,7 @@ class VizType(Protocol):
   Select visualisation type to be created.
   """
 
-  def viz_type_init(self, data: pd.DataFrame, timeseries: bool,
-                    multiple_y: bool):
+  def viz_type_init(self, data: pd.DataFrame):
     ...
 
 
@@ -74,7 +73,7 @@ class Visualizer:
     """
     self.arr_to_DataFrame()
 
-    self.viz_type.viz_type_init(self.data, self.timeseries, self.multiple_y)
+    self.viz_type.viz_type_init(self.data)
 
   def arr_to_DataFrame(self):
     """
