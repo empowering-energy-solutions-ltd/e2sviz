@@ -38,10 +38,7 @@ class ResampleManipulator():
   Returns resampled data.
   """
 
-  def __init__(self, data: npt.NDArray | pd.DataFrame) -> None:
-    self.data = data
-
-  def data_formatter(self, split_by: str,
+  def data_formatter(self, data: npt.NDArray | pd.DataFrame, split_by: str,
                      aggregation: str) -> npt.NDArray | pd.DataFrame:
     """
     Takes all data and returns just for specified year
@@ -52,7 +49,7 @@ class ResampleManipulator():
     Returns:
       Array or Dataframe, whichever you gave it in the first place resampled.
     """
-    data_copy = deepcopy(self.data)
+    data_copy = deepcopy(data)
     if isinstance(data_copy, np.ndarray):
       data_copy = pd.DataFrame(data_copy[:, 1:],
                                index=pd.DatetimeIndex(data_copy[:, 0]))
@@ -66,10 +63,8 @@ class AddTimeFeatureManipulator():
   Adds the e2slib time features to the data.
   """
 
-  def __init__(self, data: npt.NDArray | pd.DataFrame) -> None:
-    self.data = data
-
-  def data_formatter(self) -> npt.NDArray | pd.DataFrame:
+  def data_formatter(
+      self, data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
     """ 
     Takes data and applies the e2slib time features to it.
     Parameters:
@@ -77,7 +72,7 @@ class AddTimeFeatureManipulator():
     Returns:
       Array or Dataframe, whichever you gave it in the first place with time features added.
     """
-    data_copy = deepcopy(self.data)
+    data_copy = deepcopy(data)
     if isinstance(data_copy, np.ndarray):
       data_copy = pd.DataFrame(data_copy[:, 1:],
                                index=pd.DatetimeIndex(data_copy[:, 0]))
@@ -92,11 +87,9 @@ class GroupbyManipulator():
   Returns data grouped by choosen column.
   """
 
-  def __init__(self, data: npt.NDArray | pd.DataFrame) -> None:
-    self.data = data
-
   def data_formatter(
       self,
+      data: npt.NDArray | pd.DataFrame,
       groupby: list[int | str],
       agg: str,
       target: int | str | None = None) -> npt.NDArray | pd.DataFrame:
@@ -110,7 +103,7 @@ class GroupbyManipulator():
     Returns:
       Array or Dataframe, whichever you gave it in the first place grouped by target.
     """
-    data_copy = deepcopy(self.data)
+    data_copy = deepcopy(data)
     if isinstance(data_copy, np.ndarray):
       data_copy = pd.DataFrame(data_copy[:, 1:],
                                index=pd.DatetimeIndex(data_copy[:, 0]))
@@ -124,11 +117,9 @@ class EquationManipulator():
   Returns data with new column of some aggregation.
   """
 
-  def __init__(self, data: npt.NDArray | pd.DataFrame) -> None:
-    self.data = data
-
   def data_formatter(
       self,
+      data: npt.NDArray | pd.DataFrame,
       target_col: str | int,
       func: str,
       new_col: str | float = 'New column') -> npt.NDArray | pd.DataFrame:
@@ -136,7 +127,7 @@ class EquationManipulator():
     Formating function applied to data in either DataFrame 
     or Array format.
     """
-    data_copy = deepcopy(self.data)
+    data_copy = deepcopy(data)
     if isinstance(data_copy, np.ndarray):
       new_col = eval(f'data_copy[:,target_col] {func}')
       return np.insert(data_copy, data_copy.shape[1], new_col, axis=1)
@@ -151,22 +142,17 @@ class CombineColumnManipulator():
   Combine given columns and return as a new dataframe or array.
   """
 
-  def __init__(self, data: npt.NDArray | pd.DataFrame, col_1: str | int,
-               col_2: str | int) -> None:
-    self.data = data
-    self.col_1 = col_1
-    self.col_2 = col_2
-
-  def data_formatter(self) -> npt.NDArray | pd.DataFrame:
-    data_copy = deepcopy(self.data)
+  def data_formatter(self, data: npt.NDArray | pd.DataFrame, col_1: str | int,
+                     col_2: str | int) -> npt.NDArray | pd.DataFrame:
+    data_copy = deepcopy(data)
     if isinstance(data_copy, np.ndarray):
       return np.insert(data_copy,
                        data_copy.shape[1],
-                       data_copy[:, self.col_1] + data_copy[:, self.col_2],
+                       data_copy[:, col_1] + data_copy[:, col_2],
                        axis=1)
     else:
       data_copy[viz_schema.ManipulationSchema.
-                NEW_COL] = data_copy[self.col_1] + data_copy[self.col_2]
+                NEW_COL] = data_copy[col_1] + data_copy[col_2]
       return data_copy
 
 
@@ -176,35 +162,16 @@ class SeasonalWeekManipulator():
   Datetime column/index must be in the data. For array, it must be the first column.
   """
 
-  def __init__(self, data: npt.NDArray | pd.DataFrame,
-               datetime_col: int | str | None) -> None:
-    self.data = data
-    self.datetime_col = datetime_col
-
-  def datetime_check(self) -> None:
-    """
-    Checks if datetime column/index is in the data.
-    """
-    if isinstance(self.data, np.ndarray):
-      if self.datetime_col is None:
-        raise ValueError(
-            'Datetime column/index must be specified for array data.')
-    else:
-      if isinstance(self.data, pd.DataFrame):
-        index = self.data.index
-        if not isinstance(index, pd.DatetimeIndex):
-          raise ValueError(
-              'Index must be pd.DatetimeIndex for dataframe data.')
-
-  def data_formatter(self) -> list[np.ndarray] | list[pd.DataFrame]:
-    self.datetime_check()
-    data_copy = deepcopy(self.data)
+  def data_formatter(
+      self, data: npt.NDArray | pd.DataFrame,
+      datetime_col: int | str | None) -> list[np.ndarray] | list[pd.DataFrame]:
+    self.datetime_check(data, datetime_col)
+    data_copy = deepcopy(data)
     is_array = False
-    if isinstance(self.data, np.ndarray):
+    if isinstance(data, np.ndarray):
       is_array = True
-      data_copy = pd.DataFrame(self.data[:, 1:],
-                               index=pd.DatetimeIndex(
-                                   self.data[:, self.datetime_col]))
+      data_copy = pd.DataFrame(data[:, 1:],
+                               index=pd.DatetimeIndex(data[:, datetime_col]))
     # if isinstance(data_copy, np.ndarray):
     #   data_copy = pd.DataFrame(data_copy[:, 1:],
     #                            index=pd.DatetimeIndex(data_copy[:, 0]))
@@ -232,3 +199,19 @@ class SeasonalWeekManipulator():
     if is_array:
       return np.array(output)
     return output
+
+  def datetime_check(self, data: npt.NDArray | pd.DataFrame,
+                     datetime_col: int | str | None) -> None:
+    """
+    Checks if datetime column/index is in the data.
+    """
+    if isinstance(data, np.ndarray):
+      if datetime_col is None:
+        raise ValueError(
+            'Datetime column/index must be specified for array data.')
+    else:
+      if isinstance(data, pd.DataFrame):
+        index = data.index
+        if not isinstance(index, pd.DatetimeIndex):
+          raise ValueError(
+              'Index must be pd.DatetimeIndex for dataframe data.')

@@ -10,12 +10,16 @@ import pandas as pd
 from src.data import viz_schema
 
 
-def convert_data_types(data: npt.NDArray | pd.DataFrame,
-                       columns: list[str]) -> np.ndarray | ValueError:
+def convert_data_types(
+    data: npt.NDArray | pd.DataFrame,
+    columns: list[str] | None = None) -> np.ndarray | ValueError:
   if isinstance(data, pd.DataFrame):
     return np.ndarray(data.values)
   elif isinstance(data, np.ndarray):
-    return pd.DataFrame(data, columns=columns)
+    if columns:
+      return pd.DataFrame(data)
+    else:
+      return pd.DataFrame(data, columns=columns)d
   else:
     raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
@@ -141,19 +145,8 @@ class OutlierRemover():
                                                                > upper_bound)
     return outliers
 
-    # outliers = np.zeros_like(values, dtype=bool)
-    # for column_idx in range(values.shape[1]):
-    #   column_data = values[:, column_idx]
-    #   mean = np.mean(column_data)
-    #   std_dev = np.std(column_data)
-    #   lower_bound = mean - (2 * std_dev)  # Adjust the multiplier as needed
-    #   upper_bound = mean + (2 * std_dev)  # Adjust the multiplier as needed
-    #   outliers[:, column_idx] = (column_data < lower_bound) | (column_data
-    #                                                            > upper_bound)
-    # return outliers
 
-
-class FillMissingData():
+class d():
   """
   Fills missing values in array/dataframe.
   """
@@ -170,10 +163,12 @@ class FillMissingData():
     Returns:
       Array or Dataframe, whichever you gave it in the first place.
     """
-    if func == "dropna":
+    if func == 'dropna':
       data = self.dropna(data)
-    elif func == "fillna":
-      data = self.fillna(data)
+    elif func == 'meanfill':
+      data = self.fillna_mean(data)
+    elif func == 'rollingfill':
+      data = self.fillna_rolling(data)
     else:
       raise ValueError(
           "Invalid fill method. Please choose 'dropna' or 'fillna'.")
@@ -190,8 +185,8 @@ class FillMissingData():
     else:
       raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
-  def fillna(self,
-             data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
+  def fillna_mean(
+      self, data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
     data_copy = deepcopy(data)
     if isinstance(data_copy, pd.DataFrame):
       return data_copy.fillna(data_copy.mean())
@@ -204,8 +199,25 @@ class FillMissingData():
     else:
       raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
+  def fillna_rolling(
+      self, data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
+    data_copy = deepcopy(data)
+    if isinstance(data_copy, pd.DataFrame):
+      return data_copy.fillna(
+          data_copy.rolling(window=3, min_periods=1, axis=0).mean())
+    elif isinstance(data_copy, np.ndarray):
+      for column_idx in range(data_copy.shape[1]):
+        column_data = data_copy[:, column_idx]
+        mask = np.isnan(column_data)
+        rolling_mean = pd.Series(column_data).rolling(
+            window=3, min_periods=1).mean().to_numpy()
+        column_data[mask] = rolling_mean[mask]
+      return data_copy
+    else:
+      raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
-class GenerateDatetime():
+
+class s():
   """
   Creates a datetime for dataset or without one.
   """

@@ -8,7 +8,8 @@ import pandas as pd
 
 class DataPreparationProtocol(Protocol):
 
-  def data_cleaner(self) -> npt.NDArray | pd.DataFrame:
+  def data_cleaner(
+      self, data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
     ...
 
 
@@ -52,7 +53,7 @@ class RunVisualisationPreperator:
 
   def prep_nanvals(self) -> npt.NDArray | pd.DataFrame:
     if self._prep_check['nan values']:
-      return self.dataprep_nanvals.data_cleaner(self._data, func='fillna')
+      return self.dataprep_nanvals.data_cleaner(self._data, func='rollingfill')
     else:
       return self._data
 
