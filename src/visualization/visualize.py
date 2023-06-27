@@ -57,9 +57,7 @@ class VizType(Protocol):
 class Visualizer:
   data: npt.NDArray | pd.DataFrame
   viz_type: VizType
-  timeseries: bool = False
   viz_selector: VizSelector = MatPlotLibSelector()
-  multiple_y: bool = False
   columns: list[str] | None = None
 
   def __post_init__(self):
