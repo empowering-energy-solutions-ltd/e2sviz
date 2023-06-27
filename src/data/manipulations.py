@@ -9,8 +9,6 @@ from e2slib.utillib import functions
 
 from src.data import viz_schema
 
-# from data_preperation import retrieve_data
-
 
 def create_seasonal_average_week(season: enums.Season,
                                  dataf: pd.DataFrame,
@@ -33,7 +31,7 @@ def create_seasonal_average_week(season: enums.Season,
   return seasonal_data
 
 
-def seasonal_week_plot_data(
+def seasonal_avg_week_plot_data(
     plot_data: pd.DataFrame
 ) -> tuple[pd.Index, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
   timestep = enums.TimeStep.HALFHOUR
@@ -44,8 +42,15 @@ def seasonal_week_plot_data(
       plot_data, viz_schema.ManipulationSchema.ENERGY, timestep, np.max)
   min_data = functions.get_avg_week_by_season_df(
       plot_data, viz_schema.ManipulationSchema.ENERGY, timestep, np.min)
-  x = avg_data.index
-  return x, avg_data, max_data, min_data
+  datetime = avg_data.index
+  return datetime, avg_data, max_data, min_data
+
+
+def get_seasonal_week(data: pd.DataFrame) -> list[pd.DataFrame]:
+  data_copy = deepcopy(data)
+  loop_data = functions.add_time_features(data_copy)
+  output = find_week_in_season(loop_data)
+  return output
 
 
 class ResampleManipulator():
@@ -71,30 +76,6 @@ class ResampleManipulator():
       return data_copy.resample(split_by).agg(aggregation).to_numpy()
     else:
       return data_copy.resample(split_by).agg(aggregation)
-
-
-class AddTimeFeatureManipulator():
-  """
-  Adds the e2slib time features to the data.
-  """
-
-  def data_formatter(
-      self, data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
-    """ 
-    Takes data and applies the e2slib time features to it.
-    Parameters:
-      Data: Either numpy array or pandas dataframe
-    Returns:
-      Array or Dataframe, whichever you gave it in the first place with time features added.
-    """
-    data_copy = deepcopy(data)
-    if isinstance(data_copy, np.ndarray):
-      data_copy = pd.DataFrame(data_copy[:, 1:],
-                               index=pd.DatetimeIndex(data_copy[:, 0]))
-      arr_with_time = functions.add_time_features(data_copy).to_numpy()
-      return np.insert(arr_with_time, 0, data_copy.index, axis=1)
-    else:
-      return functions.add_time_features(data_copy)
 
 
 class GroupbyManipulator():
@@ -171,62 +152,24 @@ class CombineColumnManipulator():
       return data_copy
 
 
-class SeasonalWeekManipulator():
-  """
-  Creates a new dataframe/array of the data for 1 week of each season.
-  Datetime column/index must be in the data. For array, it must be the first column.
-  """
-
-  def data_formatter(
-      self, data: npt.NDArray | pd.DataFrame,
-      datetime_col: int | str | None) -> list[np.ndarray] | list[pd.DataFrame]:
-    self.datetime_check(data, datetime_col)
-    data_copy = deepcopy(data)
-    is_array = False
-    if isinstance(data, np.ndarray):
-      is_array = True
-      data_copy = pd.DataFrame(data[:, 1:],
-                               index=pd.DatetimeIndex(data[:, datetime_col]))
-    # if isinstance(data_copy, np.ndarray):
-    #   data_copy = pd.DataFrame(data_copy[:, 1:],
-    #                            index=pd.DatetimeIndex(data_copy[:, 0]))
-
-    loop_data = functions.add_time_features(data_copy)
-    output = []
-    frames = []
-    for seasons in loop_data['season'].unique():
-      found_week = False
-      week_counter = 0
-      for week in loop_data['Week'][loop_data['season'] == seasons].unique():
-        if len(loop_data[(loop_data['season'] == seasons)
-                         & (loop_data['Week'] == week)]) == 336:
-          week_counter += 1
-          if week_counter == 3:
-            frames = loop_data[(loop_data['season'] == seasons)
-                               & (loop_data['Week'] == week)]
-            found_week = True  # Set the flag to True
-            break  # Stop searching for additional weeks
-
-      if not found_week:
-        output.append(None)
-      else:
-        output.append(frames)
-    if is_array:
-      return np.array(output)
-    return output
-
-  def datetime_check(self, data: npt.NDArray | pd.DataFrame,
-                     datetime_col: int | str | None) -> None:
-    """
-    Checks if datetime column/index is in the data.
-    """
-    if isinstance(data, np.ndarray):
-      if datetime_col is None:
-        raise ValueError(
-            'Datetime column/index must be specified for array data.')
+def find_week_in_season(loop_data: pd.DataFrame) -> list[pd.DataFrame]:
+  output = []
+  frames = []
+  for seasons in loop_data['season'].unique():
+    found_week = False
+    week_counter = 0
+    for week in loop_data['Week'][loop_data['season'] == seasons].unique():
+      if len(loop_data[(loop_data['season'] == seasons)
+                       & (loop_data['Week'] == week)]) == 336:
+        week_counter += 1
+        if week_counter == 3:
+          frames = loop_data[(loop_data['season'] == seasons)
+                             & (loop_data['Week'] == week)]
+          found_week = True  # Set the flag to True
+          break  # Stop searching for additional weeks
+    if not found_week:
+      output.append(None)
     else:
-      if isinstance(data, pd.DataFrame):
-        index = data.index
-        if not isinstance(index, pd.DatetimeIndex):
-          raise ValueError(
-              'Index must be pd.DatetimeIndex for dataframe data.')
+      output.append(frames)
+
+  return output

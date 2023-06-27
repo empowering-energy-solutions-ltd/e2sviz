@@ -21,12 +21,6 @@ class StandardPlot():
     x = data.index
     plt.title(f"{ylabel} v {xlabel}")
     plt.ylabel(ylabel)
-    # if multiple_y:
-    #   y_label_1 = data.columns[1]
-    #   plt.plot(x, data.iloc[:, 1], color='mediumorchid', label=y_label_1)
-    #   plt.title(f"{ylabel}/{y_label_1} v {xlabel}")
-    #   plt.ylabel(f"{ylabel}/{y_label_1}")
-
     plt.plot(x, data.iloc[:, 0], color='royalblue', label=ylabel)
     plt.xlabel(xlabel)
     plt.legend()
@@ -40,25 +34,27 @@ class SubplotPlot():
   """
 
   def viz_type_init(self, data: pd.DataFrame):
+    years = data.index.year.unique()
+    for year in years:
+      annual_data = data.loc[data.index.year == year]
+      num_cols = annual_data.shape[1]
+      fig, axes = plt.subplots(num_cols,
+                               1,
+                               sharex=True,
+                               figsize=(10, num_cols * 4))
+      fig.suptitle(f'Column data for {year}')
+      x = data.index
 
-    num_cols = data.shape[1]
-    fig, axes = plt.subplots(num_cols,
-                             1,
-                             sharex=True,
-                             figsize=(10, num_cols * 4))
-    fig.suptitle('Subplots')
-    x = data.index
+      for i, column in enumerate(annual_data.columns):
+        ax = axes[i] if num_cols > 1 else axes
+        ax.plot(x, annual_data[column], color='royalblue')
+        ax.set_ylabel(column)
+        ax.grid()
 
-    for i, column in enumerate(data.columns):
-      ax = axes[i] if num_cols > 1 else axes
-      ax.plot(x, data[column], color='royalblue')
-      ax.set_ylabel(column)
-      ax.grid()
+        ax.xaxis.set_tick_params(which='both', labelbottom=True)
 
-      ax.xaxis.set_tick_params(which='both', labelbottom=True)
-
-    plt.xlabel("Datetime")
-    plt.show()
+      plt.xlabel("Datetime")
+      plt.show()
 
 
 class BarPlot():
@@ -79,7 +75,7 @@ class BarPlot():
     plt.show()
 
 
-class AvgSeasonPlot():
+class AvgSeasonWeekPlot():
   """
   Creates plot of average values for each season.
   """
@@ -87,7 +83,7 @@ class AvgSeasonPlot():
   def viz_type_init(self, data: pd.DataFrame):
 
     plot_data = functions.add_time_features(data)
-    x, avg_data, max_data, min_data = manipulations.seasonal_week_plot_data(
+    datetime, avg_data, max_data, min_data = manipulations.seasonal_avg_week_plot_data(
         plot_data)
 
     for temp_season in avg_data.columns:
@@ -95,6 +91,88 @@ class AvgSeasonPlot():
       avg_y = avg_data[temp_season].values
       max_y = max_data[temp_season].values
       min_y = min_data[temp_season].values
-      ax = viz_functions.custom_plot(x, avg_y, ax=ax, color='mediumorchid')
-      ax.fill_between(x, y1=min_y, y2=max_y, alpha=0.5, color='royalblue')
-      plt.title(f"Average weekly power demand in {temp_season.lower()}")
+      ax = viz_functions.custom_plot(datetime, avg_y, ax=ax, color='cyan')
+      ax.fill_between(datetime,
+                      y1=min_y,
+                      y2=max_y,
+                      alpha=0.5,
+                      color='royalblue')
+      plt.title(f'Average weekly power demand in {temp_season.lower()}')
+
+
+class ActualSeasonWeekPlot():
+  """
+  Creates bar plot from data.
+  """
+
+  def viz_type_init(self, data: pd.DataFrame):
+    weeks = manipulations.get_seasonal_week(data)
+    for week in weeks:
+      fig, ax = plt.subplots(figsize=(10, 6))
+      ax = viz_functions.custom_plot(week.index,
+                                     week.iloc[:, 0].values,
+                                     ax=ax,
+                                     color='royalblue')
+      plt.title(f'Given ' + str(week['season'].iloc[1]) + ' week power demand')
+
+
+class AnnualPlot():
+  """
+  Creates plot of annual values.
+  """
+
+  def viz_type_init(self, data: pd.DataFrame):
+    years = data.index.year.unique()
+    # plt.figure(figsize=(12, 3.5))
+    for year in years:
+      data_year = data[data.index.year == year]
+      fig, ax = plt.subplots(figsize=(10, 6))
+      data_year['Site energy [kWh]'].plot(ax=ax, label='Half-hourly')
+      data_year['Site energy [kWh]'].resample('d').mean().plot(ax=ax,
+                                                               label='Daily')
+      data_year['Site energy [kWh]'].resample('w').mean().plot(ax=ax,
+                                                               label='Weekly')
+      data_year['Site energy [kWh]'].resample('m').mean().plot(ax=ax,
+                                                               label='Monthly')
+      ax.set_ylabel('Site energy [kWh]')
+      ax.set_xlabel("Date")
+      ax.margins(0, None)
+      ax.set_title(f'Site energy [kWh] for {year}')
+      ax.legend(title='Resolution')
+      # return fig, ax
+
+    #   fig, ax = plt.subplots(figsize=(12, 3.5))
+    #
+    #   ax.plot(data_year.index, data_year.iloc[:, 0].values)
+    #   plt.title(f'Annual energy profile - {year}')
+    #   plt.xlabel('Datetime')
+    #   plt.ylabel('Energy [kWh]')
+    #   plt.grid()
+    # plt.show()
+
+
+class AnnualSeasonalWeekPlot():
+
+  def viz_type_init(self, data: pd.DataFrame):
+    featured_data = functions.add_time_features(data)
+    years = featured_data.index.year.unique()
+    for temp_year in years:
+      data_year = featured_data[featured_data.index.year == temp_year]
+      avg_data = functions.get_avg_week_by_season_df(
+          data_year, viz_schema.ManipulationSchema.ENERGY,
+          enums.TimeStep.HALFHOUR)
+      # avg_data.columns = avg_data.columns.get_level_values(1)
+      avg_data.index = functions.format_avg_week_index(avg_data,
+                                                       enums.TimeStep.HALFHOUR)
+      # avg_data.plot()
+      fig, ax = plt.subplots(figsize=(10, 6))
+      ax = viz_functions.custom_plot_from_df(avg_data, ax=ax, linewidth=1)
+
+      plt.xlabel('Day of the week (Timestep: 30 minutes)')
+      plt.ylabel('Energy profile (kWh)')
+      plt.title(f'Average weekly energy profile - {temp_year}')
+      plt.ylim(0, 40)
+      # ax = plt.gca()
+      # ax.set_ylim(0, None)
+      # ax.margins(0, None)
+      plt.show()
