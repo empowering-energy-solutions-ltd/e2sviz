@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 
 import matplotlib.pyplot as plt
-import numpy as np
-import numpy.typing as npt
+# import numpy as np
+# import numpy.typing as npt
 import pandas as pd
 import seaborn as sns
 from e2slib.structures import enums
@@ -11,6 +11,92 @@ from e2slib.visualization import viz_functions
 
 from src.data import manipulations, viz_schema
 
+# --------------- No time format ---------------
+
+
+class BarPlot():
+  """
+  Creates bar plot of sum values of each season from data.
+  """
+
+  def viz_type_init(self, data: pd.DataFrame) -> None:
+    """
+    Initialize and display the bar plot.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        The input DataFrame.
+
+    Returns
+    -------
+    None
+    """
+    column_names = data.columns
+    sum_values = data.sum()
+
+    plt.bar(column_names, sum_values, color='royalblue')
+    plt.xlabel('Columns')
+    plt.ylabel('Sum Values')
+    plt.title('Sum Values of Each Column')
+    plt.xticks(rotation=90)
+    plt.grid()
+    plt.show()
+
+
+class CorrelationPlot():
+  """
+  Creates correlation plot of each column in data.
+  """
+
+  def viz_type_init(self, data: pd.DataFrame) -> None:
+    """
+    Initialize and display the correlation plot.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        The input DataFrame.
+
+    Returns
+    -------
+    None
+    """
+    corr = data.corr()
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(corr, annot=True, cmap='coolwarm')
+    plt.title('Correlation Plot')
+    plt.xlabel('Columns')
+    plt.ylabel('Columns')
+    plt.show()
+
+
+@dataclass
+class DataDescriber:
+  """
+  Creates table describing the data.
+  """
+  _describe: pd.DataFrame = field(default_factory=pd.DataFrame)
+
+  def viz_type_init(self, data: pd.DataFrame) -> None:
+    """
+    Initialize the DataDescriber and print the description table.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        The input DataFrame.
+
+    Returns
+    -------
+    None
+    """
+    self.describe(data)
+    print(self._describe)
+
+  def describe(self, data) -> None:
+    self._describe = manipulations.statistics_of_data(data)
+
 
 # --------------- Any time format ---------------
 class StandardPlot():
@@ -18,12 +104,24 @@ class StandardPlot():
   Creates single plot of values either single or double y values.
   """
 
-  def viz_type_init(self, data: pd.DataFrame):
+  def viz_type_init(self, data: pd.DataFrame) -> None:
+    """
+    Initialize and display the standard plot.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        The input DataFrame.
+
+    Returns
+    -------
+    None
+    """
     plt.figure(figsize=(12, 6))
-    xlabel = "Datetime"
-    ylabel = data.columns[0]
+    xlabel = 'Datetime'
+    ylabel = str(data.columns[0])
     x = data.index
-    plt.title(f"{ylabel} v {xlabel}")
+    plt.title(f'{ylabel} v {xlabel}')
     plt.ylabel(ylabel)
     plt.plot(x, data.iloc[:, 0], color='royalblue', label=ylabel)
     plt.xlabel(xlabel)
@@ -37,7 +135,19 @@ class SubplotPlot():
   Create subplots for each column in data.
   """
 
-  def viz_type_init(self, data: pd.DataFrame):
+  def viz_type_init(self, data: pd.DataFrame) -> None:
+    """
+    Initialize and display the subplot plot.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        The input DataFrame.
+
+    Returns
+    -------
+    None
+    """
     years = data.index.year.unique()
     for year in years:
       annual_data = data.loc[data.index.year == year]
@@ -68,8 +178,19 @@ class AnnualPlot:
   """
   column: str = 'Site energy [kWh]'
 
-  def viz_type_init(self, data: pd.DataFrame):
-    # freq = pd.infer_freq(data.index)
+  def viz_type_init(self, data: pd.DataFrame) -> None:
+    """
+    Initialize and display the annual plot.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        The input DataFrame.
+
+    Returns
+    -------
+    None
+    """
     years = data.index.year.unique()
     for year in years:
       fig, ax = plt.subplots(figsize=(10, 6))
@@ -79,61 +200,10 @@ class AnnualPlot:
       data_year[self.column].resample('w').mean().plot(ax=ax, label='Weekly')
       data_year[self.column].resample('m').mean().plot(ax=ax, label='Monthly')
       ax.set_ylabel(self.column)
-      ax.set_xlabel("Date")
+      ax.set_xlabel('Date')
       ax.margins(0, None)
       ax.set_title(f'{self.column} for {year}')
       ax.legend(title='Resolution')
-
-
-# --------------- No time format ---------------
-
-
-class BarPlot():
-  """
-  Creates bar plot of sum values of each season from data.
-  """
-
-  def viz_type_init(self, data: pd.DataFrame):
-    column_names = data.columns
-    sum_values = data.sum()
-
-    plt.bar(column_names, sum_values, color='royalblue')
-    plt.xlabel("Columns")
-    plt.ylabel("Sum Values")
-    plt.title("Sum Values of Each Column")
-    plt.xticks(rotation=90)
-    plt.grid()
-    plt.show()
-
-
-class CorrelationPlot():
-  """
-  Creates correlation plot of each column in data.
-  """
-
-  def viz_type_init(self, data: pd.DataFrame):
-    corr = data.corr()
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(corr, annot=True, cmap='coolwarm')
-    plt.title("Correlation Plot")
-    plt.xlabel("Columns")
-    plt.ylabel("Columns")
-    plt.show()
-
-
-@dataclass
-class DataDescriber:
-  """
-  Creates table describing the data.
-  """
-  _describe: pd.DataFrame = field(default_factory=pd.DataFrame)
-
-  def viz_type_init(self, data: pd.DataFrame):
-    self.describe(data)
-    print(self._describe)
-
-  def describe(self, data):
-    self._describe = manipulations.statistics(data)
 
 
 # --------------- Half-hourly time format ---------------
@@ -144,7 +214,19 @@ class ActualSeasonWeekPlot():
   Plots actual weekly plot from each season of the year.
   """
 
-  def viz_type_init(self, data: pd.DataFrame):
+  def viz_type_init(self, data: pd.DataFrame) -> None:
+    """
+    Initialize and display the actual season week plot.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        The input DataFrame.
+
+    Returns
+    -------
+    None
+    """
     weeks = manipulations.get_seasonal_week(data)
     for week in weeks:
       fig, ax = plt.subplots(figsize=(10, 6))
@@ -160,8 +242,19 @@ class AvgSeasonWeekPlot():
   Creates plot of average values for each season of the year.
   """
 
-  def viz_type_init(self, data: pd.DataFrame):
+  def viz_type_init(self, data: pd.DataFrame) -> None:
+    """
+    Initialize and display the average season week plot.
 
+    Parameters
+    ----------
+    data : pd.DataFrame
+        The input DataFrame.
+
+    Returns
+    -------
+    None
+    """
     plot_data = functions.add_time_features(data)
     datetime, avg_data, max_data, min_data = manipulations.seasonal_avg_week_plot_data(
         plot_data)
@@ -185,7 +278,19 @@ class AnnualSeasonalWeekPlot():
   Creates single plot per year with each seasons average weekly values.
   """
 
-  def viz_type_init(self, data: pd.DataFrame):
+  def viz_type_init(self, data: pd.DataFrame) -> None:
+    """
+    Initialize and display the annual seasonal week plot.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        The input DataFrame.
+
+    Returns
+    -------
+    None
+    """
     featured_data = functions.add_time_features(data)
     years = featured_data.index.year.unique()
     for temp_year in years:

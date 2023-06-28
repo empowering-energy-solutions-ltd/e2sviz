@@ -14,6 +14,26 @@ def create_seasonal_average_week(season: enums.Season,
                                  dataf: pd.DataFrame,
                                  target_col: str | None = None,
                                  func=np.mean) -> pd.DataFrame:
+  """
+  Create a seasonal average week for the specified season.
+
+  Parameters
+  ----------
+  season : enums.Season
+      The season for which to calculate the average week.
+  dataf : pd.DataFrame
+      The input DataFrame.
+  target_col : str or None, optional
+      The target column for aggregation. If None, the first column of the DataFrame is used, by default None.
+  func : callable, optional
+      The aggregation function to use, by default np.mean.
+
+  Returns
+  -------
+  pd.DataFrame
+      The seasonal average week.
+
+  """
   timeseries_data = functions.add_time_features(dataf).copy()
   filt = timeseries_data[datetime_schema.DateTimeSchema.SEASON] == season.name
   cols = [
@@ -34,6 +54,20 @@ def create_seasonal_average_week(season: enums.Season,
 def seasonal_avg_week_plot_data(
     plot_data: pd.DataFrame
 ) -> tuple[pd.Index, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+  """
+  Prepare data for the seasonal average week plot.
+
+  Parameters
+  ----------
+  plot_data : pd.DataFrame
+      The input DataFrame.
+
+  Returns
+  -------
+  tuple[pd.Index, pd.DataFrame, pd.DataFrame, pd.DataFrame]
+      A tuple containing the datetime index and the average, maximum, and minimum seasonal average week data.
+
+  """
   timestep = enums.TimeStep.HALFHOUR
   avg_data = functions.get_avg_week_by_season_df(
       plot_data, viz_schema.ManipulationSchema.ENERGY, timestep)
@@ -47,13 +81,41 @@ def seasonal_avg_week_plot_data(
 
 
 def get_seasonal_week(data: pd.DataFrame) -> list[pd.DataFrame]:
+  """
+  Get weekly data for each season.
+
+  Parameters
+  ----------
+  data : pd.DataFrame
+      The input DataFrame.
+
+  Returns
+  -------
+  list[pd.DataFrame]
+      A list of DataFrames containing the weekly data for each season.
+
+  """
   data_copy = deepcopy(data)
   loop_data = functions.add_time_features(data_copy)
   output = find_week_in_season(loop_data)
   return output
 
 
-def statistics(data: pd.DataFrame) -> pd.DataFrame:
+def statistics_of_data(data: pd.DataFrame) -> pd.DataFrame:
+  """
+  Calculate statistics for the input data.
+
+  Parameters
+  ----------
+  data : pd.DataFrame
+      The input DataFrame.
+
+  Returns
+  -------
+  pd.DataFrame
+      A DataFrame containing the calculated statistics.
+
+  """
   statistics = {
       'Count': data.count(),
       'Mean': data.mean(),
@@ -80,19 +142,32 @@ def statistics(data: pd.DataFrame) -> pd.DataFrame:
 
 class ResampleManipulator():
   """
-  Returns resampled data.
+  Manipulate data by resampling.
+
+  Returns
+  -------
+  Resampled data.
   """
 
   def data_formatter(self, data: npt.NDArray | pd.DataFrame, split_by: str,
                      aggregation: str) -> npt.NDArray | pd.DataFrame:
     """
-    Takes all data and returns just for specified year
-    Parameters:
-      Data: Either numpy array or pandas dataframe
-      split_by: str, resample method
-      aggregation: str, aggregation method
-    Returns:
-      Array or Dataframe, whichever you gave it in the first place resampled.
+    Format the data by resampling.
+
+    Parameters
+    ----------
+    data : np.ndarray or pd.DataFrame
+        The input data.
+    split_by : str
+        The resampling method.
+    aggregation : str
+        The aggregation method.
+
+    Returns
+    -------
+    np.ndarray or pd.DataFrame
+        The resampled data.
+
     """
     data_copy = deepcopy(data)
     if isinstance(data_copy, np.ndarray):
@@ -105,7 +180,11 @@ class ResampleManipulator():
 
 class GroupbyManipulator():
   """
-  Returns data grouped by choosen column.
+  Manipulate data by grouping.
+
+  Returns
+  -------
+  Data grouped by the chosen column.
   """
 
   def data_formatter(
@@ -114,15 +193,25 @@ class GroupbyManipulator():
       groupby: list[int | str],
       agg: str,
       target: int | str | None = None) -> npt.NDArray | pd.DataFrame:
-    """ 
-    Groups data by choosen column.
-    Parameters:
-      Data: Either numpy array or pandas dataframe
-      target: str, column to aggregate
-      groupby: list, columns to group by
-      agg: str, aggregation method
-    Returns:
-      Array or Dataframe, whichever you gave it in the first place grouped by target.
+    """
+    Format the data by grouping.
+
+    Parameters
+    ----------
+    data : np.ndarray or pd.DataFrame
+        The input data.
+    groupby : list[int or str]
+        The columns to group by.
+    agg : str
+        The aggregation method.
+    target : int or str or None, optional
+        The column to aggregate, by default None.
+
+    Returns
+    -------
+    np.ndarray or pd.DataFrame
+        The grouped data.
+
     """
     data_copy = deepcopy(data)
     if isinstance(data_copy, np.ndarray):
@@ -135,7 +224,11 @@ class GroupbyManipulator():
 
 class EquationManipulator():
   """
-  Returns data with new column of some aggregation.
+  Manipulate data by applying equations.
+
+  Returns
+  -------
+  Data with a new column of aggregated values.
   """
 
   def data_formatter(
@@ -144,9 +237,25 @@ class EquationManipulator():
       target_col: str | int,
       func: str,
       new_col: str | float = 'New column') -> npt.NDArray | pd.DataFrame:
-    """ 
-    Formating function applied to data in either DataFrame 
-    or Array format.
+    """
+    Format the data by applying equations.
+
+    Parameters
+    ----------
+    data : np.ndarray or pd.DataFrame
+        The input data.
+    target_col : str or int
+        The target column to aggregate.
+    func : str
+        The aggregation function as a string.
+    new_col : str or float, optional
+        The name for the new column, by default 'New column'.
+
+    Returns
+    -------
+    np.ndarray or pd.DataFrame
+        The data with a new column of aggregated values.
+
     """
     data_copy = deepcopy(data)
     if isinstance(data_copy, np.ndarray):
@@ -160,11 +269,33 @@ class EquationManipulator():
 
 class CombineColumnManipulator():
   """
-  Combine given columns and return as a new dataframe or array.
+  Manipulate data by combining columns.
+
+  Returns
+  -------
+  Data with a new column containing the combined values.
   """
 
   def data_formatter(self, data: npt.NDArray | pd.DataFrame, col_1: str | int,
                      col_2: str | int) -> npt.NDArray | pd.DataFrame:
+    """
+    Format the data by combining columns.
+
+    Parameters
+    ----------
+    data : np.ndarray or pd.DataFrame
+        The input data.
+    col_1 : str or int
+        The first column to combine.
+    col_2 : str or int
+        The second column to combine.
+
+    Returns
+    -------
+    np.ndarray or pd.DataFrame
+        The data with a new column containing the combined values.
+
+    """
     data_copy = deepcopy(data)
     if isinstance(data_copy, np.ndarray):
       return np.insert(data_copy,
@@ -178,6 +309,20 @@ class CombineColumnManipulator():
 
 
 def find_week_in_season(loop_data: pd.DataFrame) -> list[pd.DataFrame]:
+  """
+  Find the week in each season of the year.
+
+  Parameters
+  ----------
+  loop_data : pd.DataFrame
+      The input DataFrame.
+
+  Returns
+  -------
+  list[pd.DataFrame]
+      A list of DataFrames containing the weekly data for each season.
+
+  """
   output = []
   frames = []
   for seasons in loop_data['season'].unique():
