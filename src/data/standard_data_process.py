@@ -46,16 +46,15 @@ class RunVisualisationPreparator:
     """
     self._data = self.data
     self._prep_check = self.prep_check
-    pre_clean = self.return_describe()
+    # pre_clean = self.return_describe()
     if self.dataprep_functions is None:
       print(
           'No data preparation functions provided. Data will not be cleaned. The data check is as follows:'
       )
       print(self._prep_check)
-    post_clean = self.run_cleaner()
-    return pre_clean, post_clean
+    return self.described_raw
 
-  def run_cleaner(self) -> pd.DataFrame:
+  def run_cleaner(self):  # -> pd.DataFrame:
     """
     Run the data cleaner.
 
@@ -66,14 +65,15 @@ class RunVisualisationPreparator:
     """
 
     self.clean_data()
-    return self.return_describe()
-
-  def return_describe(self) -> pd.DataFrame:
-    return self.statistics_of_data(self._data)
+    # return self.return_describe()
 
   @property
-  def described_data(self) -> pd.DataFrame:
-    return self.statistics_of_data(self._data)
+  def described_raw(self) -> pd.DataFrame:
+    return self.statistics_of_data(self.data)
+
+  # @property
+  # def described_data(self) -> pd.DataFrame:
+  #   return self.statistics_of_data(self._data)
 
   @property
   def prep_check(self) -> dict[str, bool]:
