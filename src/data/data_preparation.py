@@ -2,7 +2,7 @@ import warnings
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Protocol
+from typing import Callable
 
 import numpy as np
 import numpy.typing as npt
@@ -73,7 +73,7 @@ def describe_data(
     raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
 
-def retrieve_data(data: npt.NDArray | pd.DataFrame) -> np.ndarray | ValueError:
+def retrieve_data(data: npt.NDArray | pd.DataFrame) -> np.ndarray:
   """
   Retrieve the underlying NumPy ndarray from the input data.
 
@@ -96,8 +96,6 @@ def retrieve_data(data: npt.NDArray | pd.DataFrame) -> np.ndarray | ValueError:
     return data.values
   elif isinstance(data, np.ndarray):
     return data
-  else:
-    raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
 
 def check_dataset(data: npt.NDArray | pd.DataFrame) -> dict[str, bool]:
@@ -142,7 +140,7 @@ def check_dataset(data: npt.NDArray | pd.DataFrame) -> dict[str, bool]:
   return result
 
 
-def check_datetime(data: pd.DataFrame | npt.NDArray) -> bool:
+def check_datetime(data: pd.DataFrame) -> bool:
   """
   Check if a datetime index or column is present in the given data.
 
@@ -161,35 +159,9 @@ def check_datetime(data: pd.DataFrame | npt.NDArray) -> bool:
   ValueError
       Raised when an unsupported data type is provided.
   """
-
-  if isinstance(data, pd.DataFrame):
-    return _check_dataframe(data)
-  elif isinstance(data, np.ndarray):
-    return _check_ndarray(data)
-  else:
-    raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
-
-
-def _check_dataframe(data: pd.DataFrame) -> bool:
-  """
-  Check if a datetime index or column is present in the pandas DataFrame.
-
-  Parameters
-  ----------
-  data : pd.DataFrame
-      Input DataFrame to check for datetime information.
-
-  Returns
-  -------
-  bool
-      True if datetime information is present, False otherwise.
-  """
-
   index_type = data.index.dtype
   if pd.api.types.is_datetime64_dtype(index_type):
-    warnings.warn(
-        'Warning. Your datetime index is not timezone aware. Recommend converting using tz_localize.'
-    )
+    data.index = data.index.tz_localize('UTC')
     return True
   if pd.api.types.is_datetime64tz_dtype(data.index.dtype):
     return True
@@ -201,37 +173,17 @@ def _check_dataframe(data: pd.DataFrame) -> bool:
   return False
 
 
-def _check_ndarray(data: npt.NDArray) -> bool:
-  """
-  Check if a datetime column is present in the NumPy array.
-
-  Parameters
-  ----------
-  data : np.ndarray
-      Input NumPy array to check for datetime information.
-
-  Returns
-  -------
-  bool
-      True if datetime information is present, False otherwise.
-  """
-  df = pd.DataFrame(data)
-
-  for column in df.columns:
-    column_type = df[column].dtype
-    if pd.api.types.is_datetime64_dtype(column_type):
-      return True
-
-  return False
+OutlierCallable = Callable[[pd.DataFrame], pd.DataFrame]
 
 
-class OutlierRemover():
+@dataclass
+class OutlierRemover:
   """
   Removes outliers from array/dataframe.
   """
+  method: str = 'iqr'
 
-  def data_cleaner(
-      self, data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
+  def data_cleaner(self, data: pd.DataFrame) -> pd.DataFrame:
     """
     Remove outliers from the data.
 
@@ -247,13 +199,10 @@ class OutlierRemover():
     """
 
     data_copy = deepcopy(data)
-    values = retrieve_data(data_copy)
-    outliers = self.find_outliers(values)
-    data_copy = data_copy.astype(float)
-    data_copy[outliers] = np.nan
-    return data_copy
+    data_with_nans = self.iqr_outliers(data_copy)
+    return data_with_nans
 
-  def find_outliers(self, values: np.ndarray) -> np.ndarray:
+  def iqr_outliers(self, data: pd.DataFrame) -> pd.DataFrame:
     """
     Use interquartile range to find outliers.
 
@@ -267,6 +216,7 @@ class OutlierRemover():
     np.ndarray
         Boolean array indicating outliers.
     """
+    values = retrieve_data(data)
     outliers = np.zeros_like(values, dtype=bool)
     for column_idx in range(values.shape[1]):
       column_data = values[:, column_idx]
@@ -277,79 +227,80 @@ class OutlierRemover():
       upper_bound = q3 + (1.5 * iqr)
       outliers[:, column_idx] = (column_data < lower_bound) | (column_data
                                                                > upper_bound)
-    return outliers
+    data = data.astype(float)
+    data[outliers] = np.nan
+    return data
 
 
 @dataclass
 class FillMissingData():
   """
-  Fills missing values in array/dataframe.
+  Fills missing values in dataframe.
   """
   func: str = 'rollingfill'
 
-  def data_cleaner(
-      self, data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
+  def data_cleaner(self, data: pd.DataFrame) -> pd.DataFrame:
     """
     Fill missing values in the data.
 
     Parameters
     ----------
-    data : np.ndarray or pd.DataFrame
-        Either numpy array or pandas dataframe.
+    data : pd.DataFrame
+        Pandas dataframe.
     func : str
-        'fillna', 'meanfill' or 'rollingfill'.
+        'meanfill' or 'rollingfill'.
 
     Returns
     -------
-    np.ndarray or pd.DataFrame
-        Array or DataFrame, whichever you gave it in the first place.
+    pd.DataFrame
+        DataFrame, with values filled.
 
     Raises
     ------
     ValueError
         Raised when an unsupported fill method is provided.
     """
-    if self.func == 'dropna':
-      data = self.dropna(data)
-    elif self.func == 'meanfill':
+    if self.func == 'meanfill':
       data = self.fillna_mean(data)
     elif self.func == 'rollingfill':
       data = self.fillna_rolling(data)
     else:
       raise ValueError(viz_schema.ErrorSchema.FILL_ERROR)
 
+    if data.isnull().values.any():
+      data = self.fillna_mean(data)
+
     return data
 
-  def dropna(self,
-             data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
-    """
-    Drop rows with missing values from the data.
+  # def dropna(self,
+  #            data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
+  #   """
+  #   Drop rows with missing values from the data.
 
-    Parameters
-    ----------
-    data : np.ndarray or pd.DataFrame
-        Input data.
+  #   Parameters
+  #   ----------
+  #   data : np.ndarray or pd.DataFrame
+  #       Input data.
 
-    Returns
-    -------
-    np.ndarray or pd.DataFrame
-        Data with missing values dropped.
+  #   Returns
+  #   -------
+  #   np.ndarray or pd.DataFrame
+  #       Data with missing values dropped.
 
-    Raises
-    ------
-    ValueError
-        Raised when an unsupported data type is provided.
-    """
-    data_copy = deepcopy(data)
-    if isinstance(data_copy, pd.DataFrame):
-      return data_copy.dropna()
-    elif isinstance(data_copy, np.ndarray):
-      return data_copy[~np.isnan(data_copy).any(axis=1)]
-    else:
-      raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
+  #   Raises
+  #   ------
+  #   ValueError
+  #       Raised when an unsupported data type is provided.
+  #   """
+  #   data_copy = deepcopy(data)
+  #   if isinstance(data_copy, pd.DataFrame):
+  #     return data_copy.dropna()
+  #   elif isinstance(data_copy, np.ndarray):
+  #     return data_copy[~np.isnan(data_copy).any(axis=1)]
+  #   else:
+  #     raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
 
-  def fillna_mean(
-      self, data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
+  def fillna_mean(self, data: pd.DataFrame) -> pd.DataFrame:
     """
     Fill missing values in the data with column means.
 
@@ -369,19 +320,9 @@ class FillMissingData():
         Raised when an unsupported data type is provided.
     """
     data_copy = deepcopy(data)
-    if isinstance(data_copy, pd.DataFrame):
-      return data_copy.fillna(data_copy.mean())
-    elif isinstance(data_copy, np.ndarray):
-      for column_idx in range(data_copy.shape[1]):
-        data_copy[:, column_idx][np.isnan(
-            data_copy[:, column_idx])] = np.nanmean(data_copy[:, column_idx],
-                                                    axis=0)
-      return data_copy
-    else:
-      raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
+    return data_copy.fillna(data_copy.mean())
 
-  def fillna_rolling(
-      self, data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
+  def fillna_rolling(self, data: pd.DataFrame) -> pd.DataFrame:
     """
     Fill missing values in the data using rolling mean.
 
@@ -401,19 +342,11 @@ class FillMissingData():
         Raised when an unsupported data type is provided.
     """
     data_copy = deepcopy(data)
-    if isinstance(data_copy, pd.DataFrame):
-      return data_copy.fillna(
-          data_copy.rolling(window=3, min_periods=1, axis=0).mean())
-    elif isinstance(data_copy, np.ndarray):
-      for column_idx in range(data_copy.shape[1]):
-        column_data = data_copy[:, column_idx]
-        mask = np.isnan(column_data)
-        rolling_mean = pd.Series(column_data).rolling(
-            window=3, min_periods=1).mean().to_numpy()
-        column_data[mask] = rolling_mean[mask]
-      return data_copy
-    else:
-      raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
+    # for column in data_copy.columns:
+    # Calculate the rolling mean and fill missing values
+    data_copy = data_copy.apply(
+        lambda col: col.fillna(col.rolling(window=24, min_periods=1).mean()))
+    return data_copy
 
 
 @dataclass
