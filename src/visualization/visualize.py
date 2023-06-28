@@ -63,7 +63,6 @@ class Visualizer:
   def __post_init__(self):
 
     plt_settings()
-    # self.viz_type.viz_type_init()
 
   def plot_plt(self):
     """

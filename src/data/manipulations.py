@@ -134,7 +134,8 @@ def statistics_of_data(data: pd.DataFrame) -> pd.DataFrame:
       'Kurtosis': data.kurtosis(),
       'Unique': data.nunique(),
       'Mode': data.mode().iloc[0],
-      'Freq': data.groupby(data.columns.tolist()).size().max()
+      'Freq': data.groupby(data.columns.tolist()).size().max(),
+      'Length': len(data)
   }
   describe_df = pd.DataFrame(statistics)
   return describe_df.transpose()

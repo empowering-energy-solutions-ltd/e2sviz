@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Callable, Protocol
 
 # import numpy as np
@@ -20,13 +20,20 @@ class DataFormattingProtocol(Protocol):
     ...
 
 
+init_function_callable = Callable[[npt.NDArray | pd.DataFrame], dict[str,
+                                                                     bool]]
+data_describer_callable = Callable[[pd.DataFrame], pd.DataFrame]
+
+
 @dataclass
 class RunVisualisationPreparator:
   data: npt.NDArray | pd.DataFrame
-  init_func_test: Callable[[npt.NDArray | pd.DataFrame], dict[str, bool]]
+  init_func_test: init_function_callable
   dataprep_outliers: DataPreparationProtocol
   dataprep_nanvals: DataPreparationProtocol
   dataprep_timeseries: DataPreparationProtocol
+  data_describer: data_describer_callable
+  _described_data: pd.DataFrame = field(default_factory=pd.DataFrame)
 
   # _data: npt.NDArray | pd.DataFrame | None = None
 
@@ -41,7 +48,23 @@ class RunVisualisationPreparator:
     """
     self._prep_check = self.prep_check
     self._data = self.data
-    return self.clean_data()
+    return self.run_cleaner()
+
+  def run_cleaner(self) -> None:
+    """
+    Run the data cleaner.
+
+    Returns
+    -------
+    None
+
+    """
+    self.clean_data()
+    self._described_data = self.described_data
+
+  @property
+  def described_data(self) -> pd.DataFrame:
+    return self.data_describer(pd.DataFrame(self._data))
 
   @property
   def prep_check(self) -> dict[str, bool]:
