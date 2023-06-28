@@ -53,6 +53,31 @@ def get_seasonal_week(data: pd.DataFrame) -> list[pd.DataFrame]:
   return output
 
 
+def statistics(data: pd.DataFrame) -> pd.DataFrame:
+  statistics = {
+      'Count': data.count(),
+      'Mean': data.mean(),
+      'StD': data.std(),
+      'Min': data.min(),
+      '1%': data.quantile(0.01),
+      '25%': data.quantile(0.25),
+      '50%': data.median(),
+      '75%': data.quantile(0.75),
+      '99%': data.quantile(0.99),
+      'Max': data.max(),
+      'Range': data.max() - data.min(),
+      'Sum': data.sum(),
+      'Variance': data.var(),
+      'Skewness': data.skew(),
+      'Kurtosis': data.kurtosis(),
+      'Unique': data.nunique(),
+      'Mode': data.mode().iloc[0],
+      'Freq': data.groupby(data.columns.tolist()).size().max()
+  }
+  describe_df = pd.DataFrame(statistics)
+  return describe_df.transpose()
+
+
 class ResampleManipulator():
   """
   Returns resampled data.

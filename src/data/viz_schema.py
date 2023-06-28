@@ -3,18 +3,6 @@ class VizSchema:
   PLOTLY = 'plotly'
 
 
-class VizType:
-  LINE = 'line'
-  SCATTER = 'scatter'
-  BAR = 'bar'
-  HIST = 'hist'
-  BOX = 'box'
-  VIOLIN = 'violin'
-  PIE = 'pie'
-  HEATMAP = 'heatmap'
-  CONTOUR = 'contour'
-
-
 class ManipulationSchema:
   NEW_COL = 'new_col'
   ENERGY = 'Site energy [kWh]'

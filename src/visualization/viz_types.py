@@ -1,9 +1,10 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
+import seaborn as sns
 from e2slib.structures import enums
 from e2slib.utillib import functions
 from e2slib.visualization import viz_functions
@@ -61,7 +62,7 @@ class SubplotPlot():
 
 
 @dataclass
-class AnnualPlot():
+class AnnualPlot:
   """
   Creates plot of annual values.
   """
@@ -89,7 +90,7 @@ class AnnualPlot():
 
 class BarPlot():
   """
-  Creates bar plot from data.
+  Creates bar plot of sum values of each season from data.
   """
 
   def viz_type_init(self, data: pd.DataFrame):
@@ -105,12 +106,42 @@ class BarPlot():
     plt.show()
 
 
+class CorrelationPlot():
+  """
+  Creates correlation plot of each column in data.
+  """
+
+  def viz_type_init(self, data: pd.DataFrame):
+    corr = data.corr()
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(corr, annot=True, cmap='coolwarm')
+    plt.title("Correlation Plot")
+    plt.xlabel("Columns")
+    plt.ylabel("Columns")
+    plt.show()
+
+
+@dataclass
+class DataDescriber:
+  """
+  Creates table describing the data.
+  """
+  _describe: pd.DataFrame = field(default_factory=pd.DataFrame)
+
+  def viz_type_init(self, data: pd.DataFrame):
+    self.describe(data)
+    print(self._describe)
+
+  def describe(self, data):
+    self._describe = manipulations.statistics(data)
+
+
 # --------------- Half-hourly time format ---------------
 
 
 class ActualSeasonWeekPlot():
   """
-  Creates bar plot from data.
+  Plots actual weekly plot from each season of the year.
   """
 
   def viz_type_init(self, data: pd.DataFrame):
@@ -126,7 +157,7 @@ class ActualSeasonWeekPlot():
 
 class AvgSeasonWeekPlot():
   """
-  Creates plot of average values for each season.
+  Creates plot of average values for each season of the year.
   """
 
   def viz_type_init(self, data: pd.DataFrame):
@@ -150,6 +181,9 @@ class AvgSeasonWeekPlot():
 
 
 class AnnualSeasonalWeekPlot():
+  """
+  Creates single plot per year with each seasons average weekly values.
+  """
 
   def viz_type_init(self, data: pd.DataFrame):
     featured_data = functions.add_time_features(data)
@@ -159,7 +193,6 @@ class AnnualSeasonalWeekPlot():
       avg_data = functions.get_avg_week_by_season_df(
           data_year, viz_schema.ManipulationSchema.ENERGY,
           enums.TimeStep.HALFHOUR)
-      # avg_data.columns = avg_data.columns.get_level_values(1)
       avg_data.index = functions.format_avg_week_index(avg_data,
                                                        enums.TimeStep.HALFHOUR)
       # avg_data.plot()
