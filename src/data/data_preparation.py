@@ -42,35 +42,7 @@ def convert_data_types(
     else:
       return pd.DataFrame(data, columns=columns)  # type: ignore
   else:
-    raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
-
-
-def describe_data(
-    data: npt.NDArray | pd.DataFrame) -> pd.DataFrame | ValueError:
-  """
-  Generate descriptive statistics for the input data.
-
-  Parameters
-  ----------
-  data : np.ndarray or pd.DataFrame
-      Input data for which to generate statistics.
-
-  Returns
-  -------
-  None or pd.DataFrame
-      DataFrame containing the descriptive statistics.
-
-  Raises
-  ------
-  ValueError
-      Raised when an unsupported data type is provided.
-  """
-  if isinstance(data, pd.DataFrame):
-    return data.describe()
-  elif isinstance(data, np.ndarray):
-    return pd.DataFrame(data).describe()
-  else:
-    raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
+    raise ValueError(viz_schema.MessageSchema.DATA_TYPE)
 
 
 def retrieve_data(data: npt.NDArray | pd.DataFrame) -> np.ndarray:
@@ -98,7 +70,7 @@ def retrieve_data(data: npt.NDArray | pd.DataFrame) -> np.ndarray:
     return data
 
 
-def check_dataset(data: npt.NDArray | pd.DataFrame) -> dict[str, bool]:
+def check_dataset(data: pd.DataFrame) -> dict[str, bool]:
   """
     Check the dataset for outliers and NaN values.
 
@@ -121,20 +93,11 @@ def check_dataset(data: npt.NDArray | pd.DataFrame) -> dict[str, bool]:
   """
   result = {'outliers': False, 'nan values': False, 'timeseries': False}
   result['timeseries'] = check_datetime(data)
-  if isinstance(data, np.ndarray):
-    # Check for outliers
-    outliers_mask = np.abs(data - np.mean(data)) > 3 * np.std(data)
-    result['outliers'] = bool(np.any(outliers_mask))
-    # Check for NaN values
-    result['nan values'] = bool(np.isnan(data).any())
-  elif isinstance(data, pd.DataFrame):
-    # Check for outliers
-    outliers_mask = np.abs(data - data.mean()) > 3 * data.std()
-    result['outliers'] = bool(np.any(outliers_mask.values))  # type: ignore
-    # Check for NaN values
-    result['nan values'] = bool(data.isnull().values.any())
-  else:
-    raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
+  outliers_mask = np.abs(data - data.mean()) > 3 * data.std()
+  result['outliers'] = bool(np.any(outliers_mask.values))  # type: ignore
+  # Check for NaN values
+  result['nan values'] = bool(data.isnull().values.any())
+
   return result
 
 
@@ -263,7 +226,7 @@ class FillMissingData():
     elif self.func == 'rollingfill':
       data = self.fillna_rolling(data)
     else:
-      raise ValueError(viz_schema.ErrorSchema.FILL_ERROR)
+      raise ValueError(viz_schema.MessageSchema.FILL_ERROR)
 
     if data.isnull().values.any():
       data = self.fillna_mean(data)
@@ -296,7 +259,7 @@ class FillMissingData():
   #   elif isinstance(data_copy, np.ndarray):
   #     return data_copy[~np.isnan(data_copy).any(axis=1)]
   #   else:
-  #     raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
+  #     raise ValueError(viz_schema.MessageSchema.DATA_TYPE)
 
   def fillna_mean(self, data: pd.DataFrame) -> pd.DataFrame:
     """

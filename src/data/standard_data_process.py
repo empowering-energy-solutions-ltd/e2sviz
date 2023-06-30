@@ -1,10 +1,12 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Callable, Protocol
 
-# import numpy as np
+import matplotlib.pyplot as plt
 import numpy.typing as npt
 import pandas as pd
 from IPython.display import display
+
+from src.data import enums, viz_schema
 
 
 class DataPreparationProtocol(Protocol):
@@ -42,13 +44,10 @@ class DataPrep:
 
     """
 
-    # self._prep_check = self.prep_check
     self.described_raw_data = self.described_data(self.data)
     display(self.described_raw_data)
     if self.dataprep_functions is None:
-      print(
-          'No data preparation functions provided. Data will not be cleaned. The data check is as follows:'
-      )
+      print(viz_schema.MessageSchema.NO_DATA_PREP)
       print(self.prep_check)
     else:
       self.clean_data()
@@ -124,3 +123,40 @@ class DataPrep:
     }
     describe_df = pd.DataFrame(statistics)
     return describe_df.transpose()
+
+
+@dataclass
+class ColumnMetaData:
+  column_name: str
+  data: pd.Series
+  freq: enums.Frequency
+  units: enums.Units
+
+  @property
+  def get_x_label(self) -> str:
+    return f'Datetime (Timestep:{self.freq.name})'
+
+  @property
+  def get_y_label(self) -> str:
+    return f'{self.column_name} ({self.units.name})'
+
+  @property
+  def get_title(self) -> str:
+    return f'{self.get_y_label} vs. {self.get_x_label}'
+
+  @property
+  def get_ylim(self) -> tuple[float, float]:
+    return (self.data.min() - self.data.min() * 0.1,
+            self.data.max() + self.data.max() * 0.1)
+
+  def plot_all(self) -> None:
+    plt.figure(figsize=(15, 5))
+    plt.plot(self.data.index, self.data.values)
+    self.get_plotting_settings()
+    plt.grid()
+
+  def get_plotting_settings(self) -> None:
+    plt.xlabel(self.get_x_label)
+    plt.ylabel(self.get_y_label)
+    plt.title(self.get_title)
+    plt.ylim(self.get_ylim)
