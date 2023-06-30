@@ -71,33 +71,6 @@ class CorrelationPlot():
     plt.show()
 
 
-@dataclass
-class DataDescriber:
-  """
-  Creates table describing the data.
-  """
-  _describe: pd.DataFrame = field(default_factory=pd.DataFrame)
-
-  def viz_type_init(self, data: pd.DataFrame) -> None:
-    """
-    Initialize the DataDescriber and print the description table.
-
-    Parameters
-    ----------
-    data : pd.DataFrame
-        The input DataFrame.
-
-    Returns
-    -------
-    None
-    """
-    self.describe(data)
-    print(self._describe)
-
-  def describe(self, data) -> None:
-    self._describe = manipulations.statistics_of_data(data)
-
-
 # --------------- Any time format ---------------
 class StandardPlot():
   """

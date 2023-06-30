@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 import matplotlib.pyplot as plt
-import numpy.typing as npt
 import pandas as pd
 from IPython.display import display
 
@@ -71,8 +70,11 @@ class DataPrep:
     None
 
     """
-    for functions in self.dataprep_functions:
-      self.cleaned_data = functions(self._data)
+    if self.dataprep_functions is not None:
+      for functions in self.dataprep_functions:
+        self.cleaned_data = functions(self._data)
+    else:
+      pass
 
   def statistics_of_data(self, data: pd.DataFrame) -> pd.DataFrame:
     """

@@ -1,17 +1,16 @@
 from dataclasses import dataclass
 from typing import Protocol
 
-import matplotlib.pyplot as plt
-import numpy as np
-import numpy.typing as npt
+# import matplotlib.pyplot as plt
 import pandas as pd
-import plotly.express as px
-from e2slib.structures import enums
-from e2slib.utillib import functions
-from e2slib.visualization import viz_functions
 
 from src.data import viz_schema
 from src.visualization.plot_styles import plt_settings
+
+# import plotly.express as px
+# from e2slib.structures import enums
+# from e2slib.utillib import functions
+# from e2slib.visualization import viz_functions
 
 
 class VizSelector(Protocol):
@@ -55,7 +54,7 @@ class VizType(Protocol):
 
 @dataclass
 class Visualizer:
-  data: npt.NDArray | pd.DataFrame
+  data: pd.DataFrame
   viz_type: VizType
   viz_selector: VizSelector = MatPlotLibSelector()
   columns: list[str] | None = None
@@ -68,15 +67,5 @@ class Visualizer:
     """
     Plots the data using matplotlib.
     """
-    self.arr_to_DataFrame()
 
     self.viz_type.viz_type_init(self.data)
-
-  def arr_to_DataFrame(self):
-    """
-    Converts numpy array to pandas DataFrame.
-    """
-    if isinstance(self.data, np.ndarray):
-      self.data = pd.DataFrame(self.data[:, 1:], index=self.data[:, 0])
-      if self.columns:
-        self.data.columns = self.columns

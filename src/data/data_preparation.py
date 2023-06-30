@@ -121,7 +121,7 @@ def check_datetime(data: pd.DataFrame) -> bool:
   """
   index_type = data.index.dtype
   if pd.api.types.is_datetime64_dtype(index_type):
-    data.index = data.index.tz_localize('UTC')
+    data.index = data.index.tz_localize('UTC')  # type: ignore
     return True
   if pd.api.types.is_datetime64tz_dtype(data.index.dtype):
     return True
@@ -319,8 +319,7 @@ class GenerateDatetime():
   periods: int = 48
   tz: str = 'UTC'
 
-  def data_cleaner(
-      self, data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
+  def data_cleaner(self, data: pd.DataFrame) -> pd.DataFrame:
     """
     Add datetime column to the data.
 
@@ -357,8 +356,5 @@ class GenerateDatetime():
                                    periods=num_steps,
                                    freq=self.freq,
                                    tz=self.tz)
-    if isinstance(data, np.ndarray):
-      df = pd.DataFrame(index=datetime_array)
-      return np.insert(data_copy, 0, df.index, axis=1)
-    elif isinstance(data, pd.DataFrame):
-      return data_copy.set_index(datetime_array)
+
+    return data_copy.set_index(datetime_array)

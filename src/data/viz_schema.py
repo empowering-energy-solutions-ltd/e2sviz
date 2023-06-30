@@ -16,12 +16,12 @@ class MessageSchema:
 
 
 class FrequencySchema:
-  HH = "30T"
-  HOUR = "H"
-  HALF_DAY = "12H"
-  DAY = "D"
-  WEEK = "W"
-  MONTH = "M"
+  HH = '30T'
+  HOUR = 'H'
+  HALF_DAY = '12H'
+  DAY = 'D'
+  WEEK = 'W'
+  MONTH = 'M'
 
 
 class UnitsSchema:
