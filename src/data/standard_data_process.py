@@ -135,7 +135,7 @@ class ColumnSpecificData:
 
   @property
   def get_x_label(self) -> str:
-    return f'Datetime (Timestep:{self.freq})'
+    return f'Datetime (Timestep: {self.freq})'
 
   @property
   def get_y_label(self) -> str:
@@ -147,8 +147,8 @@ class ColumnSpecificData:
 
   @property
   def get_ylim(self) -> tuple[float, float]:
-    return (self.data.min() - self.data.min() * 0.1,
-            self.data.max() + self.data.max() * 0.1)
+    return (self.data.min() - (self.data.max() * 0.1),
+            self.data.max() + (self.data.max() * 0.1))
 
   def plot_all(self) -> None:
     plt.figure(figsize=(15, 5))
