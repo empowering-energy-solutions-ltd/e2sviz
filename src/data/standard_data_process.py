@@ -115,7 +115,7 @@ class DataPrep:
 
 
 @dataclass
-class ColumnMetaData:
+class ColumnSpecificData:
   data: pd.Series
   column_data: dict[str, Any]
 
@@ -170,7 +170,7 @@ def generate_column_classes(df, column_metadata):
     column_key_data = column_metadata[column_key]
 
     # Define the class dynamically
-    cls = ColumnMetaData(df[column], column_key_data)
+    cls = ColumnSpecificData(df[column], column_key_data)
 
     column_classes.append(cls)
 
