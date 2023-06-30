@@ -4,6 +4,7 @@ from typing import Callable, Protocol
 # import numpy as np
 import numpy.typing as npt
 import pandas as pd
+from IPython.display import display
 
 
 class DataPreparationProtocol(Protocol):
@@ -26,14 +27,10 @@ dataf_callable = Callable[[pd.DataFrame], pd.DataFrame]
 
 
 @dataclass
-class RunVisualisationPreparator:
+class DataPrep:
   data: pd.DataFrame
   init_func_test: init_function_callable
   dataprep_functions: list[dataf_callable] | None = None
-  described_raw_data: pd.DataFrame = field(default_factory=pd.DataFrame)
-  described_clean_data: pd.DataFrame = field(default_factory=pd.DataFrame)
-
-  # _data: npt.NDArray | pd.DataFrame | None = None
 
   def __post_init__(self):
     """
@@ -44,36 +41,22 @@ class RunVisualisationPreparator:
     None
 
     """
-    self._data = self.data
-    self._prep_check = self.prep_check
-    # pre_clean = self.return_describe()
+
+    # self._prep_check = self.prep_check
+    self.described_raw_data = self.described_data(self.data)
+    display(self.described_raw_data)
     if self.dataprep_functions is None:
       print(
           'No data preparation functions provided. Data will not be cleaned. The data check is as follows:'
       )
-      print(self._prep_check)
-    return self.described_raw
-
-  def run_cleaner(self):  # -> pd.DataFrame:
-    """
-    Run the data cleaner.
-
-    Returns
-    -------
-    None
-
-    """
-
-    self.clean_data()
-    # return self.return_describe()
+      print(self.prep_check)
+    else:
+      self.clean_data()
+      self.described_clean_data = self.described_data(self.cleaned_data)
 
   @property
-  def described_raw(self) -> pd.DataFrame:
-    return self.statistics_of_data(self.data)
-
-  # @property
-  # def described_data(self) -> pd.DataFrame:
-  #   return self.statistics_of_data(self._data)
+  def _data(self) -> pd.DataFrame:
+    return self.data
 
   @property
   def prep_check(self) -> dict[str, bool]:
@@ -88,6 +71,9 @@ class RunVisualisationPreparator:
     """
     return self.init_func_test(self.data)
 
+  def described_data(self, data: pd.DataFrame) -> pd.DataFrame:
+    return self.statistics_of_data(data)
+
   def clean_data(self) -> None:
     """
     Clean the data by applying specific data preparation steps.
@@ -97,12 +83,8 @@ class RunVisualisationPreparator:
     None
 
     """
-    if self.dataprep_functions is not None:
-      for functions in self.dataprep_functions:
-        self._data = functions(self._data)
-        print(functions)
-    else:
-      pass
+    for functions in self.dataprep_functions:
+      self.cleaned_data = functions(self._data)
 
   def statistics_of_data(self, data: pd.DataFrame) -> pd.DataFrame:
     """

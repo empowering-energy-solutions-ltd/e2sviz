@@ -135,8 +135,6 @@ def check_dataset(data: npt.NDArray | pd.DataFrame) -> dict[str, bool]:
     result['nan values'] = bool(data.isnull().values.any())
   else:
     raise ValueError(viz_schema.ErrorSchema.DATA_TYPE)
-  if result['outliers'] == True:
-    result['nan values'] = True
   return result
 
 
