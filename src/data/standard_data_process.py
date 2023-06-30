@@ -31,6 +31,7 @@ class DataPrep:
     """
 
     self.described_raw_data = self.described_data(self.data)
+    print('Prior to cleaning:')
     display(self.described_raw_data)
     if self.dataprep_functions is None:
       print(viz_schema.MessageSchema.NO_DATA_PREP)
@@ -38,6 +39,8 @@ class DataPrep:
     else:
       self.clean_data()
       self.described_clean_data = self.described_data(self.cleaned_data)
+      print('Post cleaning:')
+      display(self.described_clean_data)
 
   @property
   def _data(self) -> pd.DataFrame:
