@@ -1,27 +1,13 @@
 from dataclasses import dataclass
-from typing import Callable, Protocol
+from typing import Any, Callable
 
 import matplotlib.pyplot as plt
 import numpy.typing as npt
 import pandas as pd
 from IPython.display import display
 
-from src.data import enums, viz_schema
-
-
-class DataPreparationProtocol(Protocol):
-
-  def data_cleaner(
-      self, data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
-    ...
-
-
-class DataFormattingProtocol(Protocol):
-
-  def data_formatter(
-      self, data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
-    ...
-
+from src.data import enums as viz_enums
+from src.data import viz_schema
 
 init_function_callable = Callable[[pd.DataFrame], dict[str, bool]]
 
@@ -127,18 +113,28 @@ class DataPrep:
 
 @dataclass
 class ColumnMetaData:
-  column_name: str
   data: pd.Series
-  freq: enums.Frequency
-  units: enums.Units
+  column_data: dict[str, Any]
+
+  @property
+  def units(self) -> viz_schema.UnitsSchema:
+    return self.column_data['Units']
+
+  @property
+  def freq(self) -> viz_schema.FrequencySchema:
+    return self.column_data['Freq']
+
+  @property
+  def column_name(self) -> viz_enums.DataType:
+    return self.column_data['Name']
 
   @property
   def get_x_label(self) -> str:
-    return f'Datetime (Timestep:{self.freq.name})'
+    return f'Datetime (Timestep:{self.freq})'
 
   @property
   def get_y_label(self) -> str:
-    return f'{self.column_name} ({self.units.name})'
+    return f'{self.column_name} ({self.units})'
 
   @property
   def get_title(self) -> str:
@@ -160,3 +156,19 @@ class ColumnMetaData:
     plt.ylabel(self.get_y_label)
     plt.title(self.get_title)
     plt.ylim(self.get_ylim)
+
+
+def generate_column_classes(df, column_metadata):
+  column_classes = []
+
+  for i, column in enumerate(df.columns):
+    # class_name = column.capitalize().replace(' ', '')
+    column_key = f'column_{i + 1}'
+    column_key_data = column_metadata[column_key]
+
+    # Define the class dynamically
+    cls = ColumnMetaData(df[column], column_key_data)
+
+    column_classes.append(cls)
+
+  return column_classes

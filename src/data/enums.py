@@ -9,21 +9,14 @@ class Seasons(Enum):
   AUTUMN = auto()
 
 
-class Frequency(Enum):
-  HH = "30T"
-  HOUR = "H"
-  HALF_DAY = "12H"
-  DAY = "D"
-  WEEK = "W"
-  MONTH = 'M'
+class DataType(Enum):
 
-
-class Units(Enum):
-  KW = auto()
-  KWH = auto()
-  KVA = auto()
-  GBP = auto()
-  GBP_PER_KWH = auto()
-  GBP_PER_KW = auto()
-  KG_CO2 = auto()
-  KG_CO2_PER_KWH = auto()
+  FLOAT = float
+  INT = int
+  STR = str
+  BOOL = bool
+  LIST = list
+  DICT = dict
+  TUPLE = tuple
+  SET = set
+  NONE = None
