@@ -54,20 +54,20 @@ def transform_raw_dataf(dataf: pd.DataFrame) -> pd.DataFrame:
   chpqa[schema.outputSchema.CHP_heat] = dataf[
       schema.inputSchema.
       CHP_heat]  #-(dataf[schema.inputSchema.CHP_dump_heat]/1000)
-  # chpqa[schema.outputSchema.
-  # CHP_gas] = dataf[schema.inputSchema.CHP_gas] * sm3_to_MWh
+  chpqa[schema.outputSchema.CHP_gas] = dataf[
+      schema.inputSchema.CHP_gas]  # * sm3_to_MWh
   chpqa[schema.outputSchema.Boiler_1_heat] = dataf[
       schema.inputSchema.Boiler_1_heat]
   chpqa[schema.outputSchema.Boiler_2_heat] = dataf[
       schema.inputSchema.Boiler_2_heat]
   chpqa[schema.outputSchema.Boiler_3_heat] = dataf[
       schema.inputSchema.Boiler_3_heat]
-  # chpqa[schema.outputSchema.
-  #       Boiler_1_gas] = dataf[schema.inputSchema.Boiler_1_gas] * sm3_to_MWh
-  # chpqa[schema.outputSchema.
-  #       Boiler_2_gas] = dataf[schema.inputSchema.Boiler_2_gas] * sm3_to_MWh
-  # chpqa[schema.outputSchema.
-  #       Boiler_3_gas] = dataf[schema.inputSchema.Boiler_3_gas] * sm3_to_MWh
+  chpqa[schema.outputSchema.Boiler_1_gas] = dataf[
+      schema.inputSchema.Boiler_1_gas]  # * sm3_to_MWh
+  chpqa[schema.outputSchema.Boiler_2_gas] = dataf[
+      schema.inputSchema.Boiler_2_gas]  # * sm3_to_MWh
+  chpqa[schema.outputSchema.Boiler_3_gas] = dataf[
+      schema.inputSchema.Boiler_3_gas]  # * sm3_to_MWh
   chpqa[schema.outputSchema.Total_heat] = (chpqa[[
       schema.outputSchema.CHP_heat, schema.outputSchema.Boiler_1_heat,
       schema.outputSchema.Boiler_2_heat, schema.outputSchema.Boiler_3_heat

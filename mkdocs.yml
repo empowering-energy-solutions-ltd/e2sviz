@@ -1,0 +1,7 @@
+site_name: My Docs
+
+markdown_extensions:
+  - toc:
+      permalink: true
+      permalink_class: headerlink
+      separator: "_"
