@@ -126,7 +126,7 @@ class ColumnSpecificData:
   column_data: dict[str, Any]
 
   @property
-  def units(self) -> viz_schema.UnitsSchema:
+  def units(self) -> viz_enums.UnitsSchema:
     return self.column_data['Units']
 
   @property
@@ -143,11 +143,11 @@ class ColumnSpecificData:
 
   @property
   def get_y_label(self) -> str:
-    return f'{self.column_name} ({self.units})'
+    return f'{self.units.label} ({self.units.units})'
 
   @property
   def get_title(self) -> str:
-    return f'{self.get_y_label} vs. {self.get_x_label}'
+    return f'{self.column_name} vs. {self.get_x_label}'
 
   @property
   def get_ylim(self) -> tuple[float, float]:
