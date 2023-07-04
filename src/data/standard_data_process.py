@@ -1,9 +1,10 @@
-from dataclasses import dataclass
-from typing import Any, Callable, Self
+from dataclasses import dataclass, field
+from typing import Any, Callable, Literal, Self
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from e2slib.utillib import functions
 from IPython.display import display
 
 from src.data import enums as viz_enums
@@ -103,7 +104,7 @@ class DataPrep:
 
   def concat(self,
              secondary_data: Self,
-             axis: int = 1,
+             axis: Literal[0] | Literal[1] = 1,
              dataprep_functions: list[dataf_callable] | None = None) -> Self:
     """
     Concatenate two DataPrep objects.
@@ -121,7 +122,33 @@ class DataPrep:
 
 
 @dataclass
-class ColumnSpecificData:
+class DataManip:
+  data: pd.DataFrame
+  column_meta_data: dict[str, dict[str, Any]] = field(default_factory=dict)
+
+  def __post_init__(self):
+    self.data = self.data.copy()
+    self.data = functions.add_time_features(self.data)
+
+  @property
+  def dict_of_groupbys(self) -> dict[str, list[str]]:
+    return {'day': ['dayofweek', 'dayofyear']}
+
+  def filter(self):
+    pass
+
+  def groupby(self):
+    pass
+
+  def resample(self):
+    pass
+
+  def rolling(self):
+    pass
+
+
+@dataclass
+class ColumnVizData:
   data: pd.Series
   column_data: dict[str, Any]
 
@@ -176,7 +203,7 @@ def generate_column_classes(df, column_metadata):
     column_key_data = column_metadata[column_key]
 
     # Define the class dynamically
-    cls = ColumnSpecificData(df[column], column_key_data)
+    cls = ColumnVizData(df[column], column_key_data)
 
     column_classes.append(cls)
 

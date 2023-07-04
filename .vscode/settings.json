@@ -13,5 +13,5 @@
     "--style={based_on_style: pep8, indent_width: 2}"
   ],
   "python.linting.pylintEnabled": true,
-  "python.analysis.typeCheckingMode": "strict",
+  "python.analysis.typeCheckingMode": "basic",
 }
