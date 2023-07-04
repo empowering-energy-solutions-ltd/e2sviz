@@ -43,6 +43,18 @@ class DataPrep:
       print(viz_schema.MessageSchema.NO_DATA_PREP)
 
   def described_data(self, data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Returns a DataFrame containing statistics of the input data.
+
+    Parameters
+    -------
+    data : pd.DataFrame
+        The input DataFrame.
+    Returns
+    -------
+    pd.DataFrame
+        A DataFrame containing the calculated statistics.
+    """
     return self.statistics_of_data(data)
 
   def clean_data(self) -> None:
@@ -55,8 +67,8 @@ class DataPrep:
 
     """
     if self.dataprep_functions is not None:
-      for functions in self.dataprep_functions:
-        self.data = functions(self.data)
+      for prep_function in self.dataprep_functions:
+        self.data = prep_function(self.data)
     else:
       pass
 
@@ -65,7 +77,7 @@ class DataPrep:
     Calculate statistics for the input data.
 
     Parameters
-    ----------
+    -------
     data : pd.DataFrame
         The input DataFrame.
 
@@ -108,8 +120,9 @@ class DataPrep:
              dataprep_functions: list[dataf_callable] | None = None) -> Self:
     """
     Concatenate two DataPrep objects.
+
     Parameters
-    ----------
+    -------
     secondary_data : DataPrep
         The secondary DataPrep object to be concatenated to the current one.
     Returns
@@ -149,45 +162,133 @@ class DataManip:
 
 @dataclass
 class ColumnVizData:
+  """
+  Class for visualizing column data.
+
+  Parameters
+  ----------
+  data : pd.Series
+      The data to be visualized.
+  column_data : dict[str, Any]
+      Additional information about the column.
+
+  Attributes
+  ----------
+  data : pd.Series
+      The data to be visualized.
+  column_data : dict[str, Any]
+      Additional information about the column.
+  """
+
   data: pd.Series
   column_data: dict[str, Any]
 
   @property
   def units(self) -> viz_enums.UnitsSchema:
+    """
+    Get the units schema of the column data.
+
+    Returns
+    -------
+    viz_enums.UnitsSchema
+        The units schema of the column data.
+    """
     return self.column_data['Units']
 
   @property
   def freq(self) -> viz_schema.FrequencySchema:
+    """
+    Get the frequency schema of the column data.
+
+    Returns
+    -------
+    viz_schema.FrequencySchema
+        The frequency schema of the column data.
+    """
     return self.column_data['Freq']
 
   @property
   def column_name(self) -> viz_enums.DataType:
+    """
+    Get the data type of the column.
+
+    Returns
+    -------
+    viz_enums.DataType
+        The data type of the column.
+    """
     return self.column_data['Name']
 
   @property
   def get_x_label(self) -> str:
+    """
+    Get the label for the x-axis of the plot.
+
+    Returns
+    -------
+    str
+        The label for the x-axis of the plot.
+    """
     return f'Datetime (Timestep: {self.freq})'
 
   @property
   def get_y_label(self) -> str:
+    """
+    Get the label for the y-axis of the plot.
+
+    Returns
+    -------
+    str
+        The label for the y-axis of the plot.
+    """
     return f'{self.units.label} ({self.units.units})'
 
   @property
   def get_title(self) -> str:
+    """
+    Get the title of the plot.
+
+    Returns
+    -------
+    str
+        The title of the plot.
+    """
     return f'{self.column_name} vs. {self.get_x_label}'
 
   @property
   def get_ylim(self) -> tuple[float, float]:
+    """
+    Get the limits for the y-axis of the plot.
+
+    Returns
+    -------
+    tuple[float, float]
+        The limits for the y-axis of the plot.
+    """
     return (self.data.min() - (self.data.max() * 0.1),
             self.data.max() + (self.data.max() * 0.1))
 
   def plot_all(self) -> None:
+    """
+    Plot all column data.
+
+    Returns
+    -------
+    None
+    """
     plt.figure(figsize=(15, 5))
     plt.plot(self.data.index, self.data.values)
     self.get_plotting_settings()
     plt.grid()
 
   def get_plotting_settings(self) -> None:
+    """
+    Set the plotting settings.
+
+    Returns
+    -------
+    None
+    """
     plt.xlabel(self.get_x_label)
     plt.ylabel(self.get_y_label)
     plt.title(self.get_title)

@@ -1,7 +1,18 @@
-site_name: My Docs
+site_name: e2s Viz
+
+theme:
+  name: material
+  palette:
+    primary: cyan
+    accent: purple
+  font:
+    text: 'Roboto'
+    code: 'Roboto Mono'
+
+plugins:
+- search
+- mkdocstrings
 
 markdown_extensions:
-  - toc:
-      permalink: true
-      permalink_class: headerlink
-      separator: "_"
+  - codehilite:
+      linenums: true
