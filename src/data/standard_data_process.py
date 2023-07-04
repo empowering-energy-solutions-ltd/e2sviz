@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any, Callable, Self
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from IPython.display import display
 
@@ -16,7 +17,6 @@ dataf_callable = Callable[[pd.DataFrame], pd.DataFrame]
 @dataclass
 class DataPrep:
   data: pd.DataFrame
-  init_func_test: init_function_callable
   dataprep_functions: list[dataf_callable] | None = None
 
   def __post_init__(self):
@@ -28,35 +28,18 @@ class DataPrep:
     None
 
     """
-
+    self.data = self.data.copy()
     self.described_raw_data = self.described_data(self.data)
     print('Prior to cleaning:')
     display(self.described_raw_data)
-    if self.dataprep_functions is None:
-      print(viz_schema.MessageSchema.NO_DATA_PREP)
-      print(self.prep_check)
-    else:
+
+    if self.dataprep_functions is not None:
       self.clean_data()
-      self.described_clean_data = self.described_data(self.cleaned_data)
+      self.described_clean_data = self.described_data(self.data)
       print('Post cleaning:')
       display(self.described_clean_data)
-
-  @property
-  def _data(self) -> pd.DataFrame:
-    return self.data
-
-  @property
-  def prep_check(self) -> dict[str, bool]:
-    """
-    Perform initial functional tests on the data.
-
-    Returns
-    -------
-    dict[str, bool]
-        Dictionary containing the results of the functional tests.
-
-    """
-    return self.init_func_test(self.data)
+    else:
+      print(viz_schema.MessageSchema.NO_DATA_PREP)
 
   def described_data(self, data: pd.DataFrame) -> pd.DataFrame:
     return self.statistics_of_data(data)
@@ -72,7 +55,7 @@ class DataPrep:
     """
     if self.dataprep_functions is not None:
       for functions in self.dataprep_functions:
-        self.cleaned_data = functions(self._data)
+        self.data = functions(self.data)
     else:
       pass
 
@@ -93,6 +76,7 @@ class DataPrep:
     """
     statistics = {
         'Count': data.count(),
+        'NaN Count': data.isna().sum(),
         'Mean': data.mean(),
         'StD': data.std(),
         'Min': data.min(),
@@ -110,10 +94,30 @@ class DataPrep:
         'Unique': data.nunique(),
         'Mode': data.mode().iloc[0],
         'Freq': data.groupby(data.columns.tolist()).size().max(),
+        'Outliers (3x STD)': (np.abs(data - data.mean())
+                              > 3 * data.std()).sum(),
         'Length': len(data)
     }
     describe_df = pd.DataFrame(statistics)
     return describe_df.transpose()
+
+  def concat(self,
+             secondary_data: Self,
+             axis: int = 1,
+             dataprep_functions: list[dataf_callable] | None = None) -> Self:
+    """
+    Concatenate two DataPrep objects.
+    Parameters
+    ----------
+    secondary_data : DataPrep
+        The secondary DataPrep object to be concatenated to the current one.
+    Returns
+    -------
+    DataPrep object
+        The concatenated DataPrep objects.
+    """
+    combined_data = pd.concat([self.data, secondary_data.data], axis=axis)
+    return DataPrep(combined_data, dataprep_functions)
 
 
 @dataclass
