@@ -1,5 +1,6 @@
+import datetime
 from dataclasses import dataclass, field
-from typing import Any, Callable, Literal, Self
+from typing import Any, Callable, Literal, Optional, Self
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -161,13 +162,61 @@ class DataManip:
     return {
         'day': ['Weekday flag', freq_col],
         'week': ['Day of week', freq_col],
-        # 'month': ['Month', 'Week', freq_col],
+        'month': ['Month', freq_col],
         'day_season': ['season', 'Weekday flag', freq_col],
         'week_season': ['season', 'Day of week', freq_col]
     }
 
-  def filter(self):
-    pass
+  def filter(self,
+             year: Optional[list[int]] = None,
+             month: Optional[list[int]] = None,
+             day: Optional[list[int]] = None,
+             hour: Optional[list[int]] = None,
+             date: Optional[list[datetime.date]] = None,
+             inplace: bool = False) -> pd.DataFrame | None:
+    """
+    Filter the data by given year, month, day or date.
+
+    Parameters
+    -------
+    year : list[int]
+        The years to filter by.
+    month : list[int]
+        The months to filter by.
+    day : list[int]
+        The days to filter by.
+    date : list[datetime.date]
+        The dates to filter by.
+    inplace : bool
+        Whether to filter the data in place or return a new DataFrame.
+    
+    Returns
+    -------
+    pd.DataFrame
+        The filtered DataFrame.
+    None
+        If inplace is True filtered data is set to self.data.
+    """
+
+    filt = pd.Series(True, index=self.data.index)
+
+    if year is not None:
+      filt &= self.data.index.year.isin(year)
+    if month is not None:
+      filt &= self.data.index.month.isin(month)
+    if day is not None:
+      filt &= self.data.index.day.isin(day)
+    if hour is not None:
+      filt &= self.data.index.hour.isin(hour)
+    if date is not None:
+      filt &= self.data.index.isin(date)
+
+    filtered_data = self.data.loc[filt].copy()
+
+    if inplace:
+      self.data = filtered_data
+    else:
+      return filtered_data
 
   def groupby(
       self,
@@ -180,8 +229,8 @@ class DataManip:
     Parameters
     ----------
     func : str
-        The function to be used for aggregation.
-    groupby_type : str
+        Numpy function to be used for aggregation.
+    groupby_type : Callable[[pd.DataFrame], pd.Series]
         The key for dict_of_groupbys used to return groupby columns.
 
     Returns
@@ -210,8 +259,8 @@ class DataManip:
     ----------
     freq : str
         The frequency to be used for resampling.
-    func : str
-        The function to be used for aggregation.
+    func : Callable[[pd.DataFrame], pd.Series]
+        Numpy function to be used for aggregation.
     
     Returns
     -------
@@ -220,8 +269,26 @@ class DataManip:
     """
     return self.data.resample(freq).agg(func)
 
-  def rolling(self, func: Callable[[pd.DataFrame], pd.Series] = np.mean):
-    pass
+  def rolling(self,
+              window: int = 3,
+              func: Callable[[pd.DataFrame], pd.Series] = np.mean):
+    """
+    Rolling window function.
+
+    Parameters
+    ----------
+    window : int
+        The window size.
+    func : Callable[[pd.DataFrame], pd.Series]
+        Numpy function to be used for aggregation.
+
+    Returns
+    -------
+    pd.DataFrame | pd.Series
+        The rolled and aggregated data.
+    """
+
+    return self.data.rolling(window).agg(func)
 
 
 @dataclass
@@ -360,10 +427,25 @@ class ColumnVizData:
 
 
 def generate_column_classes(df, column_metadata):
+  """
+  Generate column classes for each column in the dataframe.
+
+  Parameters
+  ----------
+  df : pd.DataFrame
+      The dataframe to be used.
+  column_metadata : dict[str, Any]
+      The column metadata.
+  
+  Returns
+  -------
+  list[ColumnVizData]
+      The list of column classes.
+  """
+
   column_classes = []
 
   for i, column in enumerate(df.columns):
-    # class_name = column.capitalize().replace(' ', '')
     column_key = f'column_{i + 1}'
     column_key_data = column_metadata[column_key]
 
