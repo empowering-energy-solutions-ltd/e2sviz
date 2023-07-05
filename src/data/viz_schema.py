@@ -22,3 +22,4 @@ class FrequencySchema:
   DAY = 'D'
   WEEK = 'W'
   MONTH = 'M'
+  MISSING = 'MISSING'

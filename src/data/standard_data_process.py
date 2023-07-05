@@ -137,26 +137,90 @@ class DataPrep:
 @dataclass
 class DataManip:
   data: pd.DataFrame
+  frequency: viz_schema.FrequencySchema = viz_schema.FrequencySchema.MISSING
   column_meta_data: dict[str, dict[str, Any]] = field(default_factory=dict)
 
   def __post_init__(self):
     self.data = self.data.copy()
-    self.data = functions.add_time_features(self.data)
+    if self.frequency is viz_schema.FrequencySchema.MISSING:
+      self.frequency = pd.infer_freq(self.data.index)
+
+  @property
+  def column_from_freq(self) -> str:
+    column_mapping = {
+        '30T': 'Half-hour',
+        'H': 'Hour',
+        'D': 'Day of year',
+        'M': 'Month'
+    }
+    return column_mapping.get(self.frequency)
 
   @property
   def dict_of_groupbys(self) -> dict[str, list[str]]:
-    return {'day': ['dayofweek', 'dayofyear']}
+    freq_col = self.column_from_freq
+    return {
+        'day': ['Weekday flag', freq_col],
+        'week': ['Day of week', freq_col],
+        # 'month': ['Month', 'Week', freq_col],
+        'day_season': ['season', 'Weekday flag', freq_col],
+        'week_season': ['season', 'Day of week', freq_col]
+    }
 
   def filter(self):
     pass
 
-  def groupby(self):
-    pass
+  def groupby(
+      self,
+      groupby_type: str = 'week_season',
+      func: Callable[[pd.DataFrame], pd.Series] = np.mean
+  ) -> pd.DataFrame | pd.Series:
+    """
+    Group the data by given column/s and aggregate by a given function.
 
-  def resample(self):
-    pass
+    Parameters
+    ----------
+    func : str
+        The function to be used for aggregation.
+    groupby_type : str
+        The key for dict_of_groupbys used to return groupby columns.
 
-  def rolling(self):
+    Returns
+    -------
+    pd.DataFrame | pd.Series
+        The grouped and aggregated data.
+    """
+    col_list = self.data.columns.tolist()
+    timefeature_data = functions.add_time_features(self.data)
+    cols = self.dict_of_groupbys.get(groupby_type)
+
+    return timefeature_data.groupby(cols).agg({
+        col: func
+        for col in col_list
+    }).unstack(0)
+
+  def resample(
+      self,
+      freq: str = 'D',
+      func: Callable[[pd.DataFrame], pd.Series] = np.mean
+  ) -> pd.DataFrame | pd.Series:
+    """
+    Resample the data by given frequency and aggregate by a given function.
+
+    Parameters
+    ----------
+    freq : str
+        The frequency to be used for resampling.
+    func : str
+        The function to be used for aggregation.
+    
+    Returns
+    -------
+    pd.DataFrame | pd.Series
+        The resampled and aggregated data.
+    """
+    return self.data.resample(freq).agg(func)
+
+  def rolling(self, func: Callable[[pd.DataFrame], pd.Series] = np.mean):
     pass
 
 
