@@ -23,3 +23,16 @@ class FrequencySchema:
   WEEK = 'W'
   MONTH = 'M'
   MISSING = 'MISSING'
+
+
+class MetaDataSchema:
+  NAME = 'Name'
+  UNITS = 'Units'
+  FREQ = 'Freq'
+  TYPE = 'Type'
+
+
+class GroupingKeySchema:
+  DAY = 'day'
+  DAY_SEASON = 'day_season'
+  WEEK_SEASON = 'week_season'

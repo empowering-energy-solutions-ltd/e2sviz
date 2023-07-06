@@ -5,6 +5,7 @@ from typing import Any, Callable, Literal, Optional, Self
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from e2slib.structures import datetime_schema
 from e2slib.utillib import functions
 from IPython.display import display
 
@@ -136,23 +137,148 @@ class DataPrep:
 
 
 @dataclass
+class MetaData:
+  """
+  Class for storing the data being manipulateds metadata.
+
+  Parameters
+  ----------
+  metadata : dict[str, dict[str, Any]]
+      A dictionary of metadata for each column of data.
+  
+  Attributes
+  ----------
+  metadata : dict[str, dict[str, Any]]
+      The metadata stored.
+  """
+  metadata: dict[str, dict[str, Any]]
+
+  def units(self, col: str) -> viz_enums.UnitsSchema:
+    """
+    Get the units schema of the column data.
+
+    Parameters
+    ----------
+    col : str
+        The column to get the units schema of.
+    Returns
+    -------
+    viz_enums.UnitsSchema
+        The units schema of the column data.
+    """
+    return self.metadata[col]['Units']
+
+  def freq(self, col: str) -> viz_schema.FrequencySchema:
+    """
+    Get the frequency schema of the column data.
+
+    Parameters
+    ----------
+    col : str
+        The column to get the frequency schema of.
+    Returns
+    -------
+    viz_schema.FrequencySchema
+        The frequency schema of the column data.
+    """
+    return self.metadata[col]['Freq']
+
+  def column_name(self, col: str) -> viz_enums.DataType:
+    """
+    Get the data type of the column.
+
+    Parameters
+    ----------
+    col : str
+        The column to get the data type of.
+    Returns
+    -------
+    viz_enums.DataType
+        The data type of the column.
+    """
+    return self.metadata[col]['Name']
+
+  @property
+  def get_x_label(self) -> str:
+    """
+    Get the label for the x-axis of the plot.
+
+    Returns
+    -------
+    str
+        The label for the x-axis of the plot.
+    """
+    return f'Datetime (Timestep: {self.freq})'
+
+  def get_y_label(self, col: str) -> str:
+    """
+    Get the label for the y-axis of the plot.
+
+    Parameters
+    ----------
+    col : str
+        The column to get the label for.
+    Returns
+    -------
+    str
+        The label for the y-axis of the plot.
+    """
+    return f'{self.units(col).label} ({self.units(col).units})'
+
+  def get_title(self, col: str) -> str:
+    """
+    Get the title of the plot.
+
+    Parameters
+    ----------
+    col : str
+        The column to get the title for.
+    Returns
+    -------
+    str
+        The title of the plot.
+    """
+    return f'{self.column_name(col)} vs. {self.get_x_label}'
+
+
+@dataclass
 class DataManip:
   data: pd.DataFrame
   frequency: viz_schema.FrequencySchema = viz_schema.FrequencySchema.MISSING
-  column_meta_data: dict[str, dict[str, Any]] = field(default_factory=dict)
+  column_meta_data: MetaData = field(default_factory=(lambda: MetaData({})))
 
   def __post_init__(self):
     self.data = self.data.copy()
+    self.check_freq()
+    self.check_meta_data()
+
+  def check_freq(self):
     if self.frequency is viz_schema.FrequencySchema.MISSING:
       self.frequency = pd.infer_freq(self.data.index)
+
+  def check_meta_data(self):
+    if len(self.column_meta_data.metadata) == 0:
+      default_metadata: dict[str, dict[str, Any]] = {}
+      for col in self.data.columns:
+        default_metadata[col] = {
+            viz_schema.MetaDataSchema.NAME: col,
+            viz_schema.MetaDataSchema.UNITS: viz_enums.UnitsSchema.NAN,
+            viz_schema.MetaDataSchema.FREQ: self.frequency,
+            viz_schema.MetaDataSchema.TYPE: self.data[col].dtype
+        }
+      self.column_meta_data = MetaData(default_metadata)
+
+  def rescaling(self):
+    pass
 
   @property
   def column_from_freq(self) -> str:
     column_mapping = {
-        '30T': 'Half-hour',
-        'H': 'Hour',
-        'D': 'Day of year',
-        'M': 'Month'
+        viz_schema.FrequencySchema.HH: datetime_schema.DateTimeSchema.HALFHOUR,
+        viz_schema.FrequencySchema.HOUR: datetime_schema.DateTimeSchema.HOUR,
+        viz_schema.FrequencySchema.DAY:
+        datetime_schema.DateTimeSchema.DAYOFYEAR,
+        viz_schema.FrequencySchema.MONTH: datetime_schema.DateTimeSchema.MONTH
     }
     return column_mapping.get(self.frequency)
 
@@ -160,11 +286,20 @@ class DataManip:
   def dict_of_groupbys(self) -> dict[str, list[str]]:
     freq_col = self.column_from_freq
     return {
-        'day': ['Weekday flag', freq_col],
-        'week': ['Day of week', freq_col],
-        'month': ['Month', freq_col],
-        'day_season': ['season', 'Weekday flag', freq_col],
-        'week_season': ['season', 'Day of week', freq_col]
+        viz_schema.GroupingKeySchema.DAY:
+        [datetime_schema.DateTimeSchema.WEEKDAYFLAG, freq_col],
+        datetime_schema.DateTimeSchema.WEEK:
+        [datetime_schema.DateTimeSchema.DAYOFWEEK, freq_col],
+        datetime_schema.DateTimeSchema.MONTH:
+        [datetime_schema.DateTimeSchema.MONTH, freq_col],
+        viz_schema.GroupingKeySchema.DAY_SEASON: [
+            datetime_schema.DateTimeSchema.SEASON,
+            datetime_schema.DateTimeSchema.WEEKDAYFLAG, freq_col
+        ],
+        viz_schema.GroupingKeySchema.WEEK_SEASON: [
+            datetime_schema.DateTimeSchema.SEASON,
+            datetime_schema.DateTimeSchema.DAYOFWEEK, freq_col
+        ]
     }
 
   def filter(self,
@@ -199,17 +334,17 @@ class DataManip:
     """
 
     filt = pd.Series(True, index=self.data.index)
-
+    index_data: pd.DatetimeIndex = self.data.index
     if year is not None:
-      filt &= self.data.index.year.isin(year)
+      filt &= index_data.year.isin(year)
     if month is not None:
-      filt &= self.data.index.month.isin(month)
+      filt &= index_data.month.isin(month)
     if day is not None:
-      filt &= self.data.index.day.isin(day)
+      filt &= index_data.day.isin(day)
     if hour is not None:
-      filt &= self.data.index.hour.isin(hour)
+      filt &= index_data.hour.isin(hour)
     if date is not None:
-      filt &= self.data.index.isin(date)
+      filt &= index_data.isin(date)
 
     filtered_data = self.data.loc[filt].copy()
 
@@ -242,10 +377,7 @@ class DataManip:
     timefeature_data = functions.add_time_features(self.data)
     cols = self.dict_of_groupbys.get(groupby_type)
 
-    return timefeature_data.groupby(cols).agg({
-        col: func
-        for col in col_list
-    }).unstack(0)
+    return timefeature_data.groupby(cols).agg({col: func for col in col_list})
 
   def resample(
       self,
@@ -291,167 +423,94 @@ class DataManip:
     return self.data.rolling(window).agg(func)
 
 
-@dataclass
-class ColumnVizData:
-  """
-  Class for visualizing column data.
+# @dataclass
+# class ColumnVizData:
+#   """
+#   Class for visualizing column data.
 
-  Parameters
-  ----------
-  data : pd.Series
-      The data to be visualized.
-  column_data : dict[str, Any]
-      Additional information about the column.
+#   Parameters
+#   ----------
+#   data : pd.Series
+#       The data to be visualized.
+#   column_data : dict[str, Any]
+#       Additional information about the column.
 
-  Attributes
-  ----------
-  data : pd.Series
-      The data to be visualized.
-  column_data : dict[str, Any]
-      Additional information about the column.
-  """
+#   Attributes
+#   ----------
+#   data : pd.Series
+#       The data to be visualized.
+#   column_data : dict[str, Any]
+#       Additional information about the column.
+#   """
 
-  data: pd.Series
-  column_data: dict[str, Any]
+#   data: pd.Series
+#   column_data: dict[str, Any]
 
-  @property
-  def units(self) -> viz_enums.UnitsSchema:
-    """
-    Get the units schema of the column data.
+#   @property
+#   def get_ylim(self) -> tuple[float, float]:
+#     """
+#     Get the limits for the y-axis of the plot.
 
-    Returns
-    -------
-    viz_enums.UnitsSchema
-        The units schema of the column data.
-    """
-    return self.column_data['Units']
+#     Returns
+#     -------
+#     tuple[float, float]
+#         The limits for the y-axis of the plot.
+#     """
+#     return (self.data.min() - (self.data.max() * 0.1),
+#             self.data.max() + (self.data.max() * 0.1))
 
-  @property
-  def freq(self) -> viz_schema.FrequencySchema:
-    """
-    Get the frequency schema of the column data.
+#   def plot_all(self) -> None:
+#     """
+#     Plot all column data.
 
-    Returns
-    -------
-    viz_schema.FrequencySchema
-        The frequency schema of the column data.
-    """
-    return self.column_data['Freq']
+#     Returns
+#     -------
+#     None
+#     """
+#     plt.figure(figsize=(15, 5))
+#     plt.plot(self.data.index, self.data.values)
+#     self.get_plotting_settings()
+#     plt.grid()
 
-  @property
-  def column_name(self) -> viz_enums.DataType:
-    """
-    Get the data type of the column.
+#   def get_plotting_settings(self) -> None:
+#     """
+#     Set the plotting settings.
 
-    Returns
-    -------
-    viz_enums.DataType
-        The data type of the column.
-    """
-    return self.column_data['Name']
+#     Returns
+#     -------
+#     None
+#     """
+#     plt.xlabel(self.get_x_label)
+#     plt.ylabel(self.get_y_label)
+#     plt.title(self.get_title)
+#     plt.ylim(self.get_ylim)
 
-  @property
-  def get_x_label(self) -> str:
-    """
-    Get the label for the x-axis of the plot.
+# def generate_column_classes(df, column_metadata):
+#   """
+#   Generate column classes for each column in the dataframe.
 
-    Returns
-    -------
-    str
-        The label for the x-axis of the plot.
-    """
-    return f'Datetime (Timestep: {self.freq})'
+#   Parameters
+#   ----------
+#   df : pd.DataFrame
+#       The dataframe to be used.
+#   column_metadata : dict[str, Any]
+#       The column metadata.
 
-  @property
-  def get_y_label(self) -> str:
-    """
-    Get the label for the y-axis of the plot.
+#   Returns
+#   -------
+#   list[ColumnVizData]
+#       The list of column classes.
+#   """
 
-    Returns
-    -------
-    str
-        The label for the y-axis of the plot.
-    """
-    return f'{self.units.label} ({self.units.units})'
+#   column_classes = []
 
-  @property
-  def get_title(self) -> str:
-    """
-    Get the title of the plot.
+#   for i, column in enumerate(df.columns):
+#     column_key = f'column_{i + 1}'
+#     column_key_data = column_metadata[column_key]
 
-    Returns
-    -------
-    str
-        The title of the plot.
-    """
-    return f'{self.column_name} vs. {self.get_x_label}'
+#     # Define the class dynamically
+#     cls = ColumnVizData(df[column], column_key_data)
 
-  @property
-  def get_ylim(self) -> tuple[float, float]:
-    """
-    Get the limits for the y-axis of the plot.
+#     column_classes.append(cls)
 
-    Returns
-    -------
-    tuple[float, float]
-        The limits for the y-axis of the plot.
-    """
-    return (self.data.min() - (self.data.max() * 0.1),
-            self.data.max() + (self.data.max() * 0.1))
-
-  def plot_all(self) -> None:
-    """
-    Plot all column data.
-
-    Returns
-    -------
-    None
-    """
-    plt.figure(figsize=(15, 5))
-    plt.plot(self.data.index, self.data.values)
-    self.get_plotting_settings()
-    plt.grid()
-
-  def get_plotting_settings(self) -> None:
-    """
-    Set the plotting settings.
-
-    Returns
-    -------
-    None
-    """
-    plt.xlabel(self.get_x_label)
-    plt.ylabel(self.get_y_label)
-    plt.title(self.get_title)
-    plt.ylim(self.get_ylim)
-
-
-def generate_column_classes(df, column_metadata):
-  """
-  Generate column classes for each column in the dataframe.
-
-  Parameters
-  ----------
-  df : pd.DataFrame
-      The dataframe to be used.
-  column_metadata : dict[str, Any]
-      The column metadata.
-  
-  Returns
-  -------
-  list[ColumnVizData]
-      The list of column classes.
-  """
-
-  column_classes = []
-
-  for i, column in enumerate(df.columns):
-    column_key = f'column_{i + 1}'
-    column_key_data = column_metadata[column_key]
-
-    # Define the class dynamically
-    cls = ColumnVizData(df[column], column_key_data)
-
-    column_classes.append(cls)
-
-  return column_classes
+#   return column_classes

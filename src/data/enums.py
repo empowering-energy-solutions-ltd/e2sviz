@@ -37,6 +37,7 @@ class UnitsSchema(Enum):
   KG_CO2 = 'KgCO2', 'Carbon emissions'
   KG_CO2_PER_KWH = 'KgCO2/kWh', 'Carbon emissions per unit energy'
   KG_CO2_PER_MWH = 'KgCO2/MWh', 'Carbon emissions per unit energy'
+  NAN = 'NaN', 'NaN'
 
   @property
   def label(self) -> str:
