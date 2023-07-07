@@ -28,6 +28,7 @@ class FrequencySchema:
 class MetaDataSchema:
   NAME = 'Name'
   UNITS = 'Units'
+  SI = 'SI'
   FREQ = 'Freq'
   TYPE = 'Type'
 

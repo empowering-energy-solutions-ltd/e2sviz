@@ -251,6 +251,7 @@ class DataManip:
     self.data = self.data.copy()
     self.check_freq()
     self.check_meta_data()
+    self.check_rescaling()
 
   def check_freq(self):
     if self.frequency is viz_schema.FrequencySchema.MISSING:
@@ -263,13 +264,43 @@ class DataManip:
         default_metadata[col] = {
             viz_schema.MetaDataSchema.NAME: col,
             viz_schema.MetaDataSchema.UNITS: viz_enums.UnitsSchema.NAN,
+            viz_schema.MetaDataSchema.SI: viz_enums.UnitsSchema.NAN,
             viz_schema.MetaDataSchema.FREQ: self.frequency,
             viz_schema.MetaDataSchema.TYPE: self.data[col].dtype
         }
       self.column_meta_data = MetaData(default_metadata)
 
-  def rescaling(self):
-    pass
+  def check_rescaling(self):
+
+    si_units_list = list(viz_enums.SIUnits)
+    for column in self.data.columns:
+      mean_value = self.data[column].mean()
+      SI_val = self.column_meta_data.metadata[column][
+          viz_schema.MetaDataSchema.SI]
+      if mean_value > 1000:
+        self.data[column] = self.data[column] / 1000
+        for i, unit in enumerate(viz_enums.SIUnits):
+          if unit.index_val == self.column_meta_data.metadata[column][
+              viz_schema.MetaDataSchema.SI].index_val:
+            next_unit = si_units_list[
+                (i + 1) %
+                len(si_units_list)]  # Get the next unit by using modulo
+
+            self.column_meta_data.metadata[column][
+                viz_schema.MetaDataSchema.SI] = next_unit
+            break
+      elif mean_value < 0.1:
+        self.data[column] = self.data[column] * 1000
+        for i, unit in enumerate(viz_enums.SIUnits):
+          if unit.index_val == self.column_meta_data.metadata[column][
+              viz_schema.MetaDataSchema.SI].index_val:
+            next_unit = si_units_list[
+                (i - 1) %
+                len(si_units_list)]  # Get the next unit by using modulo
+
+            self.column_meta_data.metadata[column][
+                viz_schema.MetaDataSchema.SI] = next_unit
+            break
 
   @property
   def column_from_freq(self) -> str:
