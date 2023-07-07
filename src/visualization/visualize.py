@@ -1,71 +1,155 @@
+import datetime
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Any, Callable, List, Optional, Protocol
 
-# import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 
+from src.data import enums as viz_enums
 from src.data import viz_schema
-from src.visualization.plot_styles import plt_settings
-
-# import plotly.express as px
-# from e2slib.structures import enums
-# from e2slib.utillib import functions
-# from e2slib.visualization import viz_functions
 
 
-class VizSelector(Protocol):
+class LibraryViz(Protocol):
   """
   Selects the visualisation library to be used.
   """
 
-  def visualizer_init(self) -> str:
+  def plot_single(self, x: pd.DatetimeIndex, y: pd.Series, title: str,
+                  x_label: str, y_label: str):
     ...
-
-
-class MatPlotLibSelector():
-  """
-  Selects the visualisation library to matplotlib.
-  """
-
-  def visualizer_init(self) -> str:
-    return viz_schema.VizSchema.PLT
-
-
-class PlotlySelector():
-  """
-  Selects the visualisation library to plotly.
-  """
-
-  def visualizer_init(self) -> str:
-    return viz_schema.VizSchema.PLOTLY
 
 
 # ------------------------------------------------------------------------------
 
 
-class VizType(Protocol):
+class MetaData(Protocol):
   """
-  Select visualisation type to be created.
+  Stores the meta data.
   """
+  metadata: dict[str, dict[str, Any]]
 
-  def viz_type_init(self, data: pd.DataFrame):
+  def units(self, col: str) -> viz_enums.UnitsSchema:
+    ...
+
+  def siunits(self, col: str) -> viz_enums.SIUnits:
+    ...
+
+  def freq(self, col: str) -> viz_schema.FrequencySchema:
+    ...
+
+  def column_name(self, col: str) -> viz_enums.DataType:
+    ...
+
+  @property
+  def get_x_label(self) -> str:
+    ...
+
+  def get_y_label(self, col: str) -> str:
+    ...
+
+  def get_title(self, col: str) -> str:
+    ...
+
+
+class DataManipProtocol(Protocol):
+  """
+  Manipulates the data.
+  """
+  data: pd.DataFrame
+  frequency: viz_schema.FrequencySchema
+  column_meta_data: MetaData
+
+  def __post_init__(self) -> None:
+    ...
+
+  def check_freq(self) -> None:
+    ...
+
+  def check_meta_data(self) -> None:
+    ...
+
+  def check_rescaling(self) -> None:
+    ...
+
+  @property
+  def column_from_freq(self) -> str:
+    ...
+
+  @property
+  def dict_of_groupbys(self) -> dict[str, List[str]]:
+    ...
+
+  def filter(self,
+             year: Optional[List[int]] = None,
+             month: Optional[List[int]] = None,
+             day: Optional[List[int]] = None,
+             hour: Optional[List[int]] = None,
+             date: Optional[List[datetime.date]] = None,
+             inplace: bool = False) -> Optional[pd.DataFrame]:
+    ...
+
+  def groupby(
+      self,
+      groupby_type: str = 'week_season',
+      func: Callable[[pd.DataFrame], pd.Series] = np.mean
+  ) -> pd.DataFrame | pd.Series:
+    ...
+
+  def resample(
+      self,
+      freq: str = 'D',
+      func: Callable[[pd.DataFrame], pd.Series] = pd.mean
+  ) -> pd.DataFrame | pd.Series:
+    ...
+
+  def rolling(
+      self,
+      window: int = 3,
+      func: Callable[[pd.DataFrame], pd.Series] = np.mean
+  ) -> pd.DataFrame | pd.Series:
     ...
 
 
 @dataclass
-class Visualizer:
-  data: pd.DataFrame
-  viz_type: VizType
-  viz_selector: VizSelector = MatPlotLibSelector()
-  columns: list[str] | None = None
+class DataViz:
+  """
+  Visualises the data.
 
-  def __post_init__(self):
+  Parameters
+  ----------
+  DataManip : DataManipProtocol
+    The data manipulation class.
+  viz_selector : LibraryViz
+    The visualisation library to be used.
+  
+  Attributes
+  ----------
+  data : pd.DataFrame
+    The data to be visualised.
+  meta_data : MetaData
+    The meta data of the data to be visualised.
 
-    plt_settings()
+  Methods
+  -------
+  plot()
+    Plots the data.
+  
+  """
+  datamanip: DataManipProtocol
+  viz_selector: LibraryViz
 
-  def plot_plt(self):
-    """
-    Plots the data using matplotlib.
-    """
+  @property
+  def data(self) -> pd.DataFrame:
+    return self.datamanip.data
 
-    self.viz_type.viz_type_init(self.data)
+  @property
+  def meta_data(self) -> MetaData:
+    return self.datamanip.column_meta_data
+
+  def plot(self):
+    for col in self.data.columns:
+      self.viz_selector.plot_single(x=self.data.index,
+                                    y=self.data[col],
+                                    title=self.meta_data.get_title(col),
+                                    x_label=self.meta_data.get_x_label,
+                                    y_label=self.meta_data.get_y_label(col))

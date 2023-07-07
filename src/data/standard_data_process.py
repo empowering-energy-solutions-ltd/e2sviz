@@ -166,7 +166,22 @@ class MetaData:
     viz_enums.UnitsSchema
         The units schema of the column data.
     """
-    return self.metadata[col]['Units']
+    return self.metadata[col][viz_schema.MetaDataSchema.UNITS]
+
+  def siunits(self, col: str) -> viz_enums.SIUnits:
+    """
+    Get the SI units of the column data.
+
+    Parameters
+    ----------
+    col : str
+        The column to get the SI units of.
+    Returns
+    -------
+    viz_enums.SIUnits
+        The SI units of the column data.
+    """
+    return self.metadata[col][viz_schema.MetaDataSchema.SI]
 
   def freq(self, col: str) -> viz_schema.FrequencySchema:
     """
@@ -181,9 +196,9 @@ class MetaData:
     viz_schema.FrequencySchema
         The frequency schema of the column data.
     """
-    return self.metadata[col]['Freq']
+    return self.metadata[col][viz_schema.MetaDataSchema.FREQ]
 
-  def column_name(self, col: str) -> viz_enums.DataType:
+  def dtype(self, col: str) -> viz_enums.DataType:
     """
     Get the data type of the column.
 
@@ -196,7 +211,7 @@ class MetaData:
     viz_enums.DataType
         The data type of the column.
     """
-    return self.metadata[col]['Name']
+    return self.metadata[col][viz_schema.MetaDataSchema.TYPE]
 
   @property
   def get_x_label(self) -> str:
@@ -223,7 +238,7 @@ class MetaData:
     str
         The label for the y-axis of the plot.
     """
-    return f'{self.units(col).label} ({self.units(col).units})'
+    return f'{self.units(col).label} ({self.siunits(col).label}{self.units(col).units})'
 
   def get_title(self, col: str) -> str:
     """
@@ -238,7 +253,7 @@ class MetaData:
     str
         The title of the plot.
     """
-    return f'{self.column_name(col)} vs. {self.get_x_label}'
+    return f'{self.metadata[col][viz_schema.MetaDataSchema.NAME]} vs. {self.get_x_label}'
 
 
 @dataclass
@@ -254,10 +269,19 @@ class DataManip:
     self.check_rescaling()
 
   def check_freq(self):
+    """
+    Check the frequency of the data if value not provided,
+      it will be infered using pd.infer_freq().
+
+    """
     if self.frequency is viz_schema.FrequencySchema.MISSING:
       self.frequency = pd.infer_freq(self.data.index)
 
   def check_meta_data(self):
+    """
+    Check for metadata, if not provided,
+    default values will be generated/infered from the data available.
+    """
     if len(self.column_meta_data.metadata) == 0:
       default_metadata: dict[str, dict[str, Any]] = {}
       for col in self.data.columns:
@@ -271,6 +295,9 @@ class DataManip:
       self.column_meta_data = MetaData(default_metadata)
 
   def check_rescaling(self):
+    """
+    Check if the column data requires rescaling.
+    """
 
     si_units_list = list(viz_enums.SIUnits)
     for column in self.data.columns:
