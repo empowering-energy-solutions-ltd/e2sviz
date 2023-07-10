@@ -11,15 +11,32 @@ from IPython.display import display
 from src.data import enums as viz_enums
 from src.data import viz_schema
 
-init_function_callable = Callable[[pd.DataFrame], dict[str, bool]]
+# InitFuncCallable = Callable[[pd.DataFrame], dict[str, bool]]
 
-dataf_callable = Callable[[pd.DataFrame], pd.DataFrame]
+DatafCallable = Callable[[pd.DataFrame], pd.DataFrame]
 
 
 @dataclass
 class DataPrep:
+  """
+  Performs data preparation steps.
+
+  Parameters
+  ----------
+  data : pd.DataFrame
+      The input DataFrame.
+  dataprep_functions : list[dataf_callable]
+      The list of data preparation functions to be applied to the data.
+
+  Methods
+  -------
+  described_data(data: pd.DataFrame) -> pd.DataFrame
+      Returns a DataFrame containing statistics of the input data.
+  clean_data() -> None
+      Applies the data preparation functions to the data.
+  """
   data: pd.DataFrame
-  dataprep_functions: list[dataf_callable] | None = None
+  dataprep_functions: Optional[list[DatafCallable]]
 
   def __post_init__(self):
     """
@@ -35,7 +52,7 @@ class DataPrep:
     print('Prior to cleaning:')
     display(self.described_raw_data)
 
-    if self.dataprep_functions is not None:
+    if self.dataprep_functions:
       self.clean_data()
       self.described_clean_data = self.described_data(self.data)
       print('Post cleaning:')
@@ -256,6 +273,28 @@ class MetaData:
 
 @dataclass
 class DataManip:
+  """
+  Class for manipulating data.
+
+  Parameters
+  ----------
+  data : pd.DataFrame
+      The input DataFrame.
+  frequency : viz_schema.FrequencySchema, optional
+      The frequency of the data, by default viz_schema.FrequencySchema.MISSING.
+  column_meta_data : MetaData, optional
+      The metadata of the data, by default MetaData({}).
+  
+  Attributes
+  ----------
+  data : pd.DataFrame
+      The input DataFrame.
+  frequency : viz_schema.FrequencySchema
+      The frequency of the data.
+  column_meta_data : MetaData
+      The metadata of the data.
+  """
+
   data: pd.DataFrame
   frequency: viz_schema.FrequencySchema = viz_schema.FrequencySchema.MISSING
   column_meta_data: MetaData = field(default_factory=(lambda: MetaData({})))
@@ -503,96 +542,3 @@ class DataManip:
     if inplace:
       self.data = rolling_data
     return rolling_data
-
-
-# @dataclass
-# class ColumnVizData:
-#   """
-#   Class for visualizing column data.
-
-#   Parameters
-#   ----------
-#   data : pd.Series
-#       The data to be visualized.
-#   column_data : dict[str, Any]
-#       Additional information about the column.
-
-#   Attributes
-#   ----------
-#   data : pd.Series
-#       The data to be visualized.
-#   column_data : dict[str, Any]
-#       Additional information about the column.
-#   """
-
-#   data: pd.Series
-#   column_data: dict[str, Any]
-
-#   @property
-#   def get_ylim(self) -> tuple[float, float]:
-#     """
-#     Get the limits for the y-axis of the plot.
-
-#     Returns
-#     -------
-#     tuple[float, float]
-#         The limits for the y-axis of the plot.
-#     """
-#     return (self.data.min() - (self.data.max() * 0.1),
-#             self.data.max() + (self.data.max() * 0.1))
-
-#   def plot_all(self) -> None:
-#     """
-#     Plot all column data.
-
-#     Returns
-#     -------
-#     None
-#     """
-#     plt.figure(figsize=(15, 5))
-#     plt.plot(self.data.index, self.data.values)
-#     self.get_plotting_settings()
-#     plt.grid()
-
-#   def get_plotting_settings(self) -> None:
-#     """
-#     Set the plotting settings.
-
-#     Returns
-#     -------
-#     None
-#     """
-#     plt.xlabel(self.get_x_label)
-#     plt.ylabel(self.get_y_label)
-#     plt.title(self.get_title)
-#     plt.ylim(self.get_ylim)
-
-# def generate_column_classes(df, column_metadata):
-#   """
-#   Generate column classes for each column in the dataframe.
-
-#   Parameters
-#   ----------
-#   df : pd.DataFrame
-#       The dataframe to be used.
-#   column_metadata : dict[str, Any]
-#       The column metadata.
-
-#   Returns
-#   -------
-#   list[ColumnVizData]
-#       The list of column classes.
-#   """
-
-#   column_classes = []
-
-#   for i, column in enumerate(df.columns):
-#     column_key = f'column_{i + 1}'
-#     column_key_data = column_metadata[column_key]
-
-#     # Define the class dynamically
-#     cls = ColumnVizData(df[column], column_key_data)
-
-#     column_classes.append(cls)
-
-#   return column_classes
