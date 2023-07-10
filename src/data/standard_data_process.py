@@ -213,8 +213,7 @@ class MetaData:
     """
     return self.metadata[col][viz_schema.MetaDataSchema.TYPE]
 
-  @property
-  def get_x_label(self) -> str:
+  def get_x_label(self, col) -> str:
     """
     Get the label for the x-axis of the plot.
 
@@ -223,7 +222,7 @@ class MetaData:
     str
         The label for the x-axis of the plot.
     """
-    return f'Datetime (Timestep: {self.freq})'
+    return f'Datetime (Timestep: {self.freq(col)})'
 
   def get_y_label(self, col: str) -> str:
     """
@@ -253,7 +252,7 @@ class MetaData:
     str
         The title of the plot.
     """
-    return f'{self.metadata[col][viz_schema.MetaDataSchema.NAME]} vs. {self.get_x_label}'
+    return f'{self.metadata[col][viz_schema.MetaDataSchema.NAME]} vs. {self.get_x_label(col)}'
 
 
 @dataclass

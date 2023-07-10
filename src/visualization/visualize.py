@@ -40,8 +40,7 @@ class MetaData(Protocol):
   def column_name(self, col: str) -> viz_enums.DataType:
     ...
 
-  @property
-  def get_x_label(self) -> str:
+  def get_x_label(self, col: str) -> str:
     ...
 
   def get_y_label(self, col: str) -> str:
@@ -98,7 +97,7 @@ class DataManipProtocol(Protocol):
   def resample(
       self,
       freq: str = 'D',
-      func: Callable[[pd.DataFrame], pd.Series] = pd.mean
+      func: Callable[[pd.DataFrame], pd.Series] = np.mean
   ) -> pd.DataFrame | pd.Series:
     ...
 
@@ -146,10 +145,10 @@ class DataViz:
   def meta_data(self) -> MetaData:
     return self.datamanip.column_meta_data
 
-  def plot(self):
-    for col in self.data.columns:
+  def plotter(self):
+    for c in self.data.columns:
       self.viz_selector.plot_single(x=self.data.index,
-                                    y=self.data[col],
-                                    title=self.meta_data.get_title(col),
-                                    x_label=self.meta_data.get_x_label,
-                                    y_label=self.meta_data.get_y_label(col))
+                                    y=self.data[c],
+                                    title=self.meta_data.get_title(c),
+                                    x_label=self.meta_data.get_x_label(c),
+                                    y_label=self.meta_data.get_y_label(c))

@@ -18,7 +18,7 @@ def plotly_figure(fig: go.Figure) -> go.Figure:
 
 
 def plt_settings():
-  plt.rcParams['font.family'] = 'Comic Sans MS'  # 'Times New Roman'
+  plt.rcParams['font.family'] = 'Times New Roman'
   params = {
       'axes.labelsize': font_size + 2,
       'axes.titlesize': font_size + 4,
@@ -39,11 +39,12 @@ class MatPlotLibPlot():
 
   def plot_single(self, x: pd.DatetimeIndex, y: pd.Series, title: str,
                   x_label: str, y_label: str):
-    plt.plot(x, y, marker='o')
+    plt.figure(figsize=(10, 5))
+    plt.plot(x, y)
     plt.title(title)
     plt.xlabel(x_label)
     plt.ylabel(y_label)
-    plt.legend()
+    # ax.legend()
     plt.grid()
 
   # def plot_multiple(self, x, y, title, x_label, y_label, legend, save_path):
