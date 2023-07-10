@@ -5,16 +5,31 @@ import plotly.graph_objects as go
 font_size = 12
 
 
-def plotly_figure(fig: go.Figure) -> go.Figure:
+def custom_plot(x, y, ax=None, **plt_kwargs):
+  if ax is None:
+    ax = plt.gca()
+  ax.plot(x, y, **plt_kwargs)  ## example plot here
+  return (ax)
 
-  fig.update_layout(title=dict(font=dict(size=font_size + 4)),
-                    xaxis=dict(title=dict(font=dict(size=font_size)),
-                               tickfont=dict(size=font_size)),
-                    yaxis=dict(title=dict(font=dict(size=font_size)),
-                               tickfont=dict(size=font_size)),
-                    legend=dict(font=dict(size=font_size)))
 
-  return fig
+def multiple_custom_plots(x, y, ax=None, plt_kwargs={}, sct_kwargs={}):
+  if ax is None:
+    ax = plt.gca()
+  ax.plot(x, y, **plt_kwargs)  #example plot1
+  ax.scatter(x, y, **sct_kwargs)  #example plot2
+  return (ax)
+
+
+# def plotly_figure(fig: go.Figure) -> go.Figure:
+
+#   fig.update_layout(title=dict(font=dict(size=font_size + 4)),
+#                     xaxis=dict(title=dict(font=dict(size=font_size)),
+#                                tickfont=dict(size=font_size)),
+#                     yaxis=dict(title=dict(font=dict(size=font_size)),
+#                                tickfont=dict(size=font_size)),
+#                     legend=dict(font=dict(size=font_size)))
+
+#   return fig
 
 
 def plt_settings():
@@ -37,10 +52,16 @@ class MatPlotLibPlot():
   def __init__(self):
     plt_settings()
 
-  def plot_single(self, x: pd.DatetimeIndex, y: pd.Series, title: str,
-                  x_label: str, y_label: str):
+  def plot_single(self,
+                  x: pd.DatetimeIndex,
+                  y: pd.Series,
+                  title: str,
+                  x_label: str,
+                  y_label: str,
+                  ax=None,
+                  **plt_kwargs):
     plt.figure(figsize=(10, 5))
-    plt.plot(x, y)
+    custom_plot(x, y, ax=None, **plt_kwargs)
     plt.title(title)
     plt.xlabel(x_label)
     plt.ylabel(y_label)

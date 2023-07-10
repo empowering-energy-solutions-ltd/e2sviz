@@ -1,6 +1,6 @@
 import datetime
 from dataclasses import dataclass, field
-from typing import Any, Callable, Literal, Optional, Self
+from typing import Any, Callable, List, Literal, Optional, Self
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -301,8 +301,6 @@ class DataManip:
     si_units_list = list(viz_enums.SIUnits)
     for column in self.data.columns:
       mean_value = self.data[column].mean()
-      SI_val = self.column_meta_data.metadata[column][
-          viz_schema.MetaDataSchema.SI]
       if mean_value > 1000:
         self.data[column] = self.data[column] / 1000
         for i, unit in enumerate(viz_enums.SIUnits):
@@ -315,7 +313,7 @@ class DataManip:
             self.column_meta_data.metadata[column][
                 viz_schema.MetaDataSchema.SI] = next_unit
             break
-      elif mean_value < 0.1:
+      elif mean_value < 0.001:
         self.data[column] = self.data[column] * 1000
         for i, unit in enumerate(viz_enums.SIUnits):
           if unit.index_val == self.column_meta_data.metadata[column][
@@ -410,11 +408,10 @@ class DataManip:
     else:
       return filtered_data
 
-  def groupby(
-      self,
-      groupby_type: str = 'week_season',
-      func: Callable[[pd.DataFrame], pd.Series] = np.mean
-  ) -> pd.DataFrame | pd.Series:
+  def groupby(self,
+              groupby_type: str = viz_schema.GroupingKeySchema.WEEK_SEASON,
+              func: Callable[[pd.DataFrame], pd.Series] = np.mean,
+              inplace: bool = False) -> pd.DataFrame | pd.Series:
     """
     Group the data by given column/s and aggregate by a given function.
 
@@ -433,14 +430,20 @@ class DataManip:
     col_list = self.data.columns.tolist()
     timefeature_data = functions.add_time_features(self.data)
     cols = self.dict_of_groupbys.get(groupby_type)
+    grouped_data = timefeature_data.groupby(cols).agg(
+        {col: func
+         for col in col_list})
+    new_dict_entry = {viz_schema.MetaDataSchema.INDEX: cols}
+    self.column_meta_data.metadata[
+        viz_schema.MetaDataSchema.INDEX] = new_dict_entry
+    if inplace:
+      self.data = grouped_data
+    return grouped_data
 
-    return timefeature_data.groupby(cols).agg({col: func for col in col_list})
-
-  def resample(
-      self,
-      freq: str = 'D',
-      func: Callable[[pd.DataFrame], pd.Series] = np.mean
-  ) -> pd.DataFrame | pd.Series:
+  def resample(self,
+               freq: str = 'D',
+               func: Callable[[pd.DataFrame], pd.Series] = np.mean,
+               inplace: bool = False) -> pd.DataFrame | pd.Series:
     """
     Resample the data by given frequency and aggregate by a given function.
 
@@ -456,11 +459,15 @@ class DataManip:
     pd.DataFrame | pd.Series
         The resampled and aggregated data.
     """
-    return self.data.resample(freq).agg(func)
+    resampled_data = self.data.resample(freq).agg(func)
+    if inplace:
+      self.data = resampled_data
+    return resampled_data
 
   def rolling(self,
               window: int = 3,
-              func: Callable[[pd.DataFrame], pd.Series] = np.mean):
+              func: Callable[[pd.DataFrame], pd.Series] = np.mean,
+              inplace: bool = False) -> pd.DataFrame | pd.Series:
     """
     Rolling window function.
 
@@ -476,8 +483,10 @@ class DataManip:
     pd.DataFrame | pd.Series
         The rolled and aggregated data.
     """
-
-    return self.data.rolling(window).agg(func)
+    rolling_data = self.data.rolling(window).agg(func)
+    if inplace:
+      self.data = rolling_data
+    return rolling_data
 
 
 # @dataclass

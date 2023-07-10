@@ -19,9 +19,6 @@ class LibraryViz(Protocol):
     ...
 
 
-# ------------------------------------------------------------------------------
-
-
 class MetaData(Protocol):
   """
   Stores the meta data.
@@ -87,25 +84,22 @@ class DataManipProtocol(Protocol):
              inplace: bool = False) -> Optional[pd.DataFrame]:
     ...
 
-  def groupby(
-      self,
-      groupby_type: str = 'week_season',
-      func: Callable[[pd.DataFrame], pd.Series] = np.mean
-  ) -> pd.DataFrame | pd.Series:
+  def groupby(self,
+              groupby_type: str = 'week_season',
+              func: Callable[[pd.DataFrame], pd.Series] = np.mean,
+              inplace: bool = False) -> pd.DataFrame | pd.Series:
     ...
 
-  def resample(
-      self,
-      freq: str = 'D',
-      func: Callable[[pd.DataFrame], pd.Series] = np.mean
-  ) -> pd.DataFrame | pd.Series:
+  def resample(self,
+               freq: str = 'D',
+               func: Callable[[pd.DataFrame], pd.Series] = np.mean,
+               inplace: bool = False) -> pd.DataFrame | pd.Series:
     ...
 
-  def rolling(
-      self,
-      window: int = 3,
-      func: Callable[[pd.DataFrame], pd.Series] = np.mean
-  ) -> pd.DataFrame | pd.Series:
+  def rolling(self,
+              window: int = 3,
+              func: Callable[[pd.DataFrame], pd.Series] = np.mean,
+              inplace: bool = False) -> pd.DataFrame | pd.Series:
     ...
 
 
@@ -145,10 +139,13 @@ class DataViz:
   def meta_data(self) -> MetaData:
     return self.datamanip.column_meta_data
 
-  def plotter(self):
-    for c in self.data.columns:
-      self.viz_selector.plot_single(x=self.data.index,
-                                    y=self.data[c],
-                                    title=self.meta_data.get_title(c),
-                                    x_label=self.meta_data.get_x_label(c),
-                                    y_label=self.meta_data.get_y_label(c))
+  def single_plot(self):
+    if 'Indexes' in self.meta_data.metadata:
+      print('Indexes found.  No plotting available.')
+    else:
+      for c in self.data.columns:
+        self.viz_selector.plot_single(x=self.data.index,
+                                      y=self.data[c],
+                                      title=self.meta_data.get_title(c),
+                                      x_label=self.meta_data.get_x_label(c),
+                                      y_label=self.meta_data.get_y_label(c))
