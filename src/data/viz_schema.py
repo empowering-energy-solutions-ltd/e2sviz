@@ -31,6 +31,7 @@ class MetaDataSchema:
   SI = 'SI'
   FREQ = 'Freq'
   TYPE = 'Type'
+  INDEX = 'Indexes'
 
 
 class GroupingKeySchema:

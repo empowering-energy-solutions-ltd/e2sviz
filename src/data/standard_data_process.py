@@ -1,8 +1,7 @@
 import datetime
 from dataclasses import dataclass, field
-from typing import Any, Callable, List, Literal, Optional, Self
+from typing import Any, Callable, Literal, Optional, Self  # List,
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from e2slib.structures import datetime_schema
@@ -293,38 +292,55 @@ class DataManip:
         }
       self.column_meta_data = MetaData(default_metadata)
 
+  def val_rescaler(self, column: str, multiplier: float) -> None:
+    """
+    Rescale the values of the column data.
+
+    Parameters
+    ----------
+    column : str
+        The column to rescale.
+    multiplier : float
+        The multiplier to rescale the column data by.
+    """
+    self.data[column] = self.data[column] * multiplier
+
+  def unit_rescaler(self, column: str, step: int) -> None:
+    """
+    Rescale the units of the column data.
+
+    Parameters
+    ----------
+    column : str
+        The column to rescale.
+    step : int
+        The step to rescale the column data by.
+    """
+    si_units_list = list(viz_enums.SIUnits)
+    for i, unit in enumerate(viz_enums.SIUnits):
+      if unit.index_val == self.column_meta_data.metadata[column][
+          viz_schema.MetaDataSchema.SI].index_val:
+        next_unit = si_units_list[
+            (i + step) %
+            len(si_units_list)]  # Get the next unit by using modulo
+
+        self.column_meta_data.metadata[column][
+            viz_schema.MetaDataSchema.SI] = next_unit
+        break
+
   def check_rescaling(self):
     """
     Check if the column data requires rescaling.
     """
 
-    si_units_list = list(viz_enums.SIUnits)
     for column in self.data.columns:
       mean_value = self.data[column].mean()
       if mean_value > 1000:
-        self.data[column] = self.data[column] / 1000
-        for i, unit in enumerate(viz_enums.SIUnits):
-          if unit.index_val == self.column_meta_data.metadata[column][
-              viz_schema.MetaDataSchema.SI].index_val:
-            next_unit = si_units_list[
-                (i + 1) %
-                len(si_units_list)]  # Get the next unit by using modulo
-
-            self.column_meta_data.metadata[column][
-                viz_schema.MetaDataSchema.SI] = next_unit
-            break
+        self.val_rescaler(column, 0.001)
+        self.unit_rescaler(column, 1)
       elif mean_value < 0.001:
-        self.data[column] = self.data[column] * 1000
-        for i, unit in enumerate(viz_enums.SIUnits):
-          if unit.index_val == self.column_meta_data.metadata[column][
-              viz_schema.MetaDataSchema.SI].index_val:
-            next_unit = si_units_list[
-                (i - 1) %
-                len(si_units_list)]  # Get the next unit by using modulo
-
-            self.column_meta_data.metadata[column][
-                viz_schema.MetaDataSchema.SI] = next_unit
-            break
+        self.val_rescaler(column, 1000)
+        self.unit_rescaler(column, -1)
 
   @property
   def column_from_freq(self) -> str:
