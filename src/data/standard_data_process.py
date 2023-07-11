@@ -184,7 +184,7 @@ class MetaData:
     """
     return self.metadata[col][viz_schema.MetaDataSchema.UNITS]
 
-  def siunits(self, col: str) -> viz_enums.SIUnits:
+  def siunits(self, col: str) -> viz_enums.Prefix:
     """
     Get the SI units of the column data.
 
@@ -197,7 +197,7 @@ class MetaData:
     viz_enums.SIUnits
         The SI units of the column data.
     """
-    return self.metadata[col][viz_schema.MetaDataSchema.SI]
+    return self.metadata[col][viz_schema.MetaDataSchema.PREFIX]
 
   def freq(self, col: str) -> viz_schema.FrequencySchema:
     """
@@ -270,6 +270,21 @@ class MetaData:
     """
     return f'{self.metadata[col][viz_schema.MetaDataSchema.NAME]} vs. {self.get_x_label(col)}'
 
+  def get_legend(self, col: str) -> str:
+    """
+    Get the legend of the plot.
+
+    Parameters
+    ----------
+    col : str
+        The column to get the legend for.
+    Returns
+    -------
+    str
+        The legend of the plot.
+    """
+    return self.metadata[col][viz_schema.MetaDataSchema.LEGEND]
+
 
 @dataclass
 class DataManip:
@@ -301,6 +316,7 @@ class DataManip:
 
   def __post_init__(self):
     self.data = self.data.copy()
+    # if not self.groupbied:
     self.check_freq()
     self.check_meta_data()
     self.check_rescaling()
@@ -393,23 +409,49 @@ class DataManip:
     return column_mapping.get(self.frequency)
 
   @property
-  def dict_of_groupbys(self) -> dict[str, list[str]]:
+  def dict_of_groupbys(self) -> dict[str, dict[str, list[str]]]:
     freq_col = self.column_from_freq
     return {
-        viz_schema.GroupingKeySchema.DAY:
-        [datetime_schema.DateTimeSchema.WEEKDAYFLAG, freq_col],
-        datetime_schema.DateTimeSchema.WEEK:
-        [datetime_schema.DateTimeSchema.DAYOFWEEK, freq_col],
-        datetime_schema.DateTimeSchema.MONTH:
-        [datetime_schema.DateTimeSchema.MONTH, freq_col],
-        viz_schema.GroupingKeySchema.DAY_SEASON: [
-            datetime_schema.DateTimeSchema.SEASON,
-            datetime_schema.DateTimeSchema.WEEKDAYFLAG, freq_col
-        ],
-        viz_schema.GroupingKeySchema.WEEK_SEASON: [
-            datetime_schema.DateTimeSchema.SEASON,
-            datetime_schema.DateTimeSchema.DAYOFWEEK, freq_col
-        ]
+        viz_schema.GroupingKeySchema.DAY: {
+            viz_schema.MetaDataSchema.LEGEND:
+            [datetime_schema.DateTimeSchema.WEEKDAYFLAG],
+            viz_schema.MetaDataSchema.INDEX_COLS: [freq_col],
+            viz_schema.MetaDataSchema.GROUPED_COLS:
+            [datetime_schema.DateTimeSchema.WEEKDAYFLAG, freq_col],
+        },
+        datetime_schema.DateTimeSchema.WEEK: {
+            viz_schema.MetaDataSchema.LEGEND: [],
+            viz_schema.MetaDataSchema.INDEX_COLS:
+            [datetime_schema.DateTimeSchema.DAYOFWEEK, freq_col],
+            viz_schema.MetaDataSchema.GROUPED_COLS:
+            [datetime_schema.DateTimeSchema.DAYOFWEEK, freq_col]
+        },
+        # datetime_schema.DateTimeSchema.MONTH: {
+        #   'legend': [],
+        #   'index_cols': [],
+        #   'groupby_cols': [],
+        # },
+        viz_schema.GroupingKeySchema.DAY_SEASON: {
+            viz_schema.MetaDataSchema.LEGEND: [
+                datetime_schema.DateTimeSchema.SEASON,
+                datetime_schema.DateTimeSchema.WEEKDAYFLAG
+            ],
+            viz_schema.MetaDataSchema.INDEX_COLS: [freq_col],
+            viz_schema.MetaDataSchema.GROUPED_COLS: [
+                datetime_schema.DateTimeSchema.SEASON,
+                datetime_schema.DateTimeSchema.WEEKDAYFLAG, freq_col
+            ]
+        },
+        viz_schema.GroupingKeySchema.WEEK_SEASON: {
+            viz_schema.MetaDataSchema.LEGEND:
+            [datetime_schema.DateTimeSchema.SEASON],
+            viz_schema.MetaDataSchema.INDEX_COLS:
+            [datetime_schema.DateTimeSchema.DAYOFWEEK, freq_col],
+            viz_schema.MetaDataSchema.GROUPED_COLS: [
+                datetime_schema.DateTimeSchema.SEASON,
+                datetime_schema.DateTimeSchema.DAYOFWEEK, freq_col
+            ],
+        }
     }
 
   def filter(
@@ -420,7 +462,7 @@ class DataManip:
       hour: Optional[list[int]] = None,
       date: Optional[list[datetime.date]] = None,
       inplace: bool = False
-  ) -> pd.DataFrame | None:  # Add value limits e.g above 10kWh?
+  ) -> pd.DataFrame | Any:  # Add value limits e.g above 10kWh?
     """
     Filter the data by given year, month, day or date.
 
@@ -461,14 +503,16 @@ class DataManip:
     filtered_data = self.data.loc[filt].copy()
 
     if inplace:
-      self.data = filtered_data
+      return DataManip(filtered_data,
+                       frequency=self.frequency,
+                       column_meta_data=self.column_meta_data)
     else:
       return filtered_data
 
   def groupby(self,
               groupby_type: str = viz_schema.GroupingKeySchema.WEEK_SEASON,
               func: Callable[[pd.DataFrame], pd.Series] = np.mean,
-              inplace: bool = False) -> pd.DataFrame | pd.Series:
+              inplace: bool = False) -> pd.DataFrame | pd.Series | Any:
     """
     Group the data by given column/s and aggregate by a given function.
 
@@ -486,21 +530,26 @@ class DataManip:
     """
     col_list = self.data.columns.tolist()
     timefeature_data = functions.add_time_features(self.data)
-    cols = self.dict_of_groupbys.get(groupby_type)
-    grouped_data = timefeature_data.groupby(cols).agg(
-        {col: func
-         for col in col_list})
-    new_dict_entry = {viz_schema.MetaDataSchema.INDEX: cols}
-    self.column_meta_data.metadata[
-        viz_schema.MetaDataSchema.INDEX] = new_dict_entry
+    cols = self.dict_of_groupbys[groupby_type]  #.get(groupby_type)
+    grouped_data = timefeature_data.groupby(
+        cols[viz_schema.MetaDataSchema.GROUPED_COLS]).agg(
+            {col: func
+             for col in col_list})
     if inplace:
-      self.data = grouped_data
-    return grouped_data
+      new_meta_data = self.column_meta_data.metadata.copy()
+      for c in self.data.columns:
+        new_meta_data[c].update(self.dict_of_groupbys[groupby_type])
+      class_meta_data = MetaData(new_meta_data)
+      return DataManip(grouped_data,
+                       frequency=self.frequency,
+                       column_meta_data=class_meta_data)
+    else:
+      return grouped_data
 
   def resample(self,
                freq: str = 'D',
                func: Callable[[pd.DataFrame], pd.Series] = np.mean,
-               inplace: bool = False) -> pd.DataFrame | pd.Series:
+               inplace: bool = False) -> pd.DataFrame | pd.Series | Any:
     """
     Resample the data by given frequency and aggregate by a given function.
 
@@ -518,13 +567,16 @@ class DataManip:
     """
     resampled_data = self.data.resample(freq).agg(func)
     if inplace:
-      self.data = resampled_data
-    return resampled_data
+      return DataManip(resampled_data,
+                       frequency=pd.infer_freq(resampled_data.index),
+                       column_meta_data=self.column_meta_data)
+    else:
+      return resampled_data
 
   def rolling(self,
               window: int = 3,
               func: Callable[[pd.DataFrame], pd.Series] = np.mean,
-              inplace: bool = False) -> pd.DataFrame | pd.Series:
+              inplace: bool = False) -> pd.DataFrame | pd.Series | Any:
     """
     Rolling window function.
 
@@ -542,5 +594,8 @@ class DataManip:
     """
     rolling_data = self.data.rolling(window).agg(func)
     if inplace:
-      self.data = rolling_data
-    return rolling_data
+      return DataManip(rolling_data,
+                       frequency=self.frequency,
+                       column_meta_data=self.column_meta_data)
+    else:
+      return rolling_data

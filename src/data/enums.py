@@ -46,7 +46,7 @@ class UnitsSchema(Enum):
     return self.value[0]
 
 
-class SIUnits(Enum):
+class Prefix(Enum):
   BASE = '', 1
   K = 'k', 2
   M = 'M', 3

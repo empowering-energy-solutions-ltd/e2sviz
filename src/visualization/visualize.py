@@ -28,7 +28,7 @@ class MetaData(Protocol):
   def units(self, col: str) -> viz_enums.UnitsSchema:
     ...
 
-  def siunits(self, col: str) -> viz_enums.SIUnits:
+  def siunits(self, col: str) -> viz_enums.Prefix:
     ...
 
   def freq(self, col: str) -> viz_schema.FrequencySchema:

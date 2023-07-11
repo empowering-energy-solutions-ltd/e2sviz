@@ -28,10 +28,12 @@ class FrequencySchema:
 class MetaDataSchema:
   NAME = 'Name'
   UNITS = 'Units'
-  SI = 'SI'
+  PREFIX = 'Prefix'
   FREQ = 'Freq'
   TYPE = 'Type'
-  INDEX = 'Indexes'
+  LEGEND = 'Legend'
+  INDEX_COLS = 'index_cols'
+  GROUPED_COLS = 'groupby_cols'
 
 
 class GroupingKeySchema:
