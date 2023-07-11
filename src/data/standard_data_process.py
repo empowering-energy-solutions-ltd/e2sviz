@@ -135,7 +135,7 @@ class DataPrep:
   def concat(self,
              secondary_data: Self,
              axis: Literal[0] | Literal[1] = 1,
-             dataprep_functions: list[dataf_callable] | None = None) -> Self:
+             dataprep_functions: list[DatafCallable] | None = None) -> Self:
     """
     Concatenate two DataPrep objects.
 
@@ -412,13 +412,15 @@ class DataManip:
         ]
     }
 
-  def filter(self,
-             year: Optional[list[int]] = None,
-             month: Optional[list[int]] = None,
-             day: Optional[list[int]] = None,
-             hour: Optional[list[int]] = None,
-             date: Optional[list[datetime.date]] = None,
-             inplace: bool = False) -> pd.DataFrame | None:
+  def filter(
+      self,
+      year: Optional[list[int]] = None,
+      month: Optional[list[int]] = None,
+      day: Optional[list[int]] = None,
+      hour: Optional[list[int]] = None,
+      date: Optional[list[datetime.date]] = None,
+      inplace: bool = False
+  ) -> pd.DataFrame | None:  # Add value limits e.g above 10kWh?
     """
     Filter the data by given year, month, day or date.
 

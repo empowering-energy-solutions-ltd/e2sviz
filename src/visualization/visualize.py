@@ -139,13 +139,33 @@ class DataViz:
   def meta_data(self) -> MetaData:
     return self.datamanip.column_meta_data
 
-  def single_plot(self):
+  def single_plot(self, cols: Optional[list[str]] = None):
     if 'Indexes' in self.meta_data.metadata:
       print('Indexes found.  No plotting available.')
     else:
-      for c in self.data.columns:
-        self.viz_selector.plot_single(x=self.data.index,
-                                      y=self.data[c],
-                                      title=self.meta_data.get_title(c),
-                                      x_label=self.meta_data.get_x_label(c),
-                                      y_label=self.meta_data.get_y_label(c))
+      if cols:
+        for c in cols:
+          self.viz_selector.plot_single(x=self.data.index,
+                                        y=self.data[c],
+                                        title=self.meta_data.get_title(c),
+                                        x_label=self.meta_data.get_x_label(c),
+                                        y_label=self.meta_data.get_y_label(c))
+      else:
+        for c in self.data.columns:
+          self.viz_selector.plot_single(x=self.data.index,
+                                        y=self.data[c],
+                                        title=self.meta_data.get_title(c),
+                                        x_label=self.meta_data.get_x_label(c),
+                                        y_label=self.meta_data.get_y_label(c))
+
+  def multi_plot(self):
+    pass
+
+  def bar_box_plot(self):
+    pass
+
+  def scatter_plot(self):
+    pass
+
+  def correlation_plot(self):
+    pass
