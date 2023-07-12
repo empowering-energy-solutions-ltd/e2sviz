@@ -1,4 +1,5 @@
 import datetime
+from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any, Callable, Literal, Optional, Self  # List,
 
@@ -567,8 +568,13 @@ class DataManip:
     """
     resampled_data = self.data.resample(freq).agg(func)
     if inplace:
+      frequency = pd.infer_freq(resampled_data.index)
+      for c in resampled_data.columns:
+        new_meta_data = deepcopy(self.column_meta_data)
+        new_meta_data.metadata[c].update(
+            {viz_schema.MetaDataSchema.FREQ: frequency})
       return DataManip(resampled_data,
-                       frequency=pd.infer_freq(resampled_data.index),
+                       frequency=frequency,
                        column_meta_data=self.column_meta_data)
     else:
       return resampled_data

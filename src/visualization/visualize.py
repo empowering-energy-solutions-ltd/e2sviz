@@ -171,18 +171,22 @@ class DataViz:
           self.viz_selector.plot_single(
               x=group[index_cols],
               y=group[col],
-              title=self.meta_data.get_title(col),
+              title=f'{self.meta_data.get_title(col)} - {name}',
               x_label=index_cols[0],
               y_label=self.meta_data.get_y_label(col))
         else:
           self.viz_selector.plot_single(
               x=group['index_int'],
               y=group[col],
-              title=self.meta_data.get_title(col),
+              title=f'{self.meta_data.get_title(col)} - {name}',
               x_label=index_cols[0],
               y_label=self.meta_data.get_y_label(col))
     else:
-      pass
+      self.viz_selector.plot_single(x=reset_data['index_int'],
+                                    y=reset_data[col],
+                                    title=f'{self.meta_data.get_title(col)}',
+                                    x_label=index_cols[0],
+                                    y_label=self.meta_data.get_y_label(col))
 
   def day_and_time(self, time_data) -> pd.Series:
     return time_data['Day of week'] + (
