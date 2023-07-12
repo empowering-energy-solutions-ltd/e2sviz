@@ -53,7 +53,7 @@ class MatPlotLibPlot():
     plt_settings()
 
   def plot_single(self,
-                  x: pd.DatetimeIndex,
+                  x: pd.DatetimeIndex | pd.Series,
                   y: pd.Series,
                   title: str,
                   x_label: str,

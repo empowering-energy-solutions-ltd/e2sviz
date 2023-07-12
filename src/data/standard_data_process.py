@@ -512,7 +512,7 @@ class DataManip:
   def groupby(self,
               groupby_type: str = viz_schema.GroupingKeySchema.WEEK_SEASON,
               func: Callable[[pd.DataFrame], pd.Series] = np.mean,
-              inplace: bool = False) -> pd.DataFrame | pd.Series | Any:
+              inplace: bool = False) -> pd.DataFrame | pd.Series:
     """
     Group the data by given column/s and aggregate by a given function.
 
