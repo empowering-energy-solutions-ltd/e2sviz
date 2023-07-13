@@ -256,7 +256,7 @@ class MetaData:
     """
     return f'{self.units(col).label} ({self.siunits(col).label}{self.units(col).units})'
 
-  def get_title(self, col: str) -> str:
+  def get_title(self, col: str, category: str | None = None) -> str:
     """
     Get the title of the plot.
 
@@ -269,7 +269,13 @@ class MetaData:
     str
         The title of the plot.
     """
-    return f'{self.metadata[col][viz_schema.MetaDataSchema.NAME]} vs. {self.get_x_label(col)}'
+    if len(self.metadata[col][viz_schema.MetaDataSchema.GROUPED_COLS]):
+      title = f'{self.metadata[col][viz_schema.MetaDataSchema.NAME]} vs. {self.get_x_label(col)}'
+      if category is not None:
+        title = title + f'- {category}'
+    else:
+      title = f'{self.metadata[col][viz_schema.MetaDataSchema.NAME]} vs. {self.get_x_label(col)}'
+    return title
 
   def get_legend(self, col: str) -> str:
     """
@@ -298,7 +304,7 @@ class DataManip:
       The input DataFrame.
   frequency : viz_schema.FrequencySchema, optional
       The frequency of the data, by default viz_schema.FrequencySchema.MISSING.
-  column_meta_data : MetaData, optional
+  metadata : MetaData, optional
       The metadata of the data, by default MetaData({}).
   
   Attributes
@@ -307,13 +313,13 @@ class DataManip:
       The input DataFrame.
   frequency : viz_schema.FrequencySchema
       The frequency of the data.
-  column_meta_data : MetaData
+  metadata : MetaData
       The metadata of the data.
   """
 
   data: pd.DataFrame
   frequency: viz_schema.FrequencySchema = viz_schema.FrequencySchema.MISSING
-  column_meta_data: MetaData = field(default_factory=(lambda: MetaData({})))
+  metadata: MetaData = field(default_factory=(lambda: MetaData({})))
 
   def __post_init__(self):
     self.data = self.data.copy()
@@ -336,17 +342,17 @@ class DataManip:
     Check for metadata, if not provided,
     default values will be generated/infered from the data available.
     """
-    if len(self.column_meta_data.metadata) == 0:
+    if len(self.metadata.metadata) == 0:
       default_metadata: dict[str, dict[str, Any]] = {}
       for col in self.data.columns:
         default_metadata[col] = {
             viz_schema.MetaDataSchema.NAME: col,
             viz_schema.MetaDataSchema.UNITS: viz_enums.UnitsSchema.NAN,
-            viz_schema.MetaDataSchema.SI: viz_enums.UnitsSchema.NAN,
+            viz_schema.MetaDataSchema.PREFIX: viz_enums.UnitsSchema.NAN,
             viz_schema.MetaDataSchema.FREQ: self.frequency,
             viz_schema.MetaDataSchema.TYPE: self.data[col].dtype
         }
-      self.column_meta_data = MetaData(default_metadata)
+      self.metadata = MetaData(default_metadata)
 
   def val_rescaler(self, column: str, multiplier: float) -> None:
     """
@@ -372,16 +378,16 @@ class DataManip:
     step : int
         The step to rescale the column data by.
     """
-    si_units_list = list(viz_enums.SIUnits)
-    for i, unit in enumerate(viz_enums.SIUnits):
-      if unit.index_val == self.column_meta_data.metadata[column][
-          viz_schema.MetaDataSchema.SI].index_val:
+    si_units_list = list(viz_enums.Prefix)
+    for i, unit in enumerate(viz_enums.Prefix):
+      if unit.index_val == self.metadata.metadata[column][
+          viz_schema.MetaDataSchema.PREFIX].index_val:
         next_unit = si_units_list[
             (i + step) %
             len(si_units_list)]  # Get the next unit by using modulo
 
-        self.column_meta_data.metadata[column][
-            viz_schema.MetaDataSchema.SI] = next_unit
+        self.metadata.metadata[column][
+            viz_schema.MetaDataSchema.PREFIX] = next_unit
         break
 
   def check_rescaling(self):
@@ -506,14 +512,14 @@ class DataManip:
     if inplace:
       return DataManip(filtered_data,
                        frequency=self.frequency,
-                       column_meta_data=self.column_meta_data)
+                       metadata=self.metadata)
     else:
       return filtered_data
 
   def groupby(self,
               groupby_type: str = viz_schema.GroupingKeySchema.WEEK_SEASON,
               func: Callable[[pd.DataFrame], pd.Series] = np.mean,
-              inplace: bool = False) -> pd.DataFrame | pd.Series:
+              inplace: bool = False) -> Self:
     """
     Group the data by given column/s and aggregate by a given function.
 
@@ -531,21 +537,26 @@ class DataManip:
     """
     col_list = self.data.columns.tolist()
     timefeature_data = functions.add_time_features(self.data)
-    cols = self.dict_of_groupbys[groupby_type]  #.get(groupby_type)
+    gb_col_data = self.dict_of_groupbys[groupby_type]  #.get(groupby_type)
     grouped_data = timefeature_data.groupby(
-        cols[viz_schema.MetaDataSchema.GROUPED_COLS]).agg(
+        gb_col_data[viz_schema.MetaDataSchema.GROUPED_COLS]).agg(
             {col: func
              for col in col_list})
+
+    new_meta_data = self.metadata.metadata.copy()
+    for c in self.data.columns:
+      new_meta_data[c].update(
+          gb_col_data)  ## to update to replace old keys with new keys
+    class_meta_data = MetaData(new_meta_data)
+
     if inplace:
-      new_meta_data = self.column_meta_data.metadata.copy()
-      for c in self.data.columns:
-        new_meta_data[c].update(self.dict_of_groupbys[groupby_type])
-      class_meta_data = MetaData(new_meta_data)
+      self.metadata = class_meta_data
+      self.data = grouped_data
+      return Self
+    else:
       return DataManip(grouped_data,
                        frequency=self.frequency,
-                       column_meta_data=class_meta_data)
-    else:
-      return grouped_data
+                       metadata=class_meta_data)
 
   def resample(self,
                freq: str = 'D',
@@ -570,12 +581,12 @@ class DataManip:
     if inplace:
       frequency = pd.infer_freq(resampled_data.index)
       for c in resampled_data.columns:
-        new_meta_data = deepcopy(self.column_meta_data)
+        new_meta_data = deepcopy(self.metadata)
         new_meta_data.metadata[c].update(
             {viz_schema.MetaDataSchema.FREQ: frequency})
       return DataManip(resampled_data,
                        frequency=frequency,
-                       column_meta_data=self.column_meta_data)
+                       metadata=self.metadata)
     else:
       return resampled_data
 
@@ -602,6 +613,6 @@ class DataManip:
     if inplace:
       return DataManip(rolling_data,
                        frequency=self.frequency,
-                       column_meta_data=self.column_meta_data)
+                       metadata=self.metadata)
     else:
       return rolling_data

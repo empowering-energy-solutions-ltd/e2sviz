@@ -55,29 +55,32 @@ class MatPlotLibPlot():
   def plot_single(self,
                   x: pd.DatetimeIndex | pd.Series,
                   y: pd.Series,
-                  title: str,
-                  x_label: str,
-                  y_label: str,
+                  kwargs,
                   ax=None,
                   **plt_kwargs):
     plt.figure(figsize=(10, 5))
     custom_plot(x, y, ax=None, **plt_kwargs)
-    plt.title(title)
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
+    plt.title(kwargs['title'])
+    plt.xlabel(kwargs['x_label'])
+    plt.ylabel(kwargs['y_label'])
+    if len(kwargs['legend']):
+      plt.legend(kwargs['legend'])
     plt.grid()
 
 
 class PlotlyPlot():
 
-  def plot_single(self, x: pd.DatetimeIndex, y: pd.Series, title: str,
-                  x_label: str, y_label: str, **fig_kwargs):
+  def plot_single(self, x: pd.DatetimeIndex, y: pd.Series, kwargs,
+                  **fig_kwargs):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=x, y=y, mode='lines'))
-    fig.update_layout(title=title,
-                      xaxis_title=x_label,
-                      yaxis_title=y_label,
+    fig.update_layout(title=kwargs['title'],
+                      xaxis_title=kwargs['x_label'],
+                      yaxis_title=kwargs['y_label'],
                       **fig_kwargs)
+    print(kwargs['legend'])
+    # if len(kwargs['legend']):
+    #   fig.update_layout(legend_title_text=kwargs['legend'])
     fig.show()
 
   # def plot_multiple(self, x, y, title, x_label, y_label, legend, save_path):

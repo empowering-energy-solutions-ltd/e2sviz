@@ -14,8 +14,7 @@ class LibraryViz(Protocol):
   Selects the visualisation library to be used.
   """
 
-  def plot_single(self, x: pd.DatetimeIndex, y: pd.Series, title: str,
-                  x_label: str, y_label: str):
+  def plot_single(self, x: pd.DatetimeIndex | pd.Series, y: pd.Series, kwargs):
     ...
 
 
@@ -122,7 +121,7 @@ class DataViz:
   ----------
   data : pd.DataFrame
     The data to be visualised.
-  meta_data : MetaData
+  metadata : MetaData
     The meta data of the data to be visualised.
 
   Methods
@@ -132,10 +131,10 @@ class DataViz:
   
   """
   data: pd.DataFrame
-  meta_data: MetaData
+  metadata: MetaData
   viz_selector: LibraryViz
 
-  def single_line_plot(self, cols: list[str]):
+  def single_line_plot(self, cols: list[str] | None = None):
     """
     Plots the data.
 
@@ -145,52 +144,70 @@ class DataViz:
       The columns to be plotted. If None, all columns are plotted.
     
     """
+    dataf: pd.DataFrame = self.data.copy()
+    if cols is None:
+      cols = dataf.columns
     for c in cols:
-      if len(self.meta_data.metadata[c]['groupby_cols']) == 0:
-        self.viz_selector.plot_single(x=self.data.index,
-                                      y=self.data[c],
-                                      title=self.meta_data.get_title(c),
-                                      x_label=self.meta_data.get_x_label(c),
-                                      y_label=self.meta_data.get_y_label(c))
-      else:
-        self.grouped_single_line_plot(c)
-    pass
+      if len(self.metadata.metadata[c]['groupby_cols']) > 0:
+        # reindex_dataframe(dataf)
+        # groupby_title(self.metadata)
 
-  def grouped_single_line_plot(self, col: str):
-    reset_data = self.data.reset_index()
-    index_cols = self.meta_data.metadata[col][
+        plot_data = self.grouped_single_line_plot(c)
+      else:
+        kwargs = {
+            'title': self.metadata.get_title(c),
+            'x_label': self.metadata.get_x_label(c),
+            'y_label': self.metadata.get_y_label(c),
+            'legend': self.metadata.get_legend(c)
+        }
+        plot_data = [(dataf, kwargs)]
+      for dataf, kwargs in plot_data:
+
+        self.viz_selector.plot_single(x=dataf.index, y=dataf[c], kwargs=kwargs)
+
+  def grouped_single_line_plot(self, col: str) -> tuple[pd.DataFrame, dict]:
+    """
+    Generates individual plots for each element of the grouped data.
+
+    Parameters
+    ----------
+    col : str
+      The column to be plotted.
+    
+    """
+    plot_data = []
+    reordered_data = self.data.reset_index()
+    index_cols = self.metadata.metadata[col][
         viz_schema.MetaDataSchema.INDEX_COLS]
+
     if index_cols == ['Day of week', 'Half-hour']:
-      reset_data['index_int'] = self.day_and_time(reset_data)
-    legends = self.meta_data.metadata[col][viz_schema.MetaDataSchema.LEGEND]
+      reordered_data.index = self.day_and_time(reordered_data)
+    legends = self.metadata.metadata[col][viz_schema.MetaDataSchema.LEGEND]
 
     if len(legends) > 0:
-      grouped = reset_data.groupby(legends)
+      grouped = reordered_data.groupby(legends)
       for name, group in grouped:
-        if index_cols != ['Day of week', 'Half-hour']:
-          self.viz_selector.plot_single(
-              x=group[index_cols],
-              y=group[col],
-              title=f'{self.meta_data.get_title(col)} - {name}',
-              x_label=index_cols[0],
-              y_label=self.meta_data.get_y_label(col))
-        else:
-          self.viz_selector.plot_single(
-              x=group['index_int'],
-              y=group[col],
-              title=f'{self.meta_data.get_title(col)} - {name}',
-              x_label=index_cols[0],
-              y_label=self.meta_data.get_y_label(col))
+        kwargs = {
+            'title': f'{self.metadata.get_title(col)} - {name}',
+            'x_label': index_cols[0],
+            'y_label': self.metadata.get_y_label(col),
+            'legend': name
+        }
+        plot_data.append((group, kwargs))
+      return plot_data
     else:
-      self.viz_selector.plot_single(x=reset_data['index_int'],
-                                    y=reset_data[col],
-                                    title=f'{self.meta_data.get_title(col)}',
-                                    x_label=index_cols[0],
-                                    y_label=self.meta_data.get_y_label(col))
+      kwargs = {
+          'title': self.metadata.get_title(col),
+          'x_label': index_cols[0],
+          'y_label': self.metadata.get_y_label(col),
+          'legend': []
+      }
+      plot_data.append((reordered_data, kwargs))
+      return plot_data
 
   def day_and_time(self, time_data) -> pd.Series:
     return time_data['Day of week'] + (
-        1 / time_data['Half-hour'].max()) * time_data['Half-hour']
+        1 / (time_data['Half-hour'].max() + 1)) * time_data['Half-hour']
 
   def multi_plot(self):
     pass
