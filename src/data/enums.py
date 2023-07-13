@@ -48,10 +48,10 @@ class UnitsSchema(Enum):
 
 class Prefix(Enum):
   BASE = '', 1
-  K = 'k', 2
-  M = 'M', 3
-  G = 'G', 4
-  T = 'T', 5
+  KILO = 'k', 2
+  MEGA = 'M', 3
+  GIGA = 'G', 4
+  TERA = 'T', 5
 
   @property
   def label(self) -> str:
