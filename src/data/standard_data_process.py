@@ -12,8 +12,6 @@ from IPython.display import display
 from src.data import enums as viz_enums
 from src.data import viz_schema
 
-# InitFuncCallable = Callable[[pd.DataFrame], dict[str, bool]]
-
 DatafCallable = Callable[[pd.DataFrame], pd.DataFrame]
 
 

@@ -61,7 +61,6 @@ class MatPlotLibPlot():
     return fig
 
   def corr_plot(self, corr_matrix: pd.DataFrame) -> None:
-    print(corr_matrix)
     sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
 
 
