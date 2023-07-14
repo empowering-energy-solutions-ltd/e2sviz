@@ -23,6 +23,7 @@ class FrequencySchema:
   WEEK = 'W'
   MONTH = 'M'
   MISSING = 'MISSING'
+  DATETIME = 'Datetime'
 
 
 class MetaDataSchema:
@@ -34,6 +35,9 @@ class MetaDataSchema:
   LEGEND = 'Legend'
   INDEX_COLS = 'index_cols'
   GROUPED_COLS = 'groupby_cols'
+  FRAME = 'dataframe'
+  GB_AGG = 'groupby_agg'
+  DAY_HOUR = ['Day of week', 'Half-hour']
 
 
 class GroupingKeySchema:

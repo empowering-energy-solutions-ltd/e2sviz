@@ -200,7 +200,8 @@ class MetaData:
     """
     return self.metadata[col][viz_schema.MetaDataSchema.PREFIX]
 
-  def freq(self, col: str) -> viz_schema.FrequencySchema:
+  @property
+  def freq(self) -> viz_schema.FrequencySchema:
     """
     Get the frequency schema of the column data.
 
@@ -213,7 +214,8 @@ class MetaData:
     viz_schema.FrequencySchema
         The frequency schema of the column data.
     """
-    return self.metadata[col][viz_schema.MetaDataSchema.FREQ]
+    return self.metadata[viz_schema.MetaDataSchema.FRAME][
+        viz_schema.MetaDataSchema.FREQ]
 
   def dtype(self, col: str) -> viz_enums.DataType:
     """
@@ -230,7 +232,8 @@ class MetaData:
     """
     return self.metadata[col][viz_schema.MetaDataSchema.TYPE]
 
-  def get_x_label(self, col) -> str:
+  @property
+  def get_x_label(self) -> str:
     """
     Get the label for the x-axis of the plot.
 
@@ -239,7 +242,7 @@ class MetaData:
     str
         The label for the x-axis of the plot.
     """
-    return f'Datetime (Timestep: {self.freq(col)})'
+    return f'{self.metadata[viz_schema.MetaDataSchema.FRAME][viz_schema.MetaDataSchema.INDEX_COLS][0]} (Timestep: {self.freq})'
 
   def get_y_label(self, col: str) -> str:
     """
@@ -269,12 +272,13 @@ class MetaData:
     str
         The title of the plot.
     """
-    if len(self.metadata[col][viz_schema.MetaDataSchema.GROUPED_COLS]):
-      title = f'{self.metadata[col][viz_schema.MetaDataSchema.NAME]} vs. {self.get_x_label(col)}'
+    if len(self.metadata[viz_schema.MetaDataSchema.FRAME][
+        viz_schema.MetaDataSchema.GROUPED_COLS]):
+      title = f'{self.metadata[viz_schema.MetaDataSchema.FRAME][viz_schema.MetaDataSchema.GB_AGG]} {self.metadata[col][viz_schema.MetaDataSchema.NAME]} vs. {self.get_x_label}'
       if category is not None:
-        title = title + f'- {category}'
+        title = title + f' - {category}'
     else:
-      title = f'{self.metadata[col][viz_schema.MetaDataSchema.NAME]} vs. {self.get_x_label(col)}'
+      title = f'{self.metadata[col][viz_schema.MetaDataSchema.NAME]} vs. {self.get_x_label}'
     return title
 
   def get_legend(self, col: str) -> str:
@@ -349,9 +353,15 @@ class DataManip:
             viz_schema.MetaDataSchema.NAME: col,
             viz_schema.MetaDataSchema.UNITS: viz_enums.UnitsSchema.NAN,
             viz_schema.MetaDataSchema.PREFIX: viz_enums.UnitsSchema.NAN,
-            viz_schema.MetaDataSchema.FREQ: self.frequency,
-            viz_schema.MetaDataSchema.TYPE: self.data[col].dtype
+            viz_schema.MetaDataSchema.TYPE: self.data[col].dtype,
+            viz_schema.MetaDataSchema.LEGEND: [col]
         }
+      default_metadata[viz_schema.MetaDataSchema.FRAME] = {
+          viz_schema.MetaDataSchema.FREQ: self.frequency,
+          viz_schema.MetaDataSchema.GB_AGG: None,
+          viz_schema.MetaDataSchema.INDEX_COLS: [],
+          viz_schema.MetaDataSchema.GROUPED_COLS: []
+      }
       self.metadata = MetaData(default_metadata)
 
   def val_rescaler(self, column: str, multiplier: float) -> None:
@@ -542,11 +552,23 @@ class DataManip:
         gb_col_data[viz_schema.MetaDataSchema.GROUPED_COLS]).agg(
             {col: func
              for col in col_list})
-
+    print(gb_col_data)
     new_meta_data = self.metadata.metadata.copy()
+    new_meta_data[viz_schema.MetaDataSchema.FRAME][
+        viz_schema.MetaDataSchema.INDEX_COLS] = gb_col_data[
+            viz_schema.MetaDataSchema.INDEX_COLS]
+    new_meta_data[viz_schema.MetaDataSchema.FRAME][
+        viz_schema.MetaDataSchema.GROUPED_COLS] = gb_col_data[
+            viz_schema.MetaDataSchema.GROUPED_COLS]
     for c in self.data.columns:
-      new_meta_data[c].update(
-          gb_col_data)  ## to update to replace old keys with new keys
+      new_meta_data[c][viz_schema.MetaDataSchema.LEGEND] = gb_col_data[
+          viz_schema.MetaDataSchema.LEGEND]
+      # new_meta_data[c].update(gb_col_data)  #[viz_schema.MetaDataSchema.LEGEND]
+      new_meta_data[viz_schema.MetaDataSchema.FRAME][
+          viz_schema.MetaDataSchema.GB_AGG] = func.__name__
+      new_meta_data[c][viz_schema.MetaDataSchema.
+                       LEGEND] = grouped_data.index.get_level_values(
+                           0).unique().tolist()
     class_meta_data = MetaData(new_meta_data)
 
     if inplace:
