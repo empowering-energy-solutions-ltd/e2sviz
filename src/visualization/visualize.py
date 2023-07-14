@@ -165,21 +165,38 @@ class DataViz:
       # print(dataf[c])
       self.viz_selector.plot_single(x=dataf.index, y=dataf[c], kwargs=kwargs)
 
-      #   # reindex_dataframe(dataf)
-      #   # groupby_title(self.metadata)
+  def day_and_time(self, time_data) -> pd.Series:
+    """Adjust the index based on the column data"""
+    return time_data['Day of week'] + (
+        1 / (time_data['Half-hour'].max() + 1)) * time_data['Half-hour']
 
-      #   plot_data = self.grouped_single_line_plot(c)
-      # else:
-      #   kwargs = {
-      #       'title': self.metadata.get_title(c),
-      #       'x_label': self.metadata.get_x_label(c),
-      #       'y_label': self.metadata.get_y_label(c),
-      #       'legend': self.metadata.get_legend(c)
-      #   }
-      #   plot_data = [(dataf, kwargs)]
-      # for dataf, kwargs in plot_data:
+  def multi_plot(self):
+    pass
 
-      #   self.viz_selector.plot_single(x=dataf.index, y=dataf[c], kwargs=kwargs)
+  def bar_box_plot(self):
+    pass
+
+  def scatter_plot(self):
+    pass
+
+  def correlation_plot(self):
+    pass
+
+    #   # reindex_dataframe(dataf)
+    #   # groupby_title(self.metadata)
+
+    #   plot_data = self.grouped_single_line_plot(c)
+    # else:
+    #   kwargs = {
+    #       'title': self.metadata.get_title(c),
+    #       'x_label': self.metadata.get_x_label(c),
+    #       'y_label': self.metadata.get_y_label(c),
+    #       'legend': self.metadata.get_legend(c)
+    #   }
+    #   plot_data = [(dataf, kwargs)]
+    # for dataf, kwargs in plot_data:
+
+    #   self.viz_selector.plot_single(x=dataf.index, y=dataf[c], kwargs=kwargs)
 
   # def grouped_single_line_plot(self, col: str) -> tuple[pd.DataFrame, dict]:
   #   """
@@ -220,20 +237,3 @@ class DataViz:
   #     }
   #     plot_data.append((reordered_data, kwargs))
   #     return plot_data
-
-  def day_and_time(self, time_data) -> pd.Series:
-    """Adjust the index based on the column data"""
-    return time_data['Day of week'] + (
-        1 / (time_data['Half-hour'].max() + 1)) * time_data['Half-hour']
-
-  def multi_plot(self):
-    pass
-
-  def bar_box_plot(self):
-    pass
-
-  def scatter_plot(self):
-    pass
-
-  def correlation_plot(self):
-    pass

@@ -552,7 +552,6 @@ class DataManip:
         gb_col_data[viz_schema.MetaDataSchema.GROUPED_COLS]).agg(
             {col: func
              for col in col_list})
-    print(gb_col_data)
     new_meta_data = self.metadata.metadata.copy()
     new_meta_data[viz_schema.MetaDataSchema.FRAME][
         viz_schema.MetaDataSchema.INDEX_COLS] = gb_col_data[
@@ -561,14 +560,13 @@ class DataManip:
         viz_schema.MetaDataSchema.GROUPED_COLS] = gb_col_data[
             viz_schema.MetaDataSchema.GROUPED_COLS]
     for c in self.data.columns:
-      new_meta_data[c][viz_schema.MetaDataSchema.LEGEND] = gb_col_data[
-          viz_schema.MetaDataSchema.LEGEND]
-      # new_meta_data[c].update(gb_col_data)  #[viz_schema.MetaDataSchema.LEGEND]
+      if len(gb_col_data[viz_schema.MetaDataSchema.LEGEND]):
+        new_meta_data[c][viz_schema.MetaDataSchema.
+                         LEGEND] = grouped_data.index.get_level_values(
+                             0).unique().tolist()
       new_meta_data[viz_schema.MetaDataSchema.FRAME][
           viz_schema.MetaDataSchema.GB_AGG] = func.__name__
-      new_meta_data[c][viz_schema.MetaDataSchema.
-                       LEGEND] = grouped_data.index.get_level_values(
-                           0).unique().tolist()
+
     class_meta_data = MetaData(new_meta_data)
 
     if inplace:
