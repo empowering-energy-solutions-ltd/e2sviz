@@ -117,7 +117,9 @@ class MatPlotLibPlot():
     ----------
     data : pd.DataFrame
         Data to plot
-    
+    kwargs : dict[str, str]
+        Dictionary containing the plot settings
+        
     Returns
     -------
     plt.Figure
@@ -142,12 +144,14 @@ class MatPlotLibPlot():
 
   def box_plot(self, data: pd.DataFrame, kwargs: dict[str, str]) -> plt.Figure:
     """
-    Plot a bar plot
+    Plot a box plot
     
     Parameters
     ----------
     data : pd.DataFrame
         Data to plot
+    kwargs : dict[str, str]
+        Dictionary containing the plot settings
     
     Returns
     -------
@@ -164,6 +168,33 @@ class MatPlotLibPlot():
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.grid()
+
+    return fig
+
+  def pie_chart(self, data: pd.Series, kwargs: dict[str, str]) -> plt.Figure:
+    """
+    Plot a pie chart
+
+    Parameters
+    ----------
+    data : pd.Series
+        Data to plot
+    kwargs : dict[str, str]
+        Dictionary containing the plot settings
+
+    Returns
+    -------
+    plt.Figure
+        Matplotlib figure
+    """
+    column_sums = data.sum()
+    labels = column_sums.index.tolist()
+    values = column_sums.values.tolist()
+
+    fig, ax = plt.subplots(figsize=(6, 6))
+    ax.pie(values, labels=labels, autopct='%1.1f%%', startangle=90)
+
+    ax.set_title(kwargs['title'])
 
     return fig
 
@@ -228,6 +259,19 @@ class PlotlyPlot():
     return fig
 
   def corr_plot(self, corr_matrix: pd.DataFrame) -> go.Figure:
+    """
+    Plot a correlation matrix
+    
+    Parameters
+    ----------
+    corr_matrix : pd.DataFrame
+        Correlation matrix
+
+    Returns
+    -------
+    go.Figure
+        Plotly figure
+    """
     df_corr = pd.DataFrame(corr_matrix,
                            columns=corr_matrix.columns,
                            index=corr_matrix.columns)
@@ -250,11 +294,24 @@ class PlotlyPlot():
                       xaxis_title='Columns',
                       yaxis_title='Columns')
 
-    # return fig
-    # fig.show()
     return fig
 
   def bar_plot(self, data: pd.DataFrame, kwargs: dict[str, str]) -> go.Figure:
+    """
+    Create a bar plot.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        Data to plot
+    kwargs : dict[str, str]
+        Plot settings
+
+    Returns
+    -------
+    go.Figure
+        Plotly figure of bar plot
+    """
     column_sums = data.sum()
     column_names = column_sums.index.tolist()
     sums = column_sums.values.tolist()
@@ -270,6 +327,21 @@ class PlotlyPlot():
     return fig
 
   def box_plot(self, data: pd.DataFrame, kwargs: dict[str, str]) -> go.Figure:
+    """
+    Create a box plot.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        Data to plot
+    kwargs : dict[str, str]
+        Plot settings
+
+    Returns
+    -------
+    go.Figure
+        Plotly figure of box plot
+    """
     fig = go.Figure()
 
     for col in data.columns:
@@ -279,5 +351,31 @@ class PlotlyPlot():
                       xaxis_title=kwargs['x_label'],
                       yaxis_title=kwargs['y_label'],
                       xaxis=dict(tickangle=45))
+
+    return fig
+
+  def pie_chart(self, data: pd.Series, kwargs: dict[str, str]) -> go.Figure:
+    """
+    Create a pie chart.
+
+    Parameters
+    ----------
+    data : pd.Series
+        Data to plot
+    kwargs : dict[str, str]
+        Plot settings
+
+    Returns
+    -------
+    go.Figure
+        Plotly figure of pie chart
+    """
+    column_sums = data.sum()
+    labels = column_sums.index.tolist()
+    values = column_sums.values.tolist()
+
+    fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
+
+    fig.update_layout(title=kwargs['title'])
 
     return fig

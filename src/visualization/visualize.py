@@ -20,13 +20,19 @@ class LibraryViz(Protocol):
                   kwargs) -> plt.Axes | go.Figure:
     ...
 
-  def corr_plot(self, corr_matrix) -> plt.Axes | go.Figure:
+  def corr_plot(self, corr_matrix) -> plt.Figure | go.Figure:
     ...
 
-  def bar_plot(self, data: pd.DataFrame, kwargs: dict[str, str]) -> plt.Figure:
+  def bar_plot(self, data: pd.DataFrame,
+               kwargs: dict[str, str]) -> plt.Figure | go.Figure:
     ...
 
-  def box_plot(self, data: pd.DataFrame, kwargs: dict[str, str]) -> plt.Figure:
+  def box_plot(self, data: pd.DataFrame,
+               kwargs: dict[str, str]) -> plt.Figure | go.Figure:
+    ...
+
+  def pie_chart(self, data: pd.Series,
+                kwargs: dict[str, str]) -> plt.Figure | go.Figure:
     ...
 
 
@@ -197,6 +203,16 @@ class DataViz:
       self.viz_selector.bar_plot(data=dataf, kwargs=kwargs).show()
     else:
       self.viz_selector.box_plot(data=dataf, kwargs=kwargs).show()
+
+  def pie_chart_plot(self):
+    dataf = self.data.copy()
+    kwargs = {
+        'title': 'Barplot of column sums',
+        'x_label': 'Columns',
+        'y_label': 'Column Values',
+        'legend': [],
+    }
+    self.viz_selector.pie_chart(data=dataf, kwargs=kwargs).show()
 
   def scatter_plot(self):
     pass
