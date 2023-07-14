@@ -20,7 +20,13 @@ class LibraryViz(Protocol):
                   kwargs) -> plt.Axes | go.Figure:
     ...
 
-  def corr_plot(self, corr_matrix) -> None:
+  def corr_plot(self, corr_matrix) -> plt.Axes | go.Figure:
+    ...
+
+  def bar_plot(self, data: pd.DataFrame, kwargs: dict[str, str]) -> plt.Figure:
+    ...
+
+  def box_plot(self, data: pd.DataFrame, kwargs: dict[str, str]) -> plt.Figure:
     ...
 
 
@@ -156,6 +162,7 @@ class DataViz:
     if len(self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
         viz_schema.MetaDataSchema.GROUPED_COLS]) > 0:
       dataf.index = self.day_and_time(dataf.reset_index())
+      print(dataf)
     if cols is None:
       cols: list[str] = dataf.columns
     for c in cols:
@@ -167,8 +174,6 @@ class DataViz:
           'y_label': self.metadata.get_y_label(c),
           'legend': self.metadata.get_legend(c),
       }
-      # print(kwargs)
-      # print(dataf[c])
       self.viz_selector.plot_single(x=dataf.index, y=dataf[c],
                                     kwargs=kwargs).show()
 
@@ -180,16 +185,26 @@ class DataViz:
   def multi_plot(self):
     pass
 
-  def bar_box_plot(self):
-    pass
+  def bar_box_plot(self, bar: bool = True):
+    dataf = self.data.copy()
+    kwargs = {
+        'title': 'Barplot of column sums',
+        'x_label': 'Columns',
+        'y_label': 'Column Values',
+        'legend': [],
+    }
+    if bar:
+      self.viz_selector.bar_plot(data=dataf, kwargs=kwargs).show()
+    else:
+      self.viz_selector.box_plot(data=dataf, kwargs=kwargs).show()
 
   def scatter_plot(self):
     pass
 
   def correlation_plot(self):
-    corr_matrix = self.data.corr()
 
-    self.viz_selector.corr_plot(corr_matrix)
+    corr_matrix = self.data.corr()
+    self.viz_selector.corr_plot(corr_matrix).show()
 
     #   # reindex_dataframe(dataf)
     #   # groupby_title(self.metadata)
