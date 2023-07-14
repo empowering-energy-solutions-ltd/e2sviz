@@ -1,3 +1,5 @@
+from typing import Any
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -46,15 +48,17 @@ class MatPlotLibPlot():
                   y: pd.Series,
                   kwargs,
                   ax=None,
-                  **plt_kwargs):
-    plt.figure(figsize=(10, 5))
-    custom_plot(x, y, ax=None, **plt_kwargs)
-    plt.title(kwargs['title'])
-    plt.xlabel(kwargs['x_label'])
-    plt.ylabel(kwargs['y_label'])
+                  **plt_kwargs) -> plt.Figure:
+    if ax is None:
+      fig, ax = plt.subplots(figsize=(10, 5))
+    ax = custom_plot(x, y, ax=ax, **plt_kwargs)
+    ax.set_title(kwargs['title'])
+    ax.set_xlabel(kwargs['x_label'])
+    ax.set_ylabel(kwargs['y_label'])
     if len(kwargs['legend']):
-      plt.legend(kwargs['legend'])
-    plt.grid()
+      ax.legend(kwargs['legend'])
+    ax.grid()
+    return fig
 
   def corr_plot(self, corr_matrix: pd.DataFrame) -> None:
     print(corr_matrix)
@@ -74,18 +78,22 @@ class PlotlyPlot():
 
     return fig
 
-  def plot_single(self, x: pd.DatetimeIndex, y: pd.Series, kwargs,
-                  **fig_kwargs):
-    fig = go.Figure()
+  def plot_single(self,
+                  x: pd.DatetimeIndex,
+                  y: pd.Series,
+                  kwargs,
+                  fig=None,
+                  **fig_kwargs) -> go.Figure:
+    if fig is None:
+      fig = go.Figure()
     fig.add_trace(go.Scatter(x=x, y=y, mode='lines'))
     fig.update_layout(title=kwargs['title'],
                       xaxis_title=kwargs['x_label'],
                       yaxis_title=kwargs['y_label'],
                       **fig_kwargs)
     self.plotly_settings(fig)
-    # if len(kwargs['legend']):
-    #   fig.update_layout(legend_title_text=kwargs['legend'])
-    fig.show()
+
+    return fig
 
   def corr_plot(self, corr_matrix: pd.DataFrame):
     df_corr = pd.DataFrame(corr_matrix,
@@ -111,4 +119,4 @@ class PlotlyPlot():
                       yaxis_title='Columns')
 
     # Display the plot
-    fig.show()
+    return fig

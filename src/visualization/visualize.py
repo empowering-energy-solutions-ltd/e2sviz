@@ -2,8 +2,10 @@ import datetime
 from dataclasses import dataclass
 from typing import Any, Callable, List, Optional, Protocol
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 
 from src.data import enums as viz_enums
 from src.data import viz_schema
@@ -14,7 +16,8 @@ class LibraryViz(Protocol):
   Selects the visualisation library to be used.
   """
 
-  def plot_single(self, x: pd.DatetimeIndex | pd.Series, y: pd.Series, kwargs):
+  def plot_single(self, x: pd.DatetimeIndex | pd.Series, y: pd.Series,
+                  kwargs) -> plt.Axes | go.Figure:
     ...
 
   def corr_plot(self, corr_matrix) -> None:
@@ -166,7 +169,8 @@ class DataViz:
       }
       # print(kwargs)
       # print(dataf[c])
-      self.viz_selector.plot_single(x=dataf.index, y=dataf[c], kwargs=kwargs)
+      self.viz_selector.plot_single(x=dataf.index, y=dataf[c],
+                                    kwargs=kwargs).show()
 
   def day_and_time(self, time_data) -> pd.Series:
     """Adjust the index based on the column data"""
