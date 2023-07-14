@@ -17,6 +17,9 @@ class LibraryViz(Protocol):
   def plot_single(self, x: pd.DatetimeIndex | pd.Series, y: pd.Series, kwargs):
     ...
 
+  def corr_plot(self, corr_matrix) -> None:
+    ...
+
 
 class MetaData(Protocol):
   """
@@ -180,7 +183,9 @@ class DataViz:
     pass
 
   def correlation_plot(self):
-    pass
+    corr_matrix = self.data.corr()
+
+    self.viz_selector.corr_plot(corr_matrix)
 
     #   # reindex_dataframe(dataf)
     #   # groupby_title(self.metadata)

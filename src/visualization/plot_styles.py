@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
+import seaborn as sns
 
 font_size = 12
 
@@ -54,6 +56,10 @@ class MatPlotLibPlot():
       plt.legend(kwargs['legend'])
     plt.grid()
 
+  def corr_plot(self, corr_matrix: pd.DataFrame) -> None:
+    print(corr_matrix)
+    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
+
 
 class PlotlyPlot():
 
@@ -79,4 +85,30 @@ class PlotlyPlot():
     self.plotly_settings(fig)
     # if len(kwargs['legend']):
     #   fig.update_layout(legend_title_text=kwargs['legend'])
+    fig.show()
+
+  def corr_plot(self, corr_matrix: pd.DataFrame):
+    df_corr = pd.DataFrame(corr_matrix,
+                           columns=corr_matrix.columns,
+                           index=corr_matrix.columns)
+
+    fig = go.Figure(data=go.Heatmap(
+        z=df_corr.values,
+        x=df_corr.columns,
+        y=df_corr.index,
+        colorscale='RdBu',
+        zmin=-1,
+        zmax=1,
+        colorbar=dict(title='Correlation'),  # Add colorbar with title
+        text=np.around(df_corr.values, decimals=2
+                       ),  # Use correlation values as text annotations
+        hovertemplate=
+        'Correlation: %{text}',  # Set hover template to display correlation values
+    ))
+
+    fig.update_layout(title='Correlation Plot',
+                      xaxis_title='Columns',
+                      yaxis_title='Columns')
+
+    # Display the plot
     fig.show()
