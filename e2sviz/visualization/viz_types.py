@@ -9,7 +9,8 @@ from e2slib.structures import enums
 from e2slib.utillib import functions
 from e2slib.visualization import viz_functions
 
-from src.data import manipulations, viz_schema
+from e2sviz.data import manipulations
+from e2sviz.structure import viz_schema
 
 # --------------- No time format ---------------
 

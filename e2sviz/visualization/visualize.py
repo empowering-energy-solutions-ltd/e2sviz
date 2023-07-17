@@ -7,8 +7,8 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
-from src.data import enums as viz_enums
-from src.data import viz_schema
+from e2sviz.structure import enums as viz_enums
+from e2sviz.structure import viz_schema
 
 
 class LibraryViz(Protocol):

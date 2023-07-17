@@ -9,8 +9,8 @@ from e2slib.structures import datetime_schema
 from e2slib.utillib import functions
 from IPython.display import display
 
-from src.data import enums as viz_enums
-from src.data import viz_schema
+from e2sviz.structure import enums as viz_enums
+from e2sviz.structure import viz_schema
 
 DatafCallable = Callable[[pd.DataFrame], pd.DataFrame]
 
@@ -36,7 +36,6 @@ class DataPrep:
   """
   data: pd.DataFrame
   dataprep_functions: Optional[list[DatafCallable]]
-  pre_describe: bool = True
 
   def __post_init__(self):
     """
@@ -48,10 +47,9 @@ class DataPrep:
 
     """
     self.data = self.data.copy()
-    if self.pre_describe:
-      self.described_raw_data = self.described_data(self.data)
-      print('Prior to cleaning:')
-      display(self.described_raw_data)
+    self.described_raw_data = self.described_data(self.data)
+    print('Prior to cleaning:')
+    display(self.described_raw_data)
 
     if self.dataprep_functions:
       self.clean_data()

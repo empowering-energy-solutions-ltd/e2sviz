@@ -8,7 +8,7 @@ import numpy as np
 import numpy.typing as npt
 import pandas as pd
 
-from src.data import viz_schema
+from e2sviz.structure import viz_schema
 
 
 def convert_data_types(
@@ -266,7 +266,7 @@ class ConvertColumnDataFormat():
       DataFrame, with values reordered.
   """
   freq: str = '30T'
-  datetime_format: str = '%d/%m/%Y'
+  datetime_format: str = '%Y-%m-%d'
   date_column: str = 'Settlement Date'
 
   def data_cleaner(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -283,13 +283,8 @@ class ConvertColumnDataFormat():
     pd.DataFrame
         DataFrame, with values reordered.
     """
-    df_long = pd.melt(data,
-                      id_vars=[self.date_column],
-                      var_name='Timestep',
-                      value_name='Value')
-    df_long['Datetime'] = df_long[self.date_column] + ' ' + df_long[
-        'Timestep'].apply(lambda x: int(re.findall(r'\d+', x)[0])).astype(str)
-    df_long.drop(columns=[self.date_column, 'Timestep'], inplace=True)
+    data = data.copy().reset_index()
+    df_long = self.prep_for_formatting(data)
     df_long['Datetime'] = df_long['Datetime'].apply(
         self.convert_half_hourly_to_datetime)
     df_long.set_index('Datetime', drop=True, inplace=True)
@@ -316,6 +311,30 @@ class ConvertColumnDataFormat():
     minutes_to_add = 30 * half_hourly_value
     dt += timedelta(minutes=minutes_to_add)
     return dt
+
+  def prep_for_formatting(self, data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Prepare data for formatting.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        Raw data in a dataframe.
+    
+    Returns
+    -------
+    df_long : pd.DataFrame
+        DataFrame, with values reordered.
+    """
+    data[self.date_column] = data[self.date_column].astype(str)
+    df_long = pd.melt(data,
+                      id_vars=[self.date_column],
+                      var_name='Timestep',
+                      value_name='Value')
+    df_long['Datetime'] = df_long[self.date_column] + ' ' + df_long[
+        'Timestep'].apply(lambda x: int(re.findall(r'\d+', x)[0])).astype(str)
+    df_long.drop(columns=[self.date_column, 'Timestep'], inplace=True)
+    return df_long
 
 
 @dataclass
