@@ -36,6 +36,7 @@ class DataPrep:
   """
   data: pd.DataFrame
   dataprep_functions: Optional[list[DatafCallable]]
+  pre_describe: bool = True
 
   def __post_init__(self):
     """
@@ -47,9 +48,10 @@ class DataPrep:
 
     """
     self.data = self.data.copy()
-    self.described_raw_data = self.described_data(self.data)
-    print('Prior to cleaning:')
-    display(self.described_raw_data)
+    if self.pre_describe:
+      self.described_raw_data = self.described_data(self.data)
+      print('Prior to cleaning:')
+      display(self.described_raw_data)
 
     if self.dataprep_functions:
       self.clean_data()

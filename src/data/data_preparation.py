@@ -1,6 +1,7 @@
+import re
 from copy import deepcopy
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Callable
 
 import numpy as np
@@ -243,6 +244,78 @@ class FillMissingData():
     data_copy = data_copy.apply(
         lambda col: col.fillna(col.rolling(window=24, min_periods=1).mean()))
     return data_copy
+
+
+@dataclass
+class ConvertColumnDataFormat():
+  """
+  Converts column wise data to row wise.
+
+  Parameters
+  ----------
+  freq : str, optional
+      Frequency of the data, by default '30T'.
+  datetime_format : str, optional
+      Datetime format of the data, by default '%d/%m/%Y'.
+  date_column : str, optional
+      Column name of the date column, by default 'Settlement Date'.
+
+  Returns
+  -------
+  df_long : pd.DataFrame
+      DataFrame, with values reordered.
+  """
+  freq: str = '30T'
+  datetime_format: str = '%d/%m/%Y'
+  date_column: str = 'Settlement Date'
+
+  def data_cleaner(self, data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Reorder data from column wise to row wise.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        Raw data in a dataframe.
+    
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame, with values reordered.
+    """
+    df_long = pd.melt(data,
+                      id_vars=[self.date_column],
+                      var_name='Timestep',
+                      value_name='Value')
+    df_long['Datetime'] = df_long[self.date_column] + ' ' + df_long[
+        'Timestep'].apply(lambda x: int(re.findall(r'\d+', x)[0])).astype(str)
+    df_long.drop(columns=[self.date_column, 'Timestep'], inplace=True)
+    df_long['Datetime'] = df_long['Datetime'].apply(
+        self.convert_half_hourly_to_datetime)
+    df_long.set_index('Datetime', drop=True, inplace=True)
+    df_long.sort_index(inplace=True)
+    df_long.rename(columns={'Value': 'Site energy [kWh]'}, inplace=True)
+    return df_long
+
+  def convert_half_hourly_to_datetime(self, datetime_str) -> datetime:
+    """
+    Convert half hourly data to datetime.
+
+    Parameters
+    ----------
+    datetime_str : str
+        Half hourly data.
+    
+    Returns
+    -------
+    datetime
+        Datetime object.
+    """
+    dt = datetime.strptime(datetime_str.split()[0], self.datetime_format)
+    half_hourly_value = (int(datetime_str.split()[-1]) - 1)
+    minutes_to_add = 30 * half_hourly_value
+    dt += timedelta(minutes=minutes_to_add)
+    return dt
 
 
 @dataclass
