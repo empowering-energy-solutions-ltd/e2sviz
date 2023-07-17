@@ -167,14 +167,31 @@ class DataViz:
     dataf: pd.DataFrame = self.data.copy()
     if len(self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
         viz_schema.MetaDataSchema.GROUPED_COLS]) > 0:
-      reindex_df = dataf.reset_index()
-      reindex_df.index = self.day_and_time(reindex_df)
-      dataf = reindex_df.drop(
-          columns=self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
-              viz_schema.MetaDataSchema.INDEX_COLS],
-          axis=1)
-      value_columns = [col for col in dataf.columns if col != 'season']
-      dataf = dataf.pivot(columns='season', values=value_columns)
+      reindex_df: pd.DataFrame = dataf.reset_index()
+      if len(self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+          viz_schema.MetaDataSchema.INDEX_COLS]) > 1:
+
+        reindex_df.index = self.day_and_time(reindex_df)
+        dataf = reindex_df.drop(
+            columns=self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+                viz_schema.MetaDataSchema.INDEX_COLS],
+            axis=1)
+      else:
+        index_col = self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+            viz_schema.MetaDataSchema.INDEX_COLS][0]
+        reindex_df.index = reindex_df[index_col]
+        dataf = reindex_df.drop(
+            columns=self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+                viz_schema.MetaDataSchema.INDEX_COLS],
+            axis=1)
+      if self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+          viz_schema.MetaDataSchema.INDEX_COLS] != self.metadata.metadata[
+              viz_schema.MetaDataSchema.FRAME][
+                  viz_schema.MetaDataSchema.GROUPED_COLS]:
+        legend_col = self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+            viz_schema.MetaDataSchema.GROUPED_COLS][0]
+        value_columns = [col for col in dataf.columns if col != legend_col]
+        dataf = dataf.pivot(columns=legend_col, values=value_columns)
     if cols is None:
       cols: list[str] = dataf.columns
     for c in cols:
