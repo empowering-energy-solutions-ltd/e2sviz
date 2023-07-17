@@ -167,8 +167,14 @@ class DataViz:
     dataf: pd.DataFrame = self.data.copy()
     if len(self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
         viz_schema.MetaDataSchema.GROUPED_COLS]) > 0:
-      dataf.index = self.day_and_time(dataf.reset_index())
-      print(dataf)
+      reindex_df = dataf.reset_index()
+      reindex_df.index = self.day_and_time(reindex_df)
+      dataf = reindex_df.drop(
+          columns=self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+              viz_schema.MetaDataSchema.INDEX_COLS],
+          axis=1)
+      value_columns = [col for col in dataf.columns if col != 'season']
+      dataf = dataf.pivot(columns='season', values=value_columns)
     if cols is None:
       cols: list[str] = dataf.columns
     for c in cols:
