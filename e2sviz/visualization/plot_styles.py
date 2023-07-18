@@ -171,7 +171,8 @@ class MatPlotLibPlot():
 
     return fig
 
-  def pie_chart(self, data: pd.Series, kwargs: dict[str, str]) -> plt.Figure:
+  def pie_chart(self, data: pd.DataFrame, kwargs: dict[str,
+                                                       str]) -> plt.Figure:
     """
     Plot a pie chart
 
@@ -354,7 +355,7 @@ class PlotlyPlot():
 
     return fig
 
-  def pie_chart(self, data: pd.Series, kwargs: dict[str, str]) -> go.Figure:
+  def pie_chart(self, data: pd.DataFrame, kwargs: dict[str, str]) -> go.Figure:
     """
     Create a pie chart.
 

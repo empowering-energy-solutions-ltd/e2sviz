@@ -31,7 +31,7 @@ class LibraryViz(Protocol):
                kwargs: dict[str, str]) -> plt.Figure | go.Figure:
     ...
 
-  def pie_chart(self, data: pd.Series,
+  def pie_chart(self, data: pd.DataFrame,
                 kwargs: dict[str, str]) -> plt.Figure | go.Figure:
     ...
 
@@ -154,68 +154,112 @@ class DataViz:
   metadata: MetaData
   viz_selector: LibraryViz
 
-  def single_line_plot(self, cols: list[str] | None = None):
+  def single_line_plot(self,
+                       cols: Optional[List[str]] = None
+                       ) -> plt.Axes | go.Figure:
     """
-    Plots the data.
+        Plots the data.
 
-    Parameters
-    ----------
-    cols : list[str], optional
-      The columns to be plotted. If None, all columns are plotted.
-    
-    """
-    dataf: pd.DataFrame = self.data.copy()
+        Parameters
+        ----------
+        cols : Optional[List[str]], optional
+            The columns to be plotted. If None, all columns are plotted.
+
+        Returns
+        -------
+        plt.Axes | go.Figure
+            The plot.
+        """
+    data_copy = self.data.copy()
     if len(self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
         viz_schema.MetaDataSchema.GROUPED_COLS]) > 0:
-      reindex_df: pd.DataFrame = dataf.reset_index()
-      if len(self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
-          viz_schema.MetaDataSchema.INDEX_COLS]) > 1:
-
-        reindex_df.index = self.day_and_time(reindex_df)
-        dataf = reindex_df.drop(
-            columns=self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
-                viz_schema.MetaDataSchema.INDEX_COLS],
-            axis=1)
-      else:
-        index_col = self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
-            viz_schema.MetaDataSchema.INDEX_COLS][0]
-        reindex_df.index = reindex_df[index_col]
-        dataf = reindex_df.drop(
-            columns=self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
-                viz_schema.MetaDataSchema.INDEX_COLS],
-            axis=1)
-      if self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
-          viz_schema.MetaDataSchema.INDEX_COLS] != self.metadata.metadata[
-              viz_schema.MetaDataSchema.FRAME][
-                  viz_schema.MetaDataSchema.GROUPED_COLS]:
-        legend_col = self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
-            viz_schema.MetaDataSchema.GROUPED_COLS][0]
-        value_columns = [col for col in dataf.columns if col != legend_col]
-        dataf = dataf.pivot(columns=legend_col, values=value_columns)
+      data_copy = self._process_grouped_data(data_copy)
     if cols is None:
-      cols: list[str] = dataf.columns
-    for c in cols:
-      # for legend in self.metadata.metadata[c][
-      #     viz_schema.MetaDataSchema.LEGEND]:
+      cols = data_copy.columns
+    for col in cols:
       kwargs = {
-          'title': self.metadata.get_title(c),
+          'title': self.metadata.get_title(col),
           'x_label': self.metadata.get_x_label,
-          'y_label': self.metadata.get_y_label(c),
-          'legend': self.metadata.get_legend(c),
+          'y_label': self.metadata.get_y_label(col),
+          'legend': self.metadata.get_legend(col),
       }
-      return self.viz_selector.plot_single(x=dataf.index,
-                                           y=dataf[c],
-                                           kwargs=kwargs)  #.show()
+      return self.viz_selector.plot_single(x=data_copy.index,
+                                           y=data_copy[col],
+                                           kwargs=kwargs)
 
-  def day_and_time(self, time_data) -> pd.Series:
-    """Adjust the index based on the column data"""
+  def _process_grouped_data(self, data_copy: pd.DataFrame) -> pd.DataFrame:
+    """Process grouped data and pivot if needed."""
+    reindexed_df = data_copy.reset_index()
+    reindexed_df = self.format_index(reindexed_df)
+    data_copy = self.remove_index_cols(reindexed_df)
+    if self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+        viz_schema.MetaDataSchema.INDEX_COLS] != self.metadata.metadata[
+            viz_schema.MetaDataSchema.FRAME][
+                viz_schema.MetaDataSchema.GROUPED_COLS]:
+      data_copy = self.pivot_data(data_copy)
+    return data_copy
+
+  def format_index(self, dataf: pd.DataFrame) -> pd.DataFrame:
+    if len(self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+        viz_schema.MetaDataSchema.INDEX_COLS]) > 1:
+      dataf.index = self._adjust_index(dataf)
+    else:
+      index_col = self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+          viz_schema.MetaDataSchema.INDEX_COLS][0]
+      dataf.index = dataf[index_col]
+    return dataf
+
+  def _adjust_index(self, time_data: pd.DataFrame) -> pd.Series:
+    """
+    Adjust index to be a continuous variable.
+    
+    Parameters
+    ----------
+    time_data : pd.DataFrame
+        The data to be adjusted.
+        
+    Returns
+    -------
+    pd.Series
+        The adjusted index.
+    """
     return time_data['Day of week'] + (
         1 / (time_data['Half-hour'].max() + 1)) * time_data['Half-hour']
+
+  def remove_index_cols(self, dataf: pd.DataFrame) -> pd.DataFrame:
+    """
+    Remove the index columns from the data after they've been reset.
+    """
+    return dataf.drop(columns=self.metadata.metadata[
+        viz_schema.MetaDataSchema.FRAME][viz_schema.MetaDataSchema.INDEX_COLS],
+                      axis=1)
+
+  def pivot_data(self, dataf: pd.DataFrame) -> pd.DataFrame:
+    """
+    Pivot the data based on the metadata grouped columns.
+    """
+    legend_col = self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+        viz_schema.MetaDataSchema.GROUPED_COLS][0]
+    value_columns = [col for col in dataf.columns if col != legend_col]
+    return dataf.pivot(columns=legend_col, values=value_columns)
 
   def multi_plot(self):
     pass
 
-  def bar_box_plot(self, bar: bool = True):
+  def bar_box_plot(self, bar: bool = True) -> plt.Axes | go.Figure:
+    """
+    Plots a barplot or boxplot of the column sums.
+    
+    Parameters
+    ----------
+    bar : bool, optional
+        If True, plots a barplot. If False, plots a boxplot. The default is True.
+    
+    Returns
+    -------
+    plt.Axes | go.Figure
+        Barplot or boxplot of column data.
+    """
     dataf = self.data.copy()
     kwargs = {
         'title': 'Barplot of column sums',
@@ -230,7 +274,14 @@ class DataViz:
       kwargs['title'] = 'Boxplot of columns'
       return self.viz_selector.box_plot(data=dataf, kwargs=kwargs)  #.show()
 
-  def pie_chart_plot(self):
+  def pie_chart_plot(self) -> plt.Axes | go.Figure:
+    """
+    Plots a pie chart of the column sums.
+    
+    Returns
+    -------
+    plt.Axes | go.Figure
+        Pie chart plot."""
     dataf = self.data.copy()
     kwargs = {
         'title': 'Piechart of column sums',
@@ -243,7 +294,76 @@ class DataViz:
   def scatter_plot(self):
     pass
 
-  def correlation_plot(self):
+  def correlation_plot(self) -> plt.Axes | go.Figure:
+    """
+    Plots the correlation matrix of the data.
 
+    Returns
+    -------
+    plt.Axes | go.Figure
+        The correlation plot.
+    """
     corr_matrix = self.data.corr()
     return self.viz_selector.corr_plot(corr_matrix)  #.show()
+
+  # def single_line_plot(self, cols: list[str] | None = None) -> plt.Axes | go.Figure:
+  #   """
+  #   Plots the data.
+
+  #   Parameters
+  #   ----------
+  #   cols : list[str], optional
+  #     The columns to be plotted. If None, all columns are plotted.
+
+  #   Returns
+  #   -------
+  #   plt.Axes | go.Figure
+  #     The plot.
+  #   """
+  #   dataf: pd.DataFrame = self.data.copy()
+  #   if len(self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+  #       viz_schema.MetaDataSchema.GROUPED_COLS]) > 0:
+  #     reindex_df: pd.DataFrame = dataf.reset_index()
+  #     if len(self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+  #         viz_schema.MetaDataSchema.INDEX_COLS]) > 1:
+
+  #       reindex_df.index = self.day_and_time(reindex_df)
+  #       dataf = reindex_df.drop(
+  #           columns=self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+  #               viz_schema.MetaDataSchema.INDEX_COLS],
+  #           axis=1)
+  #     else:
+  #       index_col = self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+  #           viz_schema.MetaDataSchema.INDEX_COLS][0]
+  #       reindex_df.index = reindex_df[index_col]
+  #       dataf = reindex_df.drop(
+  #           columns=self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+  #               viz_schema.MetaDataSchema.INDEX_COLS],
+  #           axis=1)
+  #     if self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+  #         viz_schema.MetaDataSchema.INDEX_COLS] != self.metadata.metadata[
+  #             viz_schema.MetaDataSchema.FRAME][
+  #                 viz_schema.MetaDataSchema.GROUPED_COLS]:
+  #       legend_col = self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+  #           viz_schema.MetaDataSchema.GROUPED_COLS][0]
+  #       value_columns = [col for col in dataf.columns if col != legend_col]
+  #       dataf = dataf.pivot(columns=legend_col, values=value_columns)
+  #   if cols is None:
+  #     cols: list[str] = dataf.columns
+  #   for c in cols:
+  #     # for legend in self.metadata.metadata[c][
+  #     #     viz_schema.MetaDataSchema.LEGEND]:
+  #     kwargs = {
+  #         'title': self.metadata.get_title(c),
+  #         'x_label': self.metadata.get_x_label,
+  #         'y_label': self.metadata.get_y_label(c),
+  #         'legend': self.metadata.get_legend(c),
+  #     }
+  #     return self.viz_selector.plot_single(x=dataf.index,
+  #                                          y=dataf[c],
+  #                                          kwargs=kwargs)
+
+  # def day_and_time(self, time_data) -> pd.Series:
+  #   """Adjust the index based on the column data"""
+  #   return time_data['Day of week'] + (
+  #       1 / (time_data['Half-hour'].max() + 1)) * time_data['Half-hour']
