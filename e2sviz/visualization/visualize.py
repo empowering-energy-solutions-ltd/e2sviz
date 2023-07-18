@@ -203,8 +203,9 @@ class DataViz:
           'y_label': self.metadata.get_y_label(c),
           'legend': self.metadata.get_legend(c),
       }
-      self.viz_selector.plot_single(x=dataf.index, y=dataf[c],
-                                    kwargs=kwargs).show()
+      return self.viz_selector.plot_single(x=dataf.index,
+                                           y=dataf[c],
+                                           kwargs=kwargs)  #.show()
 
   def day_and_time(self, time_data) -> pd.Series:
     """Adjust the index based on the column data"""
@@ -223,19 +224,21 @@ class DataViz:
         'legend': [],
     }
     if bar:
-      self.viz_selector.bar_plot(data=dataf, kwargs=kwargs).show()
+      kwargs['title'] = 'Barplot of column sums'
+      return self.viz_selector.bar_plot(data=dataf, kwargs=kwargs)  #.show()
     else:
-      self.viz_selector.box_plot(data=dataf, kwargs=kwargs).show()
+      kwargs['title'] = 'Boxplot of columns'
+      return self.viz_selector.box_plot(data=dataf, kwargs=kwargs)  #.show()
 
   def pie_chart_plot(self):
     dataf = self.data.copy()
     kwargs = {
-        'title': 'Barplot of column sums',
+        'title': 'Piechart of column sums',
         'x_label': 'Columns',
         'y_label': 'Column Values',
         'legend': [],
     }
-    self.viz_selector.pie_chart(data=dataf, kwargs=kwargs).show()
+    return self.viz_selector.pie_chart(data=dataf, kwargs=kwargs)  #.show()
 
   def scatter_plot(self):
     pass
@@ -243,60 +246,4 @@ class DataViz:
   def correlation_plot(self):
 
     corr_matrix = self.data.corr()
-    self.viz_selector.corr_plot(corr_matrix).show()
-
-    #   # reindex_dataframe(dataf)
-    #   # groupby_title(self.metadata)
-
-    #   plot_data = self.grouped_single_line_plot(c)
-    # else:
-    #   kwargs = {
-    #       'title': self.metadata.get_title(c),
-    #       'x_label': self.metadata.get_x_label(c),
-    #       'y_label': self.metadata.get_y_label(c),
-    #       'legend': self.metadata.get_legend(c)
-    #   }
-    #   plot_data = [(dataf, kwargs)]
-    # for dataf, kwargs in plot_data:
-
-    #   self.viz_selector.plot_single(x=dataf.index, y=dataf[c], kwargs=kwargs)
-
-  # def grouped_single_line_plot(self, col: str) -> tuple[pd.DataFrame, dict]:
-  #   """
-  #   Generates individual plots for each element of the grouped data.
-
-  #   Parameters
-  #   ----------
-  #   col : str
-  #     The column to be plotted.
-
-  #   """
-  #   plot_data = []
-  #   reordered_data = self.data.reset_index()
-  #   index_cols = self.metadata.metadata[col][
-  #       viz_schema.MetaDataSchema.INDEX_COLS]
-  #   if index_cols == viz_schema.MetaDataSchema.DAY_HOUR:
-  #     reordered_data.index = self.day_and_time(reordered_data)
-  #   legends = self.metadata.metadata[col][viz_schema.MetaDataSchema.LEGEND]
-
-  #   if len(legends) > 0:
-  #     grouped = reordered_data.groupby(legends)
-  #     for name, group in grouped:
-  #       kwargs = {
-  #           'title': self.metadata.get_title(col,
-  #                                            name[0]),  #f'{} - {name[0]}',
-  #           'x_label': index_cols[0],
-  #           'y_label': self.metadata.get_y_label(col),
-  #           'legend': name[0]
-  #       }
-  #       plot_data.append((group, kwargs))
-  #     return plot_data
-  #   else:
-  #     kwargs = {
-  #         'title': self.metadata.get_title(col),
-  #         'x_label': index_cols[0],
-  #         'y_label': self.metadata.get_y_label(col),
-  #         'legend': []
-  #     }
-  #     plot_data.append((reordered_data, kwargs))
-  #     return plot_data
+    return self.viz_selector.corr_plot(corr_matrix)  #.show()
