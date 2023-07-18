@@ -600,7 +600,7 @@ class DataManip:
       frequency = pd.infer_freq(resampled_data.index)
       for c in resampled_data.columns:
         new_meta_data = deepcopy(self.metadata)
-        new_meta_data.metadata[c].update(
+        new_meta_data.metadata[viz_schema.MetaDataSchema.FRAME].update(
             {viz_schema.MetaDataSchema.FREQ: frequency})
       return DataManip(resampled_data,
                        frequency=frequency,
