@@ -557,11 +557,27 @@ class DataManip:
     new_meta_data[viz_schema.MetaDataSchema.FRAME][
         viz_schema.MetaDataSchema.GROUPED_COLS] = gb_col_data[
             viz_schema.MetaDataSchema.GROUPED_COLS]
+
+    if len(gb_col_data[viz_schema.MetaDataSchema.LEGEND]):
+      num_levels = len(gb_col_data[viz_schema.MetaDataSchema.LEGEND])
+      unique_values: dict = {}
+      for level in range(num_levels):
+
+        level_values = grouped_data.index.get_level_values(
+            level).unique().to_list()
+        unique_values[level] = level_values
+      if num_levels == 1:
+        result_list = unique_values[0]
+      else:
+        result_list = [
+            f"{value1} {value2}" for value1 in unique_values[0]
+            for value2 in unique_values[1]
+        ]
+
     for c in self.data.columns:
       if len(gb_col_data[viz_schema.MetaDataSchema.LEGEND]):
-        new_meta_data[c][viz_schema.MetaDataSchema.
-                         LEGEND] = grouped_data.index.get_level_values(
-                             0).unique().tolist()
+        new_meta_data[c][viz_schema.MetaDataSchema.LEGEND] = result_list
+
       new_meta_data[viz_schema.MetaDataSchema.FRAME][
           viz_schema.MetaDataSchema.GB_AGG] = func.__name__
 
