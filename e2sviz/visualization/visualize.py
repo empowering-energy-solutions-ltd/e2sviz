@@ -183,6 +183,7 @@ class DataViz:
           'y_label': self.metadata.get_y_label(col),
           'legend': self.metadata.get_legend(col),
       }
+      # print(data_copy[col])
       return self.viz_selector.plot_single(x=data_copy.index,
                                            y=data_copy[col],
                                            kwargs=kwargs)

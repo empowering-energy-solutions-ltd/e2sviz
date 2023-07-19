@@ -227,7 +227,7 @@ class PlotlyPlot():
     return fig
 
   def plot_single(self,
-                  x: pd.DatetimeIndex,
+                  x: pd.DatetimeIndex | pd.Series,
                   y: pd.Series,
                   kwargs,
                   fig=None,
@@ -250,7 +250,18 @@ class PlotlyPlot():
     """
     if fig is None:
       fig = go.Figure()
-    fig.add_trace(go.Scatter(x=x, y=y, mode='lines'))
+    if isinstance(y, pd.Series):
+      fig.add_trace(
+          go.Scatter(x=x, y=y, mode='lines', name=str(kwargs['legend'])))
+    else:
+      for i, column in enumerate(y.columns):
+        trace = go.Scatter(x=x,
+                           y=y[column],
+                           mode='lines',
+                           name=str(kwargs['legend'][i]))
+        fig.add_trace(trace)
+
+    # fig.add_trace(go.Scatter(x=x, y=y, mode='lines'))
     fig.update_layout(title=kwargs['title'],
                       xaxis_title=kwargs['x_label'],
                       yaxis_title=kwargs['y_label'],
