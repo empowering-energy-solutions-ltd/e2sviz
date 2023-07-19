@@ -592,10 +592,10 @@ class DataManip:
                        frequency=self.frequency,
                        metadata=class_meta_data)
 
-  def resample(self,
-               freq: str = 'D',
-               func: Callable[[pd.DataFrame], pd.Series] = np.mean,
-               inplace: bool = False) -> pd.DataFrame | pd.Series | Any:
+  def resampled(self,
+                freq: str = 'D',
+                func: Callable[[pd.DataFrame], pd.DataFrame] = np.mean,
+                inplace: bool = False) -> pd.DataFrame | Any:
     """
     Resample the data by given frequency and aggregate by a given function.
 
@@ -611,18 +611,17 @@ class DataManip:
     pd.DataFrame | pd.Series
         The resampled and aggregated data.
     """
-    resampled_data = self.data.resample(freq).agg(func)
+    resampled_data: pd.DataFrame = self.data.resample(freq).agg(func)
+    new_meta_data = deepcopy(self.metadata)
+    new_meta_data.metadata[viz_schema.MetaDataSchema.FRAME][
+        viz_schema.MetaDataSchema.FREQ] = freq
     if inplace:
-      frequency = pd.infer_freq(resampled_data.index)
-      for c in resampled_data.columns:
-        new_meta_data = deepcopy(self.metadata)
-        new_meta_data.metadata[viz_schema.MetaDataSchema.FRAME].update(
-            {viz_schema.MetaDataSchema.FREQ: frequency})
-      return DataManip(resampled_data,
-                       frequency=frequency,
-                       metadata=self.metadata)
+      self.metadata = new_meta_data
+      self.frequency = freq
+      self.data = resampled_data
+      return Self
     else:
-      return resampled_data
+      return DataManip(resampled_data, frequency=freq, metadata=new_meta_data)
 
   def rolling(self,
               window: int = 3,
