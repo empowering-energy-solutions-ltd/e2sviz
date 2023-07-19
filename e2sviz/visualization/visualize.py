@@ -238,10 +238,17 @@ class DataViz:
     """
     Pivot the data based on the metadata grouped columns.
     """
-    legend_col = self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
-        viz_schema.MetaDataSchema.GROUPED_COLS][0]
-    value_columns = [col for col in dataf.columns if col != legend_col]
-    return dataf.pivot(columns=legend_col, values=value_columns)
+    legend_cols = []
+    no_legend = (len(self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+        viz_schema.MetaDataSchema.GROUPED_COLS]) -
+                 len(self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+                     viz_schema.MetaDataSchema.INDEX_COLS]))
+    for i in range(no_legend):
+      legend_col = self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+          viz_schema.MetaDataSchema.GROUPED_COLS][i]
+      legend_cols.append(legend_col)
+    value_columns = [col for col in dataf.columns if col != legend_cols]
+    return dataf.pivot(columns=legend_cols, values=value_columns)
 
   def multi_plot(self):
     pass
