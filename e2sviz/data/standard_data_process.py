@@ -231,6 +231,17 @@ class MetaData:
     return self.metadata[col][viz_schema.MetaDataSchema.TYPE]
 
   @property
+  def column_from_freq(self) -> str:
+    column_mapping = {
+        viz_schema.FrequencySchema.HH: datetime_schema.DateTimeSchema.HALFHOUR,
+        viz_schema.FrequencySchema.HOUR: datetime_schema.DateTimeSchema.HOUR,
+        viz_schema.FrequencySchema.DAY:
+        datetime_schema.DateTimeSchema.DAYOFYEAR,
+        viz_schema.FrequencySchema.MONTH: datetime_schema.DateTimeSchema.MONTH
+    }
+    return column_mapping.get(self.freq)
+
+  @property
   def get_x_label(self) -> str:
     """
     Get the label for the x-axis of the plot.
@@ -270,9 +281,31 @@ class MetaData:
     str
         The title of the plot.
     """
+    freq_col = self.column_from_freq
+    dict_for_title = {
+        'day of year': [datetime_schema.DateTimeSchema.WEEKDAYFLAG, freq_col],
+        'week of year': [datetime_schema.DateTimeSchema.DAYOFWEEK, freq_col],
+        'day of season': [
+            datetime_schema.DateTimeSchema.SEASON,
+            datetime_schema.DateTimeSchema.WEEKDAYFLAG, freq_col
+        ],
+        'week of season': [
+            datetime_schema.DateTimeSchema.SEASON,
+            datetime_schema.DateTimeSchema.DAYOFWEEK, freq_col
+        ]
+    }
+
     if len(self.metadata[viz_schema.MetaDataSchema.FRAME][
         viz_schema.MetaDataSchema.GROUPED_COLS]):
-      title = f'{self.metadata[viz_schema.MetaDataSchema.FRAME][viz_schema.MetaDataSchema.GB_AGG]} {self.metadata[col][viz_schema.MetaDataSchema.NAME]} vs. {self.get_x_label}'
+      gb_title: str = ''
+      for key, val in dict_for_title.items():
+        # print(val)
+        # print(key)
+        if val == self.metadata[viz_schema.MetaDataSchema.FRAME][
+            viz_schema.MetaDataSchema.GROUPED_COLS]:
+          # print(key)
+          gb_title: str = key
+      title = f'{self.metadata[viz_schema.MetaDataSchema.FRAME][viz_schema.MetaDataSchema.GB_AGG]} {gb_title} {self.metadata[col][viz_schema.MetaDataSchema.NAME]} vs. {self.get_x_label}'
       if category is not None:
         title = title + f' - {category}'
     else:
@@ -441,11 +474,6 @@ class DataManip:
             viz_schema.MetaDataSchema.GROUPED_COLS:
             [datetime_schema.DateTimeSchema.DAYOFWEEK, freq_col]
         },
-        # datetime_schema.DateTimeSchema.MONTH: {
-        #   'legend': [],
-        #   'index_cols': [],
-        #   'groupby_cols': [],
-        # },
         viz_schema.GroupingKeySchema.DAY_SEASON: {
             viz_schema.MetaDataSchema.LEGEND: [
                 datetime_schema.DateTimeSchema.SEASON,
