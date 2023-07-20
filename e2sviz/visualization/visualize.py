@@ -16,8 +16,10 @@ class LibraryViz(Protocol):
   Selects the visualisation library to be used.
   """
 
-  def plot_single(self, x: pd.DatetimeIndex | pd.Series, y: pd.Series,
-                  kwargs) -> plt.Axes | go.Figure:
+  def plot_single(
+      self, x: pd.DatetimeIndex | pd.Series, y: pd.Series, kwargs: dict[str,
+                                                                        str],
+      fig_ax: Optional[plt.Axes | go.Figure]) -> plt.Axes | go.Figure:
     ...
 
   def corr_plot(self, corr_matrix) -> plt.Figure | go.Figure:
@@ -154,9 +156,10 @@ class DataViz:
   metadata: MetaData
   viz_selector: LibraryViz
 
-  def single_line_plot(self,
-                       cols: Optional[List[str]] = None
-                       ) -> plt.Axes | go.Figure:
+  def single_line_plot(
+      self,
+      cols: Optional[List[str]] = None,
+      fig_ax: Optional[plt.Figure | plt.Axes] = None) -> plt.Axes | go.Figure:
     """
         Plots the data.
 
@@ -186,6 +189,7 @@ class DataViz:
       # print(data_copy[col])
       return self.viz_selector.plot_single(x=data_copy.index,
                                            y=data_copy[col],
+                                           fig_ax=fig_ax,
                                            kwargs=kwargs)
 
   def _process_grouped_data(self, data_copy: pd.DataFrame) -> pd.DataFrame:

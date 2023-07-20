@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -51,7 +51,7 @@ class MatPlotLibPlot():
                   x: pd.DatetimeIndex | pd.Series,
                   y: pd.Series,
                   kwargs: dict[str, str],
-                  ax=None,
+                  fig_ax: Optional[plt.Axes] = None,
                   **plt_kwargs) -> plt.Figure:
     """
     Plot a single line plot
@@ -71,8 +71,11 @@ class MatPlotLibPlot():
         Matplotlib figure
     """
 
-    if ax is None:
+    if fig_ax is None:
       fig, ax = plt.subplots(figsize=(10, 5))
+    else:
+      ax = fig_ax
+      fig = ax.get_figure()
     ax = custom_plot(x, y, ax=ax, **plt_kwargs)
     # Find the indices where x values change (repeating index)
     # change_indices = np.where(x[1:] != x[:-1])[0] + 1
@@ -230,7 +233,7 @@ class PlotlyPlot():
                   x: pd.DatetimeIndex | pd.Series,
                   y: pd.Series,
                   kwargs,
-                  fig=None,
+                  fig_ax: Optional[go.Figure] = None,
                   **fig_kwargs) -> go.Figure:
     """
     Plot a single line plot
@@ -248,8 +251,10 @@ class PlotlyPlot():
     **fig_kwargs : dict
         Additional plotly figure settings
     """
-    if fig is None:
+    if fig_ax is None:
       fig = go.Figure()
+    else:
+      fig = fig_ax
     if isinstance(y, pd.Series):
       fig.add_trace(
           go.Scatter(x=x, y=y, mode='lines', name=str(kwargs['legend'])))
