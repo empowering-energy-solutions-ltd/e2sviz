@@ -13,15 +13,7 @@ def custom_plot(x, y, ax=None, **plt_kwargs):
   if ax is None:
     ax = plt.gca()
   ax.plot(x, y, **plt_kwargs)  ## example plot here
-  return (ax)
-
-
-# def multiple_custom_plots(x, y, ax=None, plt_kwargs={}, sct_kwargs={}):
-#   if ax is None:
-#     ax = plt.gca()
-#   ax.plot(x, y, **plt_kwargs)  #example plot1
-#   ax.scatter(x, y, **sct_kwargs)  #example plot2
-#   return (ax)
+  return ax
 
 
 class MatPlotLibPlot():
@@ -76,15 +68,8 @@ class MatPlotLibPlot():
     else:
       ax = fig_ax
       fig = ax.get_figure()
+
     ax = custom_plot(x, y, ax=ax, **plt_kwargs)
-    # Find the indices where x values change (repeating index)
-    # change_indices = np.where(x[1:] != x[:-1])[0] + 1
-
-    # # Insert NaN values at change_indices to create a gap in the line plot
-    # y_with_gaps = y.copy()
-    # y_with_gaps.iloc[change_indices] = np.nan
-
-    # ax = custom_plot(x, y_with_gaps, ax=ax, **plt_kwargs)
 
     ax.set_title(kwargs['title'])
     ax.set_xlabel(kwargs['x_label'])

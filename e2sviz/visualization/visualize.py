@@ -159,7 +159,7 @@ class DataViz:
   def single_line_plot(
       self,
       cols: Optional[List[str]] = None,
-      fig_ax: Optional[plt.Figure | plt.Axes] = None) -> plt.Axes | go.Figure:
+      fig_ax: Optional[go.Figure | plt.Axes] = None) -> plt.Axes | go.Figure:
     """
         Plots the data.
 
@@ -186,7 +186,6 @@ class DataViz:
           'y_label': self.metadata.get_y_label(col),
           'legend': self.metadata.get_legend(col),
       }
-      # print(data_copy[col])
       return self.viz_selector.plot_single(x=data_copy.index,
                                            y=data_copy[col],
                                            fig_ax=fig_ax,
@@ -205,6 +204,19 @@ class DataViz:
     return data_copy
 
   def format_index(self, dataf: pd.DataFrame) -> pd.DataFrame:
+    """
+    Format the index of the data based on the number of index columns in the metadata.
+
+    Parameters
+    ----------
+    dataf : pd.DataFrame
+        The data to be formatted.
+    
+    Returns
+    -------
+    pd.DataFrame
+        The formatted data.
+    """
     if len(self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
         viz_schema.MetaDataSchema.INDEX_COLS]) > 1:
       dataf.index = self._adjust_index(dataf)
@@ -276,7 +288,7 @@ class DataViz:
     kwargs = {
         'title': 'Barplot of column sums',
         'x_label': 'Columns',
-        'y_label': 'Column Values',
+        'y_label': 'Energy (kWh)',
         'legend': [],
     }
     if bar:
@@ -374,8 +386,3 @@ class DataViz:
   #     return self.viz_selector.plot_single(x=dataf.index,
   #                                          y=dataf[c],
   #                                          kwargs=kwargs)
-
-  # def day_and_time(self, time_data) -> pd.Series:
-  #   """Adjust the index based on the column data"""
-  #   return time_data['Day of week'] + (
-  #       1 / (time_data['Half-hour'].max() + 1)) * time_data['Half-hour']
