@@ -288,14 +288,14 @@ class DataViz:
     plt.Axes | go.Figure
         Barplot or boxplot of column data.
     """
+    if cols is None:
+      cols: list[str] = self.data.columns
     kwargs: dict[str, Any] = {
         'title': 'Barplot of columns',
         'x_label': 'Columns',
         'y_label': 'Energy (kWh)',
-        'legend': [],
+        'legend': cols,
     }
-    if cols is None:
-      cols: list[str] = self.data.columns
     return self.viz_selector.bar_plot(data=self.data,
                                       kwargs=kwargs,
                                       cols=cols,

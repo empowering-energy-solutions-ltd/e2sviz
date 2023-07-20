@@ -128,6 +128,7 @@ class MatPlotLibPlot():
     ax.set_title(kwargs['title'])
     ax.set_xlabel(kwargs['x_label'])
     ax.set_ylabel(kwargs['y_label'])
+    ax.legend(kwargs['legend'])
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.grid()
@@ -341,7 +342,7 @@ class PlotlyPlot():
         xaxis_title=kwargs['x_label'],
         yaxis_title=kwargs['y_label'],
         xaxis_tickangle=-45,
-        showlegend=False,
+        showlegend=True,
         margin=dict(l=50, r=50, t=50, b=50),
     )
 
