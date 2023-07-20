@@ -514,6 +514,8 @@ class DataManip:
     -------
     year : list[int]
         The years to filter by.
+    season : list[int]
+        The seasons to filter by (1: Winter, 2: Spring, 3: Summer, 4: Autumn).
     month : list[int]
         The months to filter by.
     day : list[int]
@@ -535,8 +537,18 @@ class DataManip:
     index_data: pd.DatetimeIndex = self.data.index
     if year is not None:
       filt &= index_data.year.isin(year)
-    # if season is not None:
-    #   filt &= index_data.season.isin(season)
+    if season is not None:
+      season_months = {
+          1: [12, 1, 2],  # Winter
+          2: [3, 4, 5],  # Spring
+          3: [6, 7, 8],  # Summer
+          4: [9, 10, 11],  # Autumn
+      }
+      months_to_filter = []
+      for s in season:
+        months_to_filter.extend(season_months.get(s, []))
+      if months_to_filter:
+        filt &= index_data.month.isin(months_to_filter)
     if month is not None:
       filt &= index_data.month.isin(month)
     if day is not None:
@@ -556,6 +568,10 @@ class DataManip:
       return DataManip(filtered_data,
                        frequency=self.frequency,
                        metadata=self.metadata)
+
+
+# if season is not None:
+#       filt &= index_data.season.isin(season)
 
   def groupby(self,
               groupby_type: str = viz_schema.GroupingKeySchema.WEEK_SEASON,
