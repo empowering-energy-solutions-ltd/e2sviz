@@ -559,14 +559,7 @@ class DataManip:
 
     filtered_data = self.data.loc[filt].copy()
 
-    if inplace:
-      # self.metadata = class_meta_data
-      self.data = filtered_data
-      return Self
-    else:
-      return DataManip(filtered_data,
-                       frequency=self.frequency,
-                       metadata=self.metadata)
+    return self.inplace_data(filtered_data, inplace=inplace)
 
   def groupby(self,
               groupby_type: str = viz_schema.GroupingKeySchema.WEEK_SEASON,
@@ -603,21 +596,7 @@ class DataManip:
             viz_schema.MetaDataSchema.GROUPED_COLS]
 
     if len(gb_col_data[viz_schema.MetaDataSchema.LEGEND]):
-      num_levels = len(gb_col_data[viz_schema.MetaDataSchema.LEGEND])
-      unique_values: dict = {}
-      for level in range(num_levels):
-
-        level_values = grouped_data.index.get_level_values(
-            level).unique().to_list()
-        unique_values[level] = level_values
-      if num_levels == 1:
-        result_list = unique_values[0]
-      else:
-        result_list = [
-            f"{value1} {value2}" for value1 in unique_values[0]
-            for value2 in unique_values[1]
-        ]
-
+      result_list = self.populate_legend(grouped_data, gb_col_data)
     for c in self.data.columns:
       if len(gb_col_data[viz_schema.MetaDataSchema.LEGEND]):
         new_meta_data[c][viz_schema.MetaDataSchema.LEGEND] = result_list
@@ -627,14 +606,42 @@ class DataManip:
 
     class_meta_data = MetaData(new_meta_data)
 
-    if inplace:
-      self.metadata = class_meta_data
-      self.data = grouped_data
-      return Self
+    return self.inplace_data(grouped_data,
+                             new_meta=class_meta_data,
+                             inplace=inplace)
+
+  def populate_legend(self, dataf: pd.DataFrame,
+                      gb_col_data: dict[str, list[str]]) -> list[str]:
+    """
+    Populate the legend column of the metadata.
+
+    Parameters
+    ----------
+    dataf : pd.DataFrame
+        The grouped and aggregated data.
+    gb_col_data : dict[str, list[str]]
+        The dictionary of groupby columns.
+      
+    Returns
+    -------
+    list[str]
+        The list of legend values.
+    """
+
+    num_levels = len(gb_col_data[viz_schema.MetaDataSchema.LEGEND])
+    unique_values: dict = {}
+    for level in range(num_levels):
+
+      level_values = dataf.index.get_level_values(level).unique().to_list()
+      unique_values[level] = level_values
+    if num_levels == 1:
+      result_list = unique_values[0]
     else:
-      return DataManip(grouped_data,
-                       frequency=self.frequency,
-                       metadata=class_meta_data)
+      result_list = [
+          f"{value1} {value2}" for value1 in unique_values[0]
+          for value2 in unique_values[1]
+      ]
+    return result_list
 
   def resampled(self,
                 freq: str = 'D',
@@ -659,13 +666,10 @@ class DataManip:
     new_meta_data = deepcopy(self.metadata)
     new_meta_data.metadata[viz_schema.MetaDataSchema.FRAME][
         viz_schema.MetaDataSchema.FREQ] = freq
-    if inplace:
-      self.metadata = new_meta_data
-      self.frequency = freq
-      self.data = resampled_data
-      return Self
-    else:
-      return DataManip(resampled_data, frequency=freq, metadata=new_meta_data)
+    return self.inplace_data(resampled_data,
+                             freq,
+                             new_meta_data,
+                             inplace=inplace)
 
   def rolling(self,
               window: int = 3,
@@ -687,10 +691,40 @@ class DataManip:
         The rolled and aggregated data.
     """
     rolling_data = self.data.rolling(window).agg(func)
+    return self.inplace_data(rolling_data, inplace=inplace)
+
+  def inplace_data(self,
+                   new_data: pd.DataFrame,
+                   new_freq: Optional[str] = None,
+                   new_meta: Optional[MetaData] = None,
+                   inplace: bool = False) -> Self:
+    """
+    Return the DataManip either as its self or as a new variable.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        The data to be set.
+    
+    Returns
+    -------
+    pd.DataFrame
+        The data.
+    """
     if inplace:
-      self.data = rolling_data
+      self.data = new_data
+      if new_freq:
+        self.frequency = new_freq
+      if new_meta:
+        self.metadata = new_meta
       return Self
     else:
-      return DataManip(rolling_data,
-                       frequency=self.frequency,
-                       metadata=self.metadata)
+      if new_freq:
+        freq = new_freq
+      else:
+        freq = self.frequency
+      if new_meta:
+        meta = new_meta
+      else:
+        meta = self.metadata
+      return DataManip(new_data, frequency=freq, metadata=meta)
