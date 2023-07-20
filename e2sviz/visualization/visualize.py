@@ -271,7 +271,7 @@ class DataViz:
     pass
 
   def bar_plot(self,
-               cols: Optional[list[str]],
+               cols: Optional[list[str]] = None,
                sum_vals: bool = False) -> plt.Axes | go.Figure:
     """
     Plots a barplot of the columns.

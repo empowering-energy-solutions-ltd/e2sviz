@@ -330,11 +330,13 @@ class PlotlyPlot():
       sums = column_sums.values.tolist()
 
       fig = go.Figure(data=[go.Bar(x=cols, y=sums)])
+      fig.update_layout(showlegend=False)
     else:
       fig = go.Figure()
 
       for col in cols:
         fig.add_trace(go.Bar(x=data.index, y=data[col], name=col))
+      fig.update_layout(showlegend=True)
 
     fig.update_layout(
         barmode='group',
@@ -342,7 +344,7 @@ class PlotlyPlot():
         xaxis_title=kwargs['x_label'],
         yaxis_title=kwargs['y_label'],
         xaxis_tickangle=-45,
-        showlegend=True,
+        # showlegend=True,
         margin=dict(l=50, r=50, t=50, b=50),
     )
 
