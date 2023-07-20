@@ -1,6 +1,6 @@
 import datetime
 from dataclasses import dataclass
-from typing import Any, Callable, List, Optional, Protocol
+from typing import Any, Callable, List, Optional, Protocol, Self
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,8 +17,8 @@ class LibraryViz(Protocol):
   """
 
   def plot_single(
-      self, x: pd.DatetimeIndex | pd.Series, y: pd.Series, kwargs: dict[str,
-                                                                        str],
+      self, x: pd.DatetimeIndex | pd.Series, y: pd.Series | pd.DataFrame,
+      kwargs: dict[str, str],
       fig_ax: Optional[plt.Axes | go.Figure]) -> plt.Axes | go.Figure:
     ...
 
@@ -105,25 +105,25 @@ class DataManipProtocol(Protocol):
              day: Optional[List[int]] = None,
              hour: Optional[List[int]] = None,
              date: Optional[List[datetime.date]] = None,
-             inplace: bool = False) -> Optional[pd.DataFrame]:
+             inplace: bool = False) -> Self:
     ...
 
   def groupby(self,
               groupby_type: str = 'week_season',
               func: Callable[[pd.DataFrame], pd.Series] = np.mean,
-              inplace: bool = False) -> pd.DataFrame | pd.Series:
+              inplace: bool = False) -> Self:
     ...
 
   def resample(self,
                freq: str = 'D',
                func: Callable[[pd.DataFrame], pd.Series] = np.mean,
-               inplace: bool = False) -> pd.DataFrame | pd.Series:
+               inplace: bool = False) -> Self:
     ...
 
   def rolling(self,
               window: int = 3,
               func: Callable[[pd.DataFrame], pd.Series] = np.mean,
-              inplace: bool = False) -> pd.DataFrame | pd.Series:
+              inplace: bool = False) -> Self:
     ...
 
 
@@ -355,60 +355,3 @@ class DataViz:
     """
     corr_matrix = self.data.corr()
     return self.viz_selector.corr_plot(corr_matrix)  #.show()
-
-  # def single_line_plot(self, cols: list[str] | None = None) -> plt.Axes | go.Figure:
-  #   """
-  #   Plots the data.
-
-  #   Parameters
-  #   ----------
-  #   cols : list[str], optional
-  #     The columns to be plotted. If None, all columns are plotted.
-
-  #   Returns
-  #   -------
-  #   plt.Axes | go.Figure
-  #     The plot.
-  #   """
-  #   dataf: pd.DataFrame = self.data.copy()
-  #   if len(self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
-  #       viz_schema.MetaDataSchema.GROUPED_COLS]) > 0:
-  #     reindex_df: pd.DataFrame = dataf.reset_index()
-  #     if len(self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
-  #         viz_schema.MetaDataSchema.INDEX_COLS]) > 1:
-
-  #       reindex_df.index = self.day_and_time(reindex_df)
-  #       dataf = reindex_df.drop(
-  #           columns=self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
-  #               viz_schema.MetaDataSchema.INDEX_COLS],
-  #           axis=1)
-  #     else:
-  #       index_col = self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
-  #           viz_schema.MetaDataSchema.INDEX_COLS][0]
-  #       reindex_df.index = reindex_df[index_col]
-  #       dataf = reindex_df.drop(
-  #           columns=self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
-  #               viz_schema.MetaDataSchema.INDEX_COLS],
-  #           axis=1)
-  #     if self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
-  #         viz_schema.MetaDataSchema.INDEX_COLS] != self.metadata.metadata[
-  #             viz_schema.MetaDataSchema.FRAME][
-  #                 viz_schema.MetaDataSchema.GROUPED_COLS]:
-  #       legend_col = self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
-  #           viz_schema.MetaDataSchema.GROUPED_COLS][0]
-  #       value_columns = [col for col in dataf.columns if col != legend_col]
-  #       dataf = dataf.pivot(columns=legend_col, values=value_columns)
-  #   if cols is None:
-  #     cols: list[str] = dataf.columns
-  #   for c in cols:
-  #     # for legend in self.metadata.metadata[c][
-  #     #     viz_schema.MetaDataSchema.LEGEND]:
-  #     kwargs = {
-  #         'title': self.metadata.get_title(c),
-  #         'x_label': self.metadata.get_x_label,
-  #         'y_label': self.metadata.get_y_label(c),
-  #         'legend': self.metadata.get_legend(c),
-  #     }
-  #     return self.viz_selector.plot_single(x=dataf.index,
-  #                                          y=dataf[c],
-  #                                          kwargs=kwargs)

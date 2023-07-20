@@ -42,10 +42,10 @@ class MatPlotLibPlot():
 
   def plot_single(self,
                   x: pd.DatetimeIndex | pd.Series,
-                  y: pd.Series,
+                  y: pd.Series | pd.DataFrame,
                   kwargs: dict[str, str],
-                  fig_ax: Optional[plt.Axes] = None,
-                  **plt_kwargs) -> plt.Figure:
+                  fig_ax: Optional[plt.Axes | go.Figure] = None,
+                  **plt_kwargs) -> plt.Axes | go.Figure:
     """
     Plot a single line plot
 
@@ -80,7 +80,7 @@ class MatPlotLibPlot():
     ax.grid()
     return fig
 
-  def corr_plot(self, corr_matrix: pd.DataFrame) -> plt.Figure:
+  def corr_plot(self, corr_matrix: pd.DataFrame) -> plt.Axes:
     """
     Plot a correlation matrix
     
@@ -135,7 +135,7 @@ class MatPlotLibPlot():
 
     return fig
 
-  def box_plot(self, data: pd.DataFrame, kwargs: dict[str, str]) -> plt.Figure:
+  def box_plot(self, data: pd.DataFrame, kwargs: dict[str, str]) -> plt.Axes:
     """
     Plot a box plot
     
@@ -221,10 +221,10 @@ class PlotlyPlot():
 
   def plot_single(self,
                   x: pd.DatetimeIndex | pd.Series,
-                  y: pd.Series,
-                  kwargs,
-                  fig_ax: Optional[go.Figure] = None,
-                  **fig_kwargs) -> go.Figure:
+                  y: pd.Series | pd.DataFrame,
+                  kwargs: dict[str, str],
+                  fig_ax: Optional[plt.Axes | go.Figure] = None,
+                  **fig_kwargs) -> plt.Axes | go.Figure:
     """
     Plot a single line plot
     

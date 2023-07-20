@@ -505,8 +505,7 @@ class DataManip:
       day: Optional[list[int]] = None,
       hour: Optional[list[int]] = None,
       date: Optional[list[datetime.date]] = None,
-      inplace: bool = False
-  ) -> pd.DataFrame | Any:  # Add value limits e.g above 10kWh?
+      inplace: bool = False) -> Self:  # Add value limits e.g above 10kWh?
     """
     Filter the data by given year, month, day or date.
 
@@ -568,10 +567,6 @@ class DataManip:
       return DataManip(filtered_data,
                        frequency=self.frequency,
                        metadata=self.metadata)
-
-
-# if season is not None:
-#       filt &= index_data.season.isin(season)
 
   def groupby(self,
               groupby_type: str = viz_schema.GroupingKeySchema.WEEK_SEASON,
@@ -644,7 +639,7 @@ class DataManip:
   def resampled(self,
                 freq: str = 'D',
                 func: Callable[[pd.DataFrame], pd.DataFrame] = np.mean,
-                inplace: bool = False) -> pd.DataFrame | Any:
+                inplace: bool = False) -> Self:
     """
     Resample the data by given frequency and aggregate by a given function.
 
@@ -675,7 +670,7 @@ class DataManip:
   def rolling(self,
               window: int = 3,
               func: Callable[[pd.DataFrame], pd.Series] = np.mean,
-              inplace: bool = False) -> pd.DataFrame | pd.Series | Any:
+              inplace: bool = False) -> Self:
     """
     Rolling window function.
 
@@ -693,8 +688,9 @@ class DataManip:
     """
     rolling_data = self.data.rolling(window).agg(func)
     if inplace:
+      self.data = rolling_data
+      return Self
+    else:
       return DataManip(rolling_data,
                        frequency=self.frequency,
                        metadata=self.metadata)
-    else:
-      return rolling_data
