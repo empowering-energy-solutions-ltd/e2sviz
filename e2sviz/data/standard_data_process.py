@@ -548,16 +548,9 @@ class DataManip:
 
     filtered_data = self.data.loc[filt].copy()
 
-    # if inplace:
-    #   return DataManip(filtered_data,
-    #                    frequency=self.frequency,
-    #                    metadata=self.metadata)
-    # else:
-    #   return filtered_data
-
     if inplace:
       # self.metadata = class_meta_data
-      # self.data = grouped_data
+      self.data = filtered_data
       return Self
     else:
       return DataManip(filtered_data,

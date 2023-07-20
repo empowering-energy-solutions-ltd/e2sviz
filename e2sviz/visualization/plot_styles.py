@@ -121,14 +121,14 @@ class MatPlotLibPlot():
       column_sums = data[cols].sum()
       column_names = cols
       sums = column_sums.values.tolist()
-      ax.bar(column_names, sums, ax=ax)
+      ax.bar(column_names, sums, label=kwargs['legend'])
     else:
       data[cols].plot(kind='bar', ax=ax)
 
     ax.set_title(kwargs['title'])
     ax.set_xlabel(kwargs['x_label'])
     ax.set_ylabel(kwargs['y_label'])
-    ax.legend(kwargs['legend'])
+    ax.legend()
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.grid()
@@ -340,8 +340,8 @@ class PlotlyPlot():
 
     fig.update_layout(
         barmode='group',
-        title=kwargs['title'],
-        xaxis_title=kwargs['x_label'],
+        title='Bar plot',
+        xaxis_title='Months',  #kwargs['x_label'],
         yaxis_title=kwargs['y_label'],
         xaxis_tickangle=-45,
         # showlegend=True,
