@@ -3,6 +3,7 @@ from typing import Any, Optional
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import plotly.express as px
 import plotly.graph_objects as go
 import seaborn as sns
 
@@ -97,7 +98,8 @@ class MatPlotLibPlot():
     ax = sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', ax=ax)
     return fig
 
-  def bar_plot(self, data: pd.DataFrame, kwargs: dict[str, str]) -> plt.Figure:
+  def bar_plot(self, data: pd.DataFrame, kwargs: dict[str, str],
+               cols: list[str], sum_vals: bool) -> plt.Figure:
     """
     Plot a bar plot
     
@@ -113,17 +115,19 @@ class MatPlotLibPlot():
     plt.Figure
         Matplotlib figure
     """
-    column_sums = data.sum()
-    column_names = column_sums.index.tolist()
-    sums = column_sums.values.tolist()
 
     fig, ax = plt.subplots(figsize=(10, 5))
-    ax.bar(column_names, sums)
+    if sum_vals:
+      column_sums = data[cols].sum()
+      column_names = cols
+      sums = column_sums.values.tolist()
+      ax.bar(column_names, sums, ax=ax)
+    else:
+      data[cols].plot(kind='bar', ax=ax)
 
     ax.set_title(kwargs['title'])
     ax.set_xlabel(kwargs['x_label'])
     ax.set_ylabel(kwargs['y_label'])
-
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.grid()
@@ -298,33 +302,48 @@ class PlotlyPlot():
 
     return fig
 
-  def bar_plot(self, data: pd.DataFrame, kwargs: dict[str, str]) -> go.Figure:
+  def bar_plot(self, data: pd.DataFrame, kwargs: dict[str, str],
+               cols: list[str], sum_vals: bool):
     """
-    Create a bar plot.
+    Plot a bar plot using Plotly
 
     Parameters
     ----------
     data : pd.DataFrame
         Data to plot
     kwargs : dict[str, str]
-        Plot settings
+        Dictionary containing the plot settings
+    cols : list[str]
+        List of column names to plot
+    sum_vals : bool
+        Whether to plot the sum of values in columns or individual columns
 
     Returns
     -------
     go.Figure
-        Plotly figure of bar plot
+        Plotly figure
     """
-    column_sums = data.sum()
-    column_names = column_sums.index.tolist()
-    sums = column_sums.values.tolist()
 
-    fig = go.Figure(data=[go.Bar(x=column_names, y=sums)])
+    if sum_vals:
+      column_sums = data[cols].sum()
+      sums = column_sums.values.tolist()
 
-    fig.update_layout(title=kwargs['title'],
-                      xaxis_title=kwargs['x_label'],
-                      yaxis_title=kwargs['y_label'],
-                      xaxis=dict(tickangle=45),
-                      showlegend=False)
+      fig = go.Figure(data=[go.Bar(x=cols, y=sums)])
+    else:
+      fig = go.Figure()
+
+      for col in cols:
+        fig.add_trace(go.Bar(x=data.index, y=data[col], name=col))
+
+    fig.update_layout(
+        barmode='group',
+        title=kwargs['title'],
+        xaxis_title=kwargs['x_label'],
+        yaxis_title=kwargs['y_label'],
+        xaxis_tickangle=-45,
+        showlegend=False,
+        margin=dict(l=50, r=50, t=50, b=50),
+    )
 
     return fig
 

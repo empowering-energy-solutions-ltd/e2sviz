@@ -25,8 +25,8 @@ class LibraryViz(Protocol):
   def corr_plot(self, corr_matrix) -> plt.Figure | go.Figure:
     ...
 
-  def bar_plot(self, data: pd.DataFrame,
-               kwargs: dict[str, str]) -> plt.Figure | go.Figure:
+  def bar_plot(self, data: pd.DataFrame, kwargs: dict[str, Any],
+               cols: list[str], sum_vals: bool) -> plt.Figure | go.Figure:
     ...
 
   def box_plot(self, data: pd.DataFrame,
@@ -270,9 +270,40 @@ class DataViz:
   def multi_plot(self):
     pass
 
-  def bar_box_plot(self, bar: bool = True) -> plt.Axes | go.Figure:
+  def bar_plot(self,
+               cols: Optional[list[str]],
+               sum_vals: bool = False) -> plt.Axes | go.Figure:
     """
-    Plots a barplot or boxplot of the column sums.
+    Plots a barplot of the columns.
+
+    Parameters
+    ----------
+    cols : Optional[list[str]], optional
+        The columns to be plotted. If None, all columns are plotted.
+    sum : bool, optional
+        If True, sums the columns. If False, plots the columns as is. The default is False.
+
+    Returns
+    -------
+    plt.Axes | go.Figure
+        Barplot or boxplot of column data.
+    """
+    kwargs: dict[str, Any] = {
+        'title': 'Barplot of columns',
+        'x_label': 'Columns',
+        'y_label': 'Energy (kWh)',
+        'legend': [],
+    }
+    if cols is None:
+      cols: list[str] = self.data.columns
+    return self.viz_selector.bar_plot(data=self.data,
+                                      kwargs=kwargs,
+                                      cols=cols,
+                                      sum_vals=sum_vals)
+
+  def box_plot(self) -> plt.Axes | go.Figure:
+    """
+    Plots a boxplot of the columns.
     
     Parameters
     ----------
@@ -286,17 +317,12 @@ class DataViz:
     """
     dataf = self.data.copy()
     kwargs = {
-        'title': 'Barplot of column sums',
+        'title': 'Boxplot of columns',
         'x_label': 'Columns',
         'y_label': 'Energy (kWh)',
         'legend': [],
     }
-    if bar:
-      kwargs['title'] = 'Barplot of column sums'
-      return self.viz_selector.bar_plot(data=dataf, kwargs=kwargs)  #.show()
-    else:
-      kwargs['title'] = 'Boxplot of columns'
-      return self.viz_selector.box_plot(data=dataf, kwargs=kwargs)  #.show()
+    return self.viz_selector.box_plot(data=dataf, kwargs=kwargs)  #.show()
 
   def pie_chart_plot(self) -> plt.Axes | go.Figure:
     """
