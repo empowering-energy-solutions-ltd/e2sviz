@@ -127,6 +127,9 @@ class DataManipProtocol(Protocol):
     ...
 
 
+PLOT_FACTORY = {'single_plot': LibraryViz.plot_single}
+
+
 @dataclass
 class DataViz:
   """
@@ -155,41 +158,50 @@ class DataViz:
   data: pd.DataFrame
   metadata: MetaData
   viz_selector: LibraryViz
+  plot_columns: Optional[list[str]] = None
 
-  def single_line_plot(
-      self,
-      cols: Optional[List[str]] = None,
-      fig_ax: Optional[go.Figure | plt.Axes] = None) -> plt.Axes | go.Figure:
+  def __post_init__(self):
+    if self.plot_columns is None:
+      self.plot_columns = self.data.columns.to_list()
+
+  def plot(self, plot_kind):
+    plot_data = self.structured_data()
+    list_kwargs = self.create_list_kwargs()
+    return PLOT_FACTORY[plot_kind](plot_data, self.plot_columns, list_kwargs)
+
+  def structured_data(self) -> pd.DataFrame:
     """
-        Plots the data.
-
-        Parameters
-        ----------
-        cols : Optional[List[str]], optional
-            The columns to be plotted. If None, all columns are plotted.
-
-        Returns
-        -------
-        plt.Axes | go.Figure
-            The plot.
-        """
+    Returns the data in a structured format.
+    
+    Returns
+    -------
+    pd.DataFrame
+      The data in a structured format.
+    """
     data_copy = self.data.copy()
     if len(self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
         viz_schema.MetaDataSchema.GROUPED_COLS]) > 0:
       data_copy = self._process_grouped_data(data_copy)
-    if cols is None:
-      cols = data_copy.columns
-    for col in cols:
+    return data_copy
+
+  def create_list_kwargs(self) -> list[dict[str, Any]]:
+    """
+    Creates the list of kwargs for each column.
+
+    Returns
+    -------
+    list[dict[str, Any]]
+      The list of kwargs for each column.
+    """
+    list_kwargs = []
+    for col in self.plot_columns:
       kwargs = {
           'title': self.metadata.get_title(col),
-          'x_label': self.metadata.get_x_label,
           'y_label': self.metadata.get_y_label(col),
           'legend': self.metadata.get_legend(col),
       }
-      return self.viz_selector.plot_single(x=data_copy.index,
-                                           y=data_copy[col],
-                                           fig_ax=fig_ax,
-                                           kwargs=kwargs)
+      list_kwargs.append(kwargs)
+    return list_kwargs
 
   def _process_grouped_data(self, data_copy: pd.DataFrame) -> pd.DataFrame:
     """Process grouped data and pivot if needed."""
@@ -267,84 +279,119 @@ class DataViz:
     value_columns = [col for col in dataf.columns if col != legend_cols]
     return dataf.pivot(columns=legend_cols, values=value_columns)
 
-  def multi_plot(self):
-    pass
+    # def single_line_plot(
+    #     self,
+    #     cols: Optional[List[str]] = None,
+    #     fig_ax: Optional[go.Figure | plt.Axes] = None) -> plt.Axes | go.Figure:
+    #   """
+    #       Plots the data.
 
-  def bar_plot(self,
-               cols: Optional[list[str]] = None,
-               sum_vals: bool = False) -> plt.Axes | go.Figure:
-    """
-    Plots a barplot of the columns.
+    #       Parameters
+    #       ----------
+    #       cols : Optional[List[str]], optional
+    #           The columns to be plotted. If None, all columns are plotted.
 
-    Parameters
-    ----------
-    cols : Optional[list[str]], optional
-        The columns to be plotted. If None, all columns are plotted.
-    sum : bool, optional
-        If True, sums the columns. If False, plots the columns as is. The default is False.
+    #       Returns
+    #       -------
+    #       plt.Axes | go.Figure
+    #           The plot.
+    #       """
+    #   data_copy = self.data.copy()
+    #   if len(self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
+    #       viz_schema.MetaDataSchema.GROUPED_COLS]) > 0:
+    #     data_copy = self._process_grouped_data(data_copy)
+    #   if cols is None:
+    #     cols = data_copy.columns
+    #   for col in cols:
+    #     kwargs = {
+    #         'title': self.metadata.get_title(col),
+    #         'x_label': self.metadata.get_x_label,
+    #         'y_label': self.metadata.get_y_label(col),
+    #         'legend': self.metadata.get_legend(col),
+    #     }
+    #     return self.viz_selector.plot_single(x=data_copy.index,
+    #                                          y=data_copy[col],
+    #                                          fig_ax=fig_ax,
+    #                                          kwargs=kwargs)
 
-    Returns
-    -------
-    plt.Axes | go.Figure
-        Barplot or boxplot of column data.
-    """
-    if cols is None:
-      cols: list[str] = self.data.columns
-    kwargs: dict[str, Any] = {
-        'title': 'Barplot of columns',
-        'x_label': 'Columns',
-        'y_label': 'Energy (kWh)',
-        'legend': cols,
-    }
-    return self.viz_selector.bar_plot(data=self.data,
-                                      kwargs=kwargs,
-                                      cols=cols,
-                                      sum_vals=sum_vals)
+    # def multi_plot(self):
+    #   pass
 
-  def box_plot(self) -> plt.Axes | go.Figure:
-    """
-    Plots a boxplot of the columns.
-    
-    Parameters
-    ----------
-    bar : bool, optional
-        If True, plots a barplot. If False, plots a boxplot. The default is True.
-    
-    Returns
-    -------
-    plt.Axes | go.Figure
-        Barplot or boxplot of column data.
-    """
-    dataf = self.data.copy()
-    kwargs = {
-        'title': 'Boxplot of columns',
-        'x_label': 'Columns',
-        'y_label': 'Energy (kWh)',
-        'legend': [],
-    }
-    return self.viz_selector.box_plot(data=dataf, kwargs=kwargs)  #.show()
+    # def bar_plot(self,
+    #              cols: Optional[list[str]] = None,
+    #              sum_vals: bool = False) -> plt.Axes | go.Figure:
+    #   """
+    #   Plots a barplot of the columns.
 
-  def pie_chart_plot(self) -> plt.Axes | go.Figure:
-    """
-    Plots a pie chart of the column sums.
-    
-    Returns
-    -------
-    plt.Axes | go.Figure
-        Pie chart plot."""
-    dataf = self.data.copy()
-    kwargs = {
-        'title': 'Piechart of column sums',
-        'x_label': 'Columns',
-        'y_label': 'Column Values',
-        'legend': [],
-    }
-    return self.viz_selector.pie_chart(data=dataf, kwargs=kwargs)  #.show()
+    #   Parameters
+    #   ----------
+    #   cols : Optional[list[str]], optional
+    #       The columns to be plotted. If None, all columns are plotted.
+    #   sum : bool, optional
+    #       If True, sums the columns. If False, plots the columns as is. The default is False.
 
-  def scatter_plot(self):
-    pass
+    #   Returns
+    #   -------
+    #   plt.Axes | go.Figure
+    #       Barplot or boxplot of column data.
+    #   """
+    #   if cols is None:
+    #     cols: list[str] = self.data.columns
+    #   kwargs: dict[str, Any] = {
+    #       'title': 'Barplot of columns',
+    #       'x_label': 'Columns',
+    #       'y_label': 'Energy (kWh)',
+    #       'legend': cols,
+    #   }
+    #   return self.viz_selector.bar_plot(data=self.data,
+    #                                     kwargs=kwargs,
+    #                                     cols=cols,
+    #                                     sum_vals=sum_vals)
 
-  def correlation_plot(self) -> plt.Axes | go.Figure:
+    # def box_plot(self) -> plt.Axes | go.Figure:
+    #   """
+    #   Plots a boxplot of the columns.
+
+    #   Parameters
+    #   ----------
+    #   bar : bool, optional
+    #       If True, plots a barplot. If False, plots a boxplot. The default is True.
+
+    #   Returns
+    #   -------
+    #   plt.Axes | go.Figure
+    #       Barplot or boxplot of column data.
+    #   """
+    #   dataf = self.data.copy()
+    #   kwargs = {
+    #       'title': 'Boxplot of columns',
+    #       'x_label': 'Columns',
+    #       'y_label': 'Energy (kWh)',
+    #       'legend': [],
+    #   }
+    #   return self.viz_selector.box_plot(data=dataf, kwargs=kwargs)  #.show()
+
+    # def pie_chart_plot(self) -> plt.Axes | go.Figure:
+    #   """
+    #   Plots a pie chart of the column sums.
+
+    #   Returns
+    #   -------
+    #   plt.Axes | go.Figure
+    #       Pie chart plot."""
+    #   dataf = self.data.copy()
+    #   kwargs = {
+    #       'title': 'Piechart of column sums',
+    #       'x_label': 'Columns',
+    #       'y_label': 'Column Values',
+    #       'legend': [],
+    #   }
+    #   return self.viz_selector.pie_chart(data=dataf, kwargs=kwargs)  #.show()
+
+    # def scatter_plot(self):
+    #   pass
+
+    # def correlation_plot(self) -> plt.Axes | go.Figure:
     """
     Plots the correlation matrix of the data.
 
