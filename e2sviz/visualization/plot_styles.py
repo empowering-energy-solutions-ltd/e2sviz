@@ -18,6 +18,7 @@ def custom_plot(x, y, ax=None, **plt_kwargs):
 
 
 class MatPlotLibPlot():
+  container: plt.Axes
 
   def __init__(self):
     self.plt_settings()

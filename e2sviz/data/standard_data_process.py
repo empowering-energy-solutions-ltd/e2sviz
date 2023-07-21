@@ -587,23 +587,9 @@ class DataManip:
         gb_col_data[viz_schema.MetaDataSchema.GROUPED_COLS]).agg(
             {col: func
              for col in col_list})
-    new_meta_data = self.metadata.metadata.copy()
+    new_meta_data = self.update_metadata(grouped_data, gb_col_data)
     new_meta_data[viz_schema.MetaDataSchema.FRAME][
-        viz_schema.MetaDataSchema.INDEX_COLS] = gb_col_data[
-            viz_schema.MetaDataSchema.INDEX_COLS]
-    new_meta_data[viz_schema.MetaDataSchema.FRAME][
-        viz_schema.MetaDataSchema.GROUPED_COLS] = gb_col_data[
-            viz_schema.MetaDataSchema.GROUPED_COLS]
-
-    if len(gb_col_data[viz_schema.MetaDataSchema.LEGEND]):
-      result_list = self.populate_legend(grouped_data, gb_col_data)
-    for c in self.data.columns:
-      if len(gb_col_data[viz_schema.MetaDataSchema.LEGEND]):
-        new_meta_data[c][viz_schema.MetaDataSchema.LEGEND] = result_list
-
-      new_meta_data[viz_schema.MetaDataSchema.FRAME][
-          viz_schema.MetaDataSchema.GB_AGG] = func.__name__
-
+        viz_schema.MetaDataSchema.GB_AGG] = func.__name__
     class_meta_data = MetaData(new_meta_data)
 
     return self.inplace_data(grouped_data,
@@ -642,6 +628,39 @@ class DataManip:
           for value2 in unique_values[1]
       ]
     return result_list
+
+  def update_metadata(
+      self, grouped_data: pd.DataFrame,
+      gb_col_data: dict[str,
+                        list[str]]) -> dict[str, dict[str, str | list[str]]]:
+    """
+    Update the metadata for the grouped data.
+
+    Parameters
+    ----------
+    grouped_data : pd.DataFrame
+        The grouped and aggregated data.
+    gb_col_data : dict[str, list[str]]
+        The dictionary of groupby columns.
+
+    Returns
+    -------
+    dict[str, dict[str, str | list[str]]]
+        The updated metadata.
+    """
+    new_meta_data = self.metadata.metadata.copy()
+    new_meta_data[viz_schema.MetaDataSchema.FRAME][
+        viz_schema.MetaDataSchema.INDEX_COLS] = gb_col_data[
+            viz_schema.MetaDataSchema.INDEX_COLS]
+    new_meta_data[viz_schema.MetaDataSchema.FRAME][
+        viz_schema.MetaDataSchema.GROUPED_COLS] = gb_col_data[
+            viz_schema.MetaDataSchema.GROUPED_COLS]
+    if len(gb_col_data[viz_schema.MetaDataSchema.LEGEND]):
+      result_list = self.populate_legend(grouped_data, gb_col_data)
+    for c in self.data.columns:
+      if len(gb_col_data[viz_schema.MetaDataSchema.LEGEND]):
+        new_meta_data[c][viz_schema.MetaDataSchema.LEGEND] = result_list
+    return new_meta_data
 
   def resampled(self,
                 freq: str = 'D',
