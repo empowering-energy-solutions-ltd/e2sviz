@@ -16,10 +16,8 @@ class LibraryViz(Protocol):
   Selects the visualisation library to be used.
   """
 
-  def plot_single(
-      self, x: pd.DatetimeIndex | pd.Series, y: pd.Series | pd.DataFrame,
-      kwargs: dict[str, str],
-      fig_ax: Optional[plt.Axes | go.Figure]) -> plt.Axes | go.Figure:
+  def plot_single(self, dataf: pd.DataFrame, plot_columns: list[str],
+                  dict_kwargs: dict[str, dict[str, str]], **plt_kwargs):
     ...
 
   def corr_plot(self, corr_matrix) -> plt.Figure | go.Figure:
@@ -42,6 +40,7 @@ class MetaData(Protocol):
   """
   Stores the meta data.
   """
+
   metadata: dict[str, dict[str, Any]]
 
   def units(self, col: str) -> viz_enums.UnitsSchema:
@@ -71,7 +70,8 @@ class MetaData(Protocol):
     ...
 
 
-class DataManipProtocol(Protocol):
+# class DataManipProtocol(Protocol):
+
   """
   Manipulates the data.
   """
@@ -126,8 +126,12 @@ class DataManipProtocol(Protocol):
               inplace: bool = False) -> Self:
     ...
 
-
-PLOT_FACTORY = {'single_plot': LibraryViz.plot_single}
+PLOT_FACTORY = {
+    'single_plot': LibraryViz.plot_single,
+    'bar_plot': LibraryViz.bar_plot,
+    'box_plot': LibraryViz.box_plot,
+    'pie_chart': LibraryViz.pie_chart
+}
 
 
 @dataclass
@@ -166,8 +170,10 @@ class DataViz:
 
   def plot(self, plot_kind):
     plot_data = self.structured_data()
-    list_kwargs = self.create_list_kwargs()
-    return PLOT_FACTORY[plot_kind](plot_data, self.plot_columns, list_kwargs)
+    dict_kwargs = self.create_dict_kwargs()
+    return PLOT_FACTORY[plot_kind](dataf=plot_data,
+                                   plot_columns=self.plot_columns,
+                                   dict_kwargs=dict_kwargs)
 
   def structured_data(self) -> pd.DataFrame:
     """
@@ -184,7 +190,7 @@ class DataViz:
       data_copy = self._process_grouped_data(data_copy)
     return data_copy
 
-  def create_list_kwargs(self) -> list[dict[str, Any]]:
+  def create_dict_kwargs(self) -> dict[str, dict[str, Any]]:
     """
     Creates the list of kwargs for each column.
 
@@ -193,15 +199,16 @@ class DataViz:
     list[dict[str, Any]]
       The list of kwargs for each column.
     """
-    list_kwargs = []
-    for col in self.plot_columns:
+    dict_kwargs = {}
+    for column in self.plot_columns:
       kwargs = {
-          'title': self.metadata.get_title(col),
-          'y_label': self.metadata.get_y_label(col),
-          'legend': self.metadata.get_legend(col),
+          'title': self.metadata.get_title(column),
+          'x_label': self.metadata.get_x_label,
+          'y_label': self.metadata.get_y_label(column),
+          'legend': self.metadata.get_legend(column),
       }
-      list_kwargs.append(kwargs)
-    return list_kwargs
+      dict_kwargs[column] = kwargs
+    return dict_kwargs
 
   def _process_grouped_data(self, data_copy: pd.DataFrame) -> pd.DataFrame:
     """Process grouped data and pivot if needed."""

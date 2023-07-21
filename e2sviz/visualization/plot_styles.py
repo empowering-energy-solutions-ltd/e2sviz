@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Any, Optional
 
 import matplotlib.pyplot as plt
@@ -17,11 +18,18 @@ def custom_plot(x, y, ax=None, **plt_kwargs):
   return ax
 
 
+@dataclass
 class MatPlotLibPlot():
   container: plt.Axes
 
   def __init__(self):
     self.plt_settings()
+
+  @property
+  def get_container(self):
+    if self.container is None:
+      self.container = plt.subplots(figsize=(10, 5))[1]
+    return self.container
 
   def plt_settings(self):
     """
@@ -41,45 +49,53 @@ class MatPlotLibPlot():
     fig_format = "png"
     dpi = 1000
 
-  def plot_single(self,
-                  x: pd.DatetimeIndex | pd.Series,
-                  y: pd.Series | pd.DataFrame,
-                  kwargs: dict[str, str],
-                  fig_ax: Optional[plt.Axes | go.Figure] = None,
-                  **plt_kwargs) -> plt.Axes | go.Figure:
+  def get_column_kwargs(
+      self, column: str, dict_kwargs: dict[str, dict[str,
+                                                     str]]) -> dict[str, str]:
     """
-    Plot a single line plot
-
+    Get the keyword arguments for a column
+    
     Parameters
     ----------
-    x : pd.DatetimeIndex
-        x-axis values
-    y : pd.Series
-        y-axis values
-    kwargs : dict
+    column : str
+        Column name
+    dict_kwargs : dict[str, dict[str, str]]
         Dictionary containing the plot settings
-    
+        
     Returns
     -------
-    plt.Figure
-        Matplotlib figure
+    dict[str, str]
+        Dictionary containing the keyword arguments
     """
+    return dict_kwargs[column]
 
-    if fig_ax is None:
-      fig, ax = plt.subplots(figsize=(10, 5))
-    else:
-      ax = fig_ax
-      fig = ax.get_figure()
-
-    ax = custom_plot(x, y, ax=ax, **plt_kwargs)
-
+  def set_kwargs(self, ax: plt.Axes, kwargs: dict[str, str]):
+    """
+    Set the keyword arguments for a plot
+    
+    Parameters
+    ----------
+    kwargs : dict[str, str]
+        Dictionary containing the plot settings
+    """
     ax.set_title(kwargs['title'])
     ax.set_xlabel(kwargs['x_label'])
     ax.set_ylabel(kwargs['y_label'])
     if len(kwargs['legend']):
       ax.legend(kwargs['legend'])
     ax.grid()
-    return fig
+
+  def plot_single(self, dataf: pd.DataFrame, plot_columns: list[str],
+                  dict_kwargs: dict[str, dict[str, str]], **plt_kwargs):
+
+    ax = self.get_container
+    fig = ax.get_figure()
+
+    for column in plot_columns:
+      kwargs = self.get_column_kwargs(column, dict_kwargs)
+      ax = custom_plot(dataf.index, dataf[column], ax=ax, **kwargs)
+      self.set_kwargs(ax, kwargs)
+      self.container = ax
 
   def corr_plot(self, corr_matrix: pd.DataFrame) -> plt.Axes:
     """
