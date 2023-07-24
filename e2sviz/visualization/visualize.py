@@ -1,5 +1,6 @@
 import datetime
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Callable, List, Optional, Protocol, Self
 
 import matplotlib.pyplot as plt
@@ -17,22 +18,29 @@ class LibraryViz(Protocol):
   """
 
   def plot_single(self, dataf: pd.DataFrame, plot_columns: list[str],
-                  dict_kwargs: dict[str, dict[str, str]], **plt_kwargs):
+                  dict_kwargs: dict[str, dict[str, str]]):
     ...
 
-  def corr_plot(self, corr_matrix) -> plt.Figure | go.Figure:
+  def corr_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+                dict_kwargs: dict[str, dict[str, str]]):
     ...
 
-  def bar_plot(self, data: pd.DataFrame, kwargs: dict[str, Any],
-               cols: list[str], sum_vals: bool) -> plt.Figure | go.Figure:
+  def bar_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+               dict_kwargs: dict[str, dict[str, str]]):
     ...
 
-  def box_plot(self, data: pd.DataFrame,
-               kwargs: dict[str, str]) -> plt.Figure | go.Figure:
+  def box_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+               dict_kwargs: dict[str, dict[str, str]]):
     ...
 
-  def pie_chart(self, data: pd.DataFrame,
-                kwargs: dict[str, str]) -> plt.Figure | go.Figure:
+  def pie_chart(self, dataf: pd.DataFrame, plot_columns: list[str],
+                dict_kwargs: dict[str, dict[str, str]]):
+    ...
+
+  def show(self) -> Any:
+    ...
+
+  def save(self, save_path: Path) -> Any:
     ...
 
 
@@ -70,68 +78,61 @@ class MetaData(Protocol):
     ...
 
 
-# class DataManipProtocol(Protocol):
+# # class DataManipProtocol(Protocol):
 
-  """
-  Manipulates the data.
-  """
-  data: pd.DataFrame
-  frequency: viz_schema.FrequencySchema
-  column_meta_data: MetaData
+#   """
+#   Manipulates the data.
+#   """
+#   data: pd.DataFrame
+#   frequency: viz_schema.FrequencySchema
+#   column_meta_data: MetaData
 
-  def __post_init__(self) -> None:
-    ...
+#   def __post_init__(self) -> None:
+#     ...
 
-  def check_freq(self) -> None:
-    ...
+#   def check_freq(self) -> None:
+#     ...
 
-  def check_meta_data(self) -> None:
-    ...
+#   def check_meta_data(self) -> None:
+#     ...
 
-  def check_rescaling(self) -> None:
-    ...
+#   def check_rescaling(self) -> None:
+#     ...
 
-  @property
-  def column_from_freq(self) -> str:
-    ...
+#   @property
+#   def column_from_freq(self) -> str:
+#     ...
 
-  @property
-  def dict_of_groupbys(self) -> dict[str, List[str]]:
-    ...
+#   @property
+#   def dict_of_groupbys(self) -> dict[str, List[str]]:
+#     ...
 
-  def filter(self,
-             year: Optional[List[int]] = None,
-             month: Optional[List[int]] = None,
-             day: Optional[List[int]] = None,
-             hour: Optional[List[int]] = None,
-             date: Optional[List[datetime.date]] = None,
-             inplace: bool = False) -> Self:
-    ...
+#   def filter(self,
+#              year: Optional[List[int]] = None,
+#              month: Optional[List[int]] = None,
+#              day: Optional[List[int]] = None,
+#              hour: Optional[List[int]] = None,
+#              date: Optional[List[datetime.date]] = None,
+#              inplace: bool = False) -> Self:
+#     ...
 
-  def groupby(self,
-              groupby_type: str = 'week_season',
-              func: Callable[[pd.DataFrame], pd.Series] = np.mean,
-              inplace: bool = False) -> Self:
-    ...
+#   def groupby(self,
+#               groupby_type: str = 'week_season',
+#               func: Callable[[pd.DataFrame], pd.Series] = np.mean,
+#               inplace: bool = False) -> Self:
+#     ...
 
-  def resample(self,
-               freq: str = 'D',
-               func: Callable[[pd.DataFrame], pd.Series] = np.mean,
-               inplace: bool = False) -> Self:
-    ...
+#   def resample(self,
+#                freq: str = 'D',
+#                func: Callable[[pd.DataFrame], pd.Series] = np.mean,
+#                inplace: bool = False) -> Self:
+#     ...
 
-  def rolling(self,
-              window: int = 3,
-              func: Callable[[pd.DataFrame], pd.Series] = np.mean,
-              inplace: bool = False) -> Self:
-    ...
-
-PLOT_FACTORY = {
-    'single_plot': LibraryViz.plot_single,
-    'bar_plot': LibraryViz.bar_plot,
-    'box_plot': LibraryViz.box_plot,
-    'pie_chart': LibraryViz.pie_chart
-}
+#   def rolling(self,
+#               window: int = 3,
+#               func: Callable[[pd.DataFrame], pd.Series] = np.mean,
+#               inplace: bool = False) -> Self:
+#     ...
 
 
 @dataclass
@@ -166,14 +167,31 @@ class DataViz:
 
   def __post_init__(self):
     if self.plot_columns is None:
-      self.plot_columns = self.data.columns.to_list()
+      self.plot_columns: list[str] = self.data.columns.to_list()
+
+  @property
+  def plot_factory(self) -> dict[str, Callable]:
+    return {
+        'single_plot': self.viz_selector.plot_single,
+        'corr_plot': self.viz_selector.corr_plot,
+        'bar_plot': self.viz_selector.bar_plot,
+        'box_plot': self.viz_selector.box_plot,
+        'pie_chart': self.viz_selector.pie_chart
+    }
 
   def plot(self, plot_kind):
     plot_data = self.structured_data()
     dict_kwargs = self.create_dict_kwargs()
-    return PLOT_FACTORY[plot_kind](dataf=plot_data,
-                                   plot_columns=self.plot_columns,
-                                   dict_kwargs=dict_kwargs)
+    self.plot_factory[plot_kind](dataf=plot_data,
+                                 plot_columns=self.plot_columns,
+                                 dict_kwargs=dict_kwargs)
+    # return self.viz_selector.show()
+
+  def show_viz(self):
+    self.viz_selector.show()
+
+  def save_figure(self):
+    self.viz_selector.save()
 
   def structured_data(self) -> pd.DataFrame:
     """

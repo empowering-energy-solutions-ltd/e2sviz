@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Optional
 
 import matplotlib.pyplot as plt
@@ -18,18 +19,25 @@ def custom_plot(x, y, ax=None, **plt_kwargs):
   return ax
 
 
+def custom_plot_from_df(dataf: pd.DataFrame,
+                        ax: plt.Axes = None,
+                        **plt_kwargs):
+  if ax is None:
+    ax = plt.gca()
+  dataf.plot(ax=ax, **plt_kwargs)  ## example plot here
+  ax.margins(0, None)
+  ax.grid()
+  ax.yaxis.set_major_formatter(mtick.StrMethodFormatter('{x:,.0f}'))
+
+
 @dataclass
 class MatPlotLibPlot():
-  container: plt.Axes
+  container: Optional[plt.Axes] = None
 
-  def __init__(self):
+  def __post_init__(self):
     self.plt_settings()
-
-  @property
-  def get_container(self):
     if self.container is None:
-      self.container = plt.subplots(figsize=(10, 5))[1]
-    return self.container
+      self.container = plt.figure(figsize=(15, 8)).gca()
 
   def plt_settings(self):
     """
@@ -45,6 +53,8 @@ class MatPlotLibPlot():
         'ytick.labelsize': font_size,
         'font.size': font_size
     }
+    plt.style.use('ggplot')
+    plt.style.use('seaborn-v0_8-colorblind')
     plt.rcParams.update(params)
     fig_format = "png"
     dpi = 1000
@@ -81,23 +91,31 @@ class MatPlotLibPlot():
     ax.set_title(kwargs['title'])
     ax.set_xlabel(kwargs['x_label'])
     ax.set_ylabel(kwargs['y_label'])
-    if len(kwargs['legend']):
-      ax.legend(kwargs['legend'])
-    ax.grid()
+    ax.legend(kwargs['legend'])
 
   def plot_single(self, dataf: pd.DataFrame, plot_columns: list[str],
-                  dict_kwargs: dict[str, dict[str, str]], **plt_kwargs):
+                  dict_kwargs: dict[str, dict[str, str]]):
+    """
+    Plot a single line plot.
 
-    ax = self.get_container
-    fig = ax.get_figure()
-
+    Parameters
+    ----------
+    dataf : pd.DataFrame
+        Data to plot.
+    dict_kwargs : dict[str, dict[str, str]]
+        Dictionary containing the kwargs for each column.
+    **plt_kwargs : dict
+        Additional matplotlib plot settings.
+    """
     for column in plot_columns:
+      ax: plt.Axes = self.container
       kwargs = self.get_column_kwargs(column, dict_kwargs)
-      ax = custom_plot(dataf.index, dataf[column], ax=ax, **kwargs)
+      ax = custom_plot(dataf.index, dataf[column], ax=ax)
       self.set_kwargs(ax, kwargs)
       self.container = ax
 
-  def corr_plot(self, corr_matrix: pd.DataFrame) -> plt.Axes:
+  def corr_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+                dict_kwargs: dict[str, dict[str, str]]):
     """
     Plot a correlation matrix
     
@@ -111,12 +129,12 @@ class MatPlotLibPlot():
     plt.Figure
         Matplotlib figure
     """
-    fig, ax = plt.subplots(figsize=(10, 10))
-    ax = sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', ax=ax)
-    return fig
+    corr_matrix = dataf[plot_columns].corr()
+    ax = sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', ax=None)
+    self.container = ax
 
-  def bar_plot(self, data: pd.DataFrame, kwargs: dict[str, str],
-               cols: list[str], sum_vals: bool) -> plt.Figure:
+  def bar_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+               dict_kwargs: dict[str, dict[str, str]]):
     """
     Plot a bar plot
     
@@ -133,26 +151,24 @@ class MatPlotLibPlot():
         Matplotlib figure
     """
 
-    fig, ax = plt.subplots(figsize=(10, 5))
-    if sum_vals:
-      column_sums = data[cols].sum()
-      column_names = cols
-      sums = column_sums.values.tolist()
-      ax.bar(column_names, sums, label=kwargs['legend'])
-    else:
-      data[cols].plot(kind='bar', ax=ax)
+    ax = plt.figure(figsize=(15, 8)).gca()
+    column_sums = dataf[plot_columns].sum()
+    column_names = plot_columns
+    sums = column_sums.values.tolist()
+    ax.bar(column_names, sums)
+    kwargs = self.get_column_kwargs(plot_columns[0], dict_kwargs)
+    self.set_kwargs(ax, kwargs)
+    ax.set_title('Totals')
+    ax.set_xlabel('Columns')
 
-    ax.set_title(kwargs['title'])
-    ax.set_xlabel(kwargs['x_label'])
-    ax.set_ylabel(kwargs['y_label'])
-    ax.legend()
     plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.grid()
+    ax.legend().set_visible(False)
 
-    return fig
+    self.container = ax
 
-  def box_plot(self, data: pd.DataFrame, kwargs: dict[str, str]) -> plt.Axes:
+  def box_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+               dict_kwargs: dict[str, dict[str, str]]):
     """
     Plot a box plot
     
@@ -168,21 +184,22 @@ class MatPlotLibPlot():
     plt.Figure
         Matplotlib figure
     """
-    fig, ax = plt.subplots(figsize=(10, 5))
-    ax.boxplot(data.values)
-    ax.set_xticklabels(data.columns)
-    ax.set_title(kwargs['title'])
-    ax.set_xlabel(kwargs['x_label'])
-    ax.set_ylabel(kwargs['y_label'])
+    ax = plt.figure(figsize=(15, 8)).gca()
+    ax.boxplot(dataf[plot_columns].values)
+    # ax.set_xticklabels(dataf[plot_columns].columns)
+    kwargs = self.get_column_kwargs(plot_columns[0], dict_kwargs)
+    self.set_kwargs(ax, kwargs)
+    ax.set_title('BoxPlot')
+    ax.set_xlabel('Columns')
 
     plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.grid()
+    ax.legend().set_visible(False)
 
-    return fig
+    self.container = ax
 
-  def pie_chart(self, data: pd.DataFrame, kwargs: dict[str,
-                                                       str]) -> plt.Figure:
+  def pie_chart(self, dataf: pd.DataFrame, plot_columns: list[str],
+                dict_kwargs: dict[str, dict[str, str]]):
     """
     Plot a pie chart
 
@@ -198,29 +215,43 @@ class MatPlotLibPlot():
     plt.Figure
         Matplotlib figure
     """
-    column_sums = data.sum()
+    column_sums = dataf[plot_columns].sum()
     labels = column_sums.index.tolist()
     values = column_sums.values.tolist()
 
     fig, ax = plt.subplots(figsize=(6, 6))
     ax.pie(values, labels=labels, autopct='%1.1f%%', startangle=90)
 
-    ax.set_title(kwargs['title'])
+    ax.set_title('Pie Chart')
 
-    return fig
+    self.container = ax
+
+  def show(self):
+    self.container.show()
+
+  def save(self, save_path: Path):
+    self.container.figure.savefig(save_path, dpi=300)
 
 
+@dataclass
 class PlotlyPlot():
 
-  def plotly_settings(self, fig: go.Figure) -> go.Figure:
+  container: Optional[go.Figure] = None
+
+  def __post_init__(self):
+    if self.container is None:
+      self.container = go.Figure()
+    self.plotly_settings(self.container)
+
+  def plotly_settings(self, fig: go.Figure):
     """
     Set the plotly figure settings
-    
+
     Parameters
     ----------
     fig : go.Figure
         Plotly figure
-    
+
     Returns
     -------
     go.Figure
@@ -234,17 +265,46 @@ class PlotlyPlot():
                                  tickfont=dict(size=font_size)),
                       legend=dict(font=dict(size=font_size)))
 
-    return fig
+    self.container = fig
 
-  def plot_single(self,
-                  x: pd.DatetimeIndex | pd.Series,
-                  y: pd.Series | pd.DataFrame,
-                  kwargs: dict[str, str],
-                  fig_ax: Optional[plt.Axes | go.Figure] = None,
-                  **fig_kwargs) -> plt.Axes | go.Figure:
+  def get_column_kwargs(
+      self, column: str, dict_kwargs: dict[str, dict[str,
+                                                     str]]) -> dict[str, str]:
+    """
+    Get the keyword arguments for a column
+    
+    Parameters
+    ----------
+    column : str
+        Column name
+    dict_kwargs : dict[str, dict[str, str]]
+        Dictionary containing the plot settings
+        
+    Returns
+    -------
+    dict[str, str]
+        Dictionary containing the keyword arguments
+    """
+    return dict_kwargs[column]
+
+  def set_kwargs(self, fig: go.Figure, kwargs: dict[str, str]):
+    """
+    Set the keyword arguments for a plot
+    
+    Parameters
+    ----------
+    kwargs : dict[str, str]
+        Dictionary containing the plot settings
+    """
+    fig.update_layout(title=kwargs['title'],
+                      xaxis_title=kwargs['x_label'],
+                      yaxis_title=kwargs['y_label'])
+
+  def plot_single(self, dataf: pd.DataFrame, plot_columns: list[str],
+                  dict_kwargs: dict[str, dict[str, str]]):
     """
     Plot a single line plot
-    
+
     Parameters
     ----------
     x : pd.DatetimeIndex
@@ -258,34 +318,32 @@ class PlotlyPlot():
     **fig_kwargs : dict
         Additional plotly figure settings
     """
-    if fig_ax is None:
-      fig = go.Figure()
-    else:
-      fig = fig_ax
-    if isinstance(y, pd.Series):
-      fig.add_trace(
-          go.Scatter(x=x, y=y, mode='lines', name=str(kwargs['legend'])))
-    else:
-      for i, column in enumerate(y.columns):
-        trace = go.Scatter(x=x,
-                           y=y[column],
-                           mode='lines',
-                           name=str(kwargs['legend'][i]))
-        fig.add_trace(trace)
+    fig = self.container
+    for column in plot_columns:
+      kwargs = self.get_column_kwargs(column, dict_kwargs)
+      y = dataf[column]
+      if isinstance(y, pd.Series):
+        fig.add_trace(
+            go.Scatter(x=dataf.index,
+                       y=y,
+                       mode='lines',
+                       name=str(kwargs['legend'])))
+      else:
+        for i, column in enumerate(y.columns):
+          trace = go.Scatter(x=dataf.index,
+                             y=y[column],
+                             mode='lines',
+                             name=str(kwargs['legend'][i]))
+          fig.add_trace(trace)
+      self.set_kwargs(fig, kwargs)
 
-    # fig.add_trace(go.Scatter(x=x, y=y, mode='lines'))
-    fig.update_layout(title=kwargs['title'],
-                      xaxis_title=kwargs['x_label'],
-                      yaxis_title=kwargs['y_label'],
-                      **fig_kwargs)
-    self.plotly_settings(fig)
+    self.container = fig
 
-    return fig
-
-  def corr_plot(self, corr_matrix: pd.DataFrame) -> go.Figure:
+  def corr_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+                dict_kwargs: dict[str, dict[str, str]]):
     """
     Plot a correlation matrix
-    
+
     Parameters
     ----------
     corr_matrix : pd.DataFrame
@@ -296,6 +354,8 @@ class PlotlyPlot():
     go.Figure
         Plotly figure
     """
+    fig = go.Figure()
+    corr_matrix = dataf[plot_columns].corr()
     df_corr = pd.DataFrame(corr_matrix,
                            columns=corr_matrix.columns,
                            index=corr_matrix.columns)
@@ -318,10 +378,10 @@ class PlotlyPlot():
                       xaxis_title='Columns',
                       yaxis_title='Columns')
 
-    return fig
+    self.container = fig
 
-  def bar_plot(self, data: pd.DataFrame, kwargs: dict[str, str],
-               cols: list[str], sum_vals: bool):
+  def bar_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+               dict_kwargs: dict[str, dict[str, str]]):
     """
     Plot a bar plot using Plotly
 
@@ -329,31 +389,24 @@ class PlotlyPlot():
     ----------
     data : pd.DataFrame
         Data to plot
-    kwargs : dict[str, str]
+    plot_columns : list[str]
+        Columns to plot
+    dict_kwargs : dict[str, dict[str, str]]
         Dictionary containing the plot settings
-    cols : list[str]
-        List of column names to plot
-    sum_vals : bool
-        Whether to plot the sum of values in columns or individual columns
 
     Returns
     -------
     go.Figure
         Plotly figure
     """
+    fig = go.Figure()
 
-    if sum_vals:
-      column_sums = data[cols].sum()
-      sums = column_sums.values.tolist()
+    column_sums = dataf[plot_columns].sum()
+    sums = column_sums.values.tolist()
 
-      fig = go.Figure(data=[go.Bar(x=cols, y=sums)])
-      fig.update_layout(showlegend=False)
-    else:
-      fig = go.Figure()
-
-      for col in cols:
-        fig.add_trace(go.Bar(x=data.index, y=data[col], name=col))
-      fig.update_layout(showlegend=True)
+    fig = go.Figure(data=[go.Bar(x=plot_columns, y=sums)])
+    fig.update_layout(showlegend=False)
+    kwargs = self.get_column_kwargs(plot_columns[0], dict_kwargs)
 
     fig.update_layout(
         barmode='group',
@@ -365,9 +418,10 @@ class PlotlyPlot():
         margin=dict(l=50, r=50, t=50, b=50),
     )
 
-    return fig
+    self.container = fig
 
-  def box_plot(self, data: pd.DataFrame, kwargs: dict[str, str]) -> go.Figure:
+  def box_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+               dict_kwargs: dict[str, dict[str, str]]):
     """
     Create a box plot.
 
@@ -385,17 +439,20 @@ class PlotlyPlot():
     """
     fig = go.Figure()
 
-    for col in data.columns:
-      fig.add_trace(go.Box(y=data[col], name=col))
+    for col in plot_columns:
+      kwargs: dict[str,
+                   str | list[str]] = self.get_column_kwargs(col, dict_kwargs)
+      fig.add_trace(go.Box(y=dataf[col], name=str(kwargs['legend'])))
 
-    fig.update_layout(title=kwargs['title'],
-                      xaxis_title=kwargs['x_label'],
+    fig.update_layout(title='Box Plot',
+                      xaxis_title='Columns',
                       yaxis_title=kwargs['y_label'],
                       xaxis=dict(tickangle=45))
 
-    return fig
+    self.container = fig
 
-  def pie_chart(self, data: pd.DataFrame, kwargs: dict[str, str]) -> go.Figure:
+  def pie_chart(self, dataf: pd.DataFrame, plot_columns: list[str],
+                dict_kwargs: dict[str, dict[str, str]]):
     """
     Create a pie chart.
 
@@ -411,12 +468,35 @@ class PlotlyPlot():
     go.Figure
         Plotly figure of pie chart
     """
-    column_sums = data.sum()
+    column_sums = dataf[plot_columns].sum()
     labels = column_sums.index.tolist()
     values = column_sums.values.tolist()
 
     fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
 
-    fig.update_layout(title=kwargs['title'])
+    fig.update_layout(title='Pie Chart')
 
-    return fig
+    self.container = fig
+
+  def show(self):
+    self.container.show()
+
+  def save(self, save_path: Path):
+    self.container.write_html(save_path)
+
+  # def sum_bar():
+  # fig = go.Figure()
+
+  # for col in cols:
+  #   fig.add_trace(go.Bar(x=data.index, y=data[col], name=col))
+  # fig.update_layout(showlegend=True)
+
+  # fig.update_layout(
+  #     barmode='group',
+  #     title='Bar plot',
+  #     xaxis_title='Months',  #kwargs['x_label'],
+  #     yaxis_title=kwargs['y_label'],
+  #     xaxis_tickangle=-45,
+  #     # showlegend=True,
+  #     margin=dict(l=50, r=50, t=50, b=50),
+  # )
