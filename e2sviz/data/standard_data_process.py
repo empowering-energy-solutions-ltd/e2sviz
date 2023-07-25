@@ -358,7 +358,6 @@ class DataManip:
 
   def __post_init__(self):
     self.data = self.data.copy()
-    # if not self.groupbied:
     self.check_freq()
     self.check_meta_data()
     self.check_rescaling()

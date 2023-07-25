@@ -17,8 +17,12 @@ class LibraryViz(Protocol):
   Selects the visualisation library to be used.
   """
 
-  def plot_single(self, dataf: pd.DataFrame, plot_columns: list[str],
-                  dict_kwargs: dict[str, dict[str, str]]):
+  def line_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+                dict_kwargs: dict[str, dict[str, str]]):
+    ...
+
+  def stacked_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+                   dict_kwargs: dict[str, dict[str, str]]):
     ...
 
   def corr_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
@@ -27,6 +31,10 @@ class LibraryViz(Protocol):
 
   def bar_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
                dict_kwargs: dict[str, dict[str, str]]):
+    ...
+
+  def dt_bar_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+                  dict_kwargs: dict[str, dict[str, str]]):
     ...
 
   def box_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
@@ -172,9 +180,11 @@ class DataViz:
   @property
   def plot_factory(self) -> dict[str, Callable]:
     return {
-        'single_plot': self.viz_selector.plot_single,
+        'line_plot': self.viz_selector.line_plot,
+        'stacked_plot': self.viz_selector.stacked_plot,
         'corr_plot': self.viz_selector.corr_plot,
         'bar_plot': self.viz_selector.bar_plot,
+        'dt_bar_plot': self.viz_selector.dt_bar_plot,
         'box_plot': self.viz_selector.box_plot,
         'pie_chart': self.viz_selector.pie_chart
     }

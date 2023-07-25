@@ -93,8 +93,8 @@ class MatPlotLibPlot():
     ax.set_ylabel(kwargs['y_label'])
     ax.legend(kwargs['legend'])
 
-  def plot_single(self, dataf: pd.DataFrame, plot_columns: list[str],
-                  dict_kwargs: dict[str, dict[str, str]]):
+  def line_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+                dict_kwargs: dict[str, dict[str, str]]):
     """
     Plot a single line plot.
 
@@ -113,6 +113,39 @@ class MatPlotLibPlot():
       ax = custom_plot(dataf.index, dataf[column], ax=ax)
       self.set_kwargs(ax, kwargs)
       self.container = ax
+
+  def stacked_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+                   dict_kwargs: dict[str, dict[str, str]]):
+    """
+    Plot a stacked line plot
+
+    Parameters
+    ----------
+    x : pd.DatetimeIndex
+        x-axis values
+    y : pd.Series
+        y-axis values
+    kwargs : dict
+        Dictionary of plot settings
+    fig : go.Figure, optional
+        Plotly figure, by default None
+    **fig_kwargs : dict
+        Additional plotly figure settings
+    """
+    ax = self.container
+    cum_sum = pd.Series(0, index=dataf.index)
+    # ax.fill_between(dataf.index, zeros, label='zeros', alpha=0)
+    # Plot the stacked lines
+    for column in plot_columns:
+      kwargs = self.get_column_kwargs(column, dict_kwargs)
+      self.set_kwargs(ax, kwargs)
+      ax.plot(dataf.index, dataf[column] + cum_sum, label=column)
+      cum_sum += dataf[column]
+
+    ax.set_title('Stacked Plot')
+    ax.legend()
+
+    self.container = ax
 
   def corr_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
                 dict_kwargs: dict[str, dict[str, str]]):
@@ -164,6 +197,54 @@ class MatPlotLibPlot():
     plt.xticks(rotation=45)
     plt.tight_layout()
     ax.legend().set_visible(False)
+
+    self.container = ax
+
+  def dt_bar_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+                  dict_kwargs: dict[str, dict[str, str]]):
+    """
+    Plot a bar plot
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        Data to plot
+    kwargs : dict[str, str]
+        Dictionary containing the plot settings
+
+    Returns
+    -------
+    plt.Figure
+        Matplotlib figure
+    """
+    ax = self.container
+
+    total_bars = len(plot_columns)
+    bar_width = 0.8 / total_bars  # Adjust this value as needed to change the bar width
+
+    x_values = np.arange(len(dataf.index))
+
+    for i, col in enumerate(plot_columns):
+      kwargs = self.get_column_kwargs(col, dict_kwargs)
+
+      # Calculate the offset for each bar based on its position in the sequence of columns
+      bar_offset = (i - total_bars // 2) * bar_width
+
+      ax.bar((x_values + bar_offset) + 1,
+             dataf[col],
+             label=col,
+             width=bar_width)
+    # for col in plot_columns:
+    #   kwargs = self.get_column_kwargs(col, dict_kwargs)
+    #   ax.bar(dataf.index, dataf[col], label=col)
+
+    ax.set_title('Bar plot')
+    ax.set_xlabel('Months')  # kwargs['x_label']
+    ax.set_ylabel(kwargs['y_label'])
+    ax.tick_params(axis='x', rotation=45)
+    ax.legend()
+    plt.xticks(x_values)
+    plt.tight_layout()
 
     self.container = ax
 
@@ -226,8 +307,8 @@ class MatPlotLibPlot():
 
     self.container = ax
 
-  def show(self):
-    self.container.show()
+  def show(self) -> Any:
+    return self.container
 
   def save(self, save_path: Path):
     self.container.figure.savefig(save_path, dpi=300)
@@ -300,8 +381,8 @@ class PlotlyPlot():
                       xaxis_title=kwargs['x_label'],
                       yaxis_title=kwargs['y_label'])
 
-  def plot_single(self, dataf: pd.DataFrame, plot_columns: list[str],
-                  dict_kwargs: dict[str, dict[str, str]]):
+  def line_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+                dict_kwargs: dict[str, dict[str, str]]):
     """
     Plot a single line plot
 
@@ -337,6 +418,46 @@ class PlotlyPlot():
           fig.add_trace(trace)
       self.set_kwargs(fig, kwargs)
 
+    self.container = fig
+
+  def stacked_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+                   dict_kwargs: dict[str, dict[str, str]]):
+    """
+    Plot a stacked line plot
+
+    Parameters
+    ----------
+    x : pd.DatetimeIndex
+        x-axis values
+    y : pd.Series
+        y-axis values
+    kwargs : dict
+        Dictionary of plot settings
+    fig : go.Figure, optional
+        Plotly figure, by default None
+    **fig_kwargs : dict
+        Additional plotly figure settings
+    """
+    fig = self.container
+    cum_sum = None
+
+    # Plot the stacked lines
+    for column in plot_columns:
+      kwargs = self.get_column_kwargs(column, dict_kwargs)
+      self.set_kwargs(fig, kwargs)
+      if cum_sum is None:
+        fig.add_trace(
+            go.Scatter(x=dataf.index,
+                       y=dataf[column],
+                       mode='lines',
+                       name=column))
+        cum_sum = dataf[column]
+      else:
+        y_values = cum_sum + dataf[column]
+        fig.add_trace(
+            go.Scatter(x=dataf.index, y=y_values, mode='lines', name=column))
+        cum_sum += dataf[column]
+    fig.update_layout(title='Stacked Plot')
     self.container = fig
 
   def corr_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
@@ -420,6 +541,45 @@ class PlotlyPlot():
 
     self.container = fig
 
+  def dt_bar_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
+                  dict_kwargs: dict[str, dict[str, str]]):
+    """
+    Plot a datetime bar plot using Plotly.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        Data to plot
+    plot_columns : list[str]
+        Columns to plot 
+    dict_kwargs : dict[str, dict[str, str]]
+        Dictionary containing the plot settings
+        
+    Returns
+    -------
+    go.Figure
+        Plotly figure
+    """
+
+    fig = self.container
+
+    for col in plot_columns:
+      kwargs = self.get_column_kwargs(col, dict_kwargs)
+      fig.add_trace(go.Bar(x=dataf.index, y=dataf[col], name=col))
+    # fig.update_layout(showlegend=True)
+
+    fig.update_layout(
+        barmode='group',
+        title='Bar plot',
+        xaxis=dict(dtick='M1'),
+        xaxis_title='Months',  #kwargs['x_label'],
+        yaxis_title=kwargs['y_label'],
+        xaxis_tickangle=-45,
+        showlegend=True,
+        margin=dict(l=50, r=50, t=50, b=50),
+    )
+    self.container = fig
+
   def box_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
                dict_kwargs: dict[str, dict[str, str]]):
     """
@@ -483,20 +643,3 @@ class PlotlyPlot():
 
   def save(self, save_path: Path):
     self.container.write_html(save_path)
-
-  # def sum_bar():
-  # fig = go.Figure()
-
-  # for col in cols:
-  #   fig.add_trace(go.Bar(x=data.index, y=data[col], name=col))
-  # fig.update_layout(showlegend=True)
-
-  # fig.update_layout(
-  #     barmode='group',
-  #     title='Bar plot',
-  #     xaxis_title='Months',  #kwargs['x_label'],
-  #     yaxis_title=kwargs['y_label'],
-  #     xaxis_tickangle=-45,
-  #     # showlegend=True,
-  #     margin=dict(l=50, r=50, t=50, b=50),
-  # )
