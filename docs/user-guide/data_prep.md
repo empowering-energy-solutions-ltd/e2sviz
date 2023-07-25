@@ -1,6 +1,6 @@
 # DataPrep
 
-::: src.data.standard_data_process.DataPrep
+::: e2sviz.data.standard_data_process.DataPrep
     handler: python
     options:
         members:
