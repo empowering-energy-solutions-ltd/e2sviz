@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
 
@@ -33,6 +33,7 @@ def custom_plot_from_df(dataf: pd.DataFrame,
 @dataclass
 class MatPlotLibPlot():
   container: Optional[plt.Axes] = None
+  plt_kwargs: Optional[dict[str, str]] = field(default_factory=dict)
 
   def __post_init__(self):
     self.plt_settings()
@@ -110,7 +111,7 @@ class MatPlotLibPlot():
     for column in plot_columns:
       ax: plt.Axes = self.container
       kwargs = self.get_column_kwargs(column, dict_kwargs)
-      ax = custom_plot(dataf.index, dataf[column], ax=ax)
+      ax = custom_plot(dataf.index, dataf[column], ax=ax, **self.plt_kwargs)
       self.set_kwargs(ax, kwargs)
       self.container = ax
 
@@ -139,7 +140,10 @@ class MatPlotLibPlot():
     for column in plot_columns:
       kwargs = self.get_column_kwargs(column, dict_kwargs)
       self.set_kwargs(ax, kwargs)
-      ax.plot(dataf.index, dataf[column] + cum_sum, label=column)
+      ax.plot(dataf.index,
+              dataf[column] + cum_sum,
+              label=column,
+              **self.plt_kwargs)
       cum_sum += dataf[column]
 
     ax.set_title('Stacked Plot')
@@ -188,7 +192,7 @@ class MatPlotLibPlot():
     column_sums = dataf[plot_columns].sum()
     column_names = plot_columns
     sums = column_sums.values.tolist()
-    ax.bar(column_names, sums)
+    ax.bar(column_names, sums, **self.plt_kwargs)
     kwargs = self.get_column_kwargs(plot_columns[0], dict_kwargs)
     self.set_kwargs(ax, kwargs)
     ax.set_title('Totals')
@@ -218,28 +222,19 @@ class MatPlotLibPlot():
         Matplotlib figure
     """
     ax = self.container
-
     total_bars = len(plot_columns)
-    bar_width = 0.8 / total_bars  # Adjust this value as needed to change the bar width
-
+    bar_width = 0.8 / total_bars
     x_values = np.arange(len(dataf.index))
-
     for i, col in enumerate(plot_columns):
       kwargs = self.get_column_kwargs(col, dict_kwargs)
-
-      # Calculate the offset for each bar based on its position in the sequence of columns
       bar_offset = (i - total_bars // 2) * bar_width
-
       ax.bar((x_values + bar_offset) + 1,
              dataf[col],
              label=col,
              width=bar_width)
-    # for col in plot_columns:
-    #   kwargs = self.get_column_kwargs(col, dict_kwargs)
-    #   ax.bar(dataf.index, dataf[col], label=col)
 
     ax.set_title('Bar plot')
-    ax.set_xlabel('Months')  # kwargs['x_label']
+    ax.set_xlabel('Months')
     ax.set_ylabel(kwargs['y_label'])
     ax.tick_params(axis='x', rotation=45)
     ax.legend()
@@ -266,7 +261,7 @@ class MatPlotLibPlot():
         Matplotlib figure
     """
     ax = plt.figure(figsize=(15, 8)).gca()
-    ax.boxplot(dataf[plot_columns].values)
+    ax.boxplot(dataf[plot_columns].values, labels=plot_columns)
     # ax.set_xticklabels(dataf[plot_columns].columns)
     kwargs = self.get_column_kwargs(plot_columns[0], dict_kwargs)
     self.set_kwargs(ax, kwargs)
@@ -318,6 +313,7 @@ class MatPlotLibPlot():
 class PlotlyPlot():
 
   container: Optional[go.Figure] = None
+  plotly_kwargs: Optional[dict[str, str]] = field(default_factory=dict)
 
   def __post_init__(self):
     if self.container is None:
@@ -405,10 +401,12 @@ class PlotlyPlot():
       y = dataf[column]
       if isinstance(y, pd.Series):
         fig.add_trace(
-            go.Scatter(x=dataf.index,
-                       y=y,
-                       mode='lines',
-                       name=str(kwargs['legend'])))
+            go.Scatter(
+                x=dataf.index,
+                y=y,
+                #mode='lines',
+                name=str(kwargs['legend']),
+                **self.plotly_kwargs))
       else:
         for i, column in enumerate(y.columns):
           trace = go.Scatter(x=dataf.index,
@@ -447,15 +445,22 @@ class PlotlyPlot():
       self.set_kwargs(fig, kwargs)
       if cum_sum is None:
         fig.add_trace(
-            go.Scatter(x=dataf.index,
-                       y=dataf[column],
-                       mode='lines',
-                       name=column))
+            go.Scatter(
+                x=dataf.index,
+                y=dataf[column],
+                #mode='lines',
+                name=column,
+                **self.plotly_kwargs))
         cum_sum = dataf[column]
       else:
         y_values = cum_sum + dataf[column]
         fig.add_trace(
-            go.Scatter(x=dataf.index, y=y_values, mode='lines', name=column))
+            go.Scatter(
+                x=dataf.index,
+                y=y_values,
+                #mode='lines',
+                name=column,
+                **self.plotly_kwargs))
         cum_sum += dataf[column]
     fig.update_layout(title='Stacked Plot')
     self.container = fig
@@ -602,7 +607,10 @@ class PlotlyPlot():
     for col in plot_columns:
       kwargs: dict[str,
                    str | list[str]] = self.get_column_kwargs(col, dict_kwargs)
-      fig.add_trace(go.Box(y=dataf[col], name=str(kwargs['legend'])))
+      fig.add_trace(go.Box(
+          y=dataf[col],
+          name=str(kwargs['legend']),
+      ))
 
     fig.update_layout(title='Box Plot',
                       xaxis_title='Columns',
