@@ -311,6 +311,36 @@ class MatPlotLibPlot():
 
 @dataclass
 class PlotlyPlot():
+  """
+  Plotly plot class
+  
+  Attributes
+  ----------
+  container : go.Figure
+      Plotly figure
+  
+  Methods
+  -------
+  corr_plot(dataf: pd.DataFrame, plot_columns: list[str],
+            dict_kwargs: dict[str, dict[str, str]])
+      Plot a correlation matrix
+  bar_plot(dataf: pd.DataFrame, plot_columns: list[str],
+           dict_kwargs: dict[str, dict[str, str]])
+      Plot a bar plot
+  dt_bar_plot(dataf: pd.DataFrame, plot_columns: list[str],
+              dict_kwargs: dict[str, dict[str, str]])
+      Plot a bar plot
+  box_plot(dataf: pd.DataFrame, plot_columns: list[str],
+           dict_kwargs: dict[str, dict[str, str]])
+      Plot a box plot
+  pie_chart(dataf: pd.DataFrame, plot_columns: list[str],
+            dict_kwargs: dict[str, dict[str, str]])
+      Plot a pie chart
+  show() -> Any
+      Show the plot
+  save(save_path: Path)
+      Save the plot
+  """
 
   container: Optional[go.Figure] = None
   plotly_kwargs: Optional[dict[str, str]] = field(default_factory=dict)

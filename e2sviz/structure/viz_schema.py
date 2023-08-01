@@ -42,5 +42,6 @@ class MetaDataSchema:
 
 class GroupingKeySchema:
   DAY = 'day'
+  WEEK = 'week'
   DAY_SEASON = 'day_season'
   WEEK_SEASON = 'week_season'

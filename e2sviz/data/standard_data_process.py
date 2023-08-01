@@ -466,7 +466,7 @@ class DataManip:
             viz_schema.MetaDataSchema.GROUPED_COLS:
             [datetime_schema.DateTimeSchema.WEEKDAYFLAG, freq_col],
         },
-        datetime_schema.DateTimeSchema.WEEK: {
+        viz_schema.GroupingKeySchema.WEEK: {
             viz_schema.MetaDataSchema.LEGEND: [],
             viz_schema.MetaDataSchema.INDEX_COLS:
             [datetime_schema.DateTimeSchema.DAYOFWEEK, freq_col],
@@ -508,7 +508,7 @@ class DataManip:
     """
     Filter the data by given year, month, day or date.
 
-    Parameters
+    Parametersd
     -------
     year : list[int]
         The years to filter by.
