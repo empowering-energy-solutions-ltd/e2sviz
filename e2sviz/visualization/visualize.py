@@ -86,63 +86,6 @@ class MetaData(Protocol):
     ...
 
 
-# # class DataManipProtocol(Protocol):
-
-#   """
-#   Manipulates the data.
-#   """
-#   data: pd.DataFrame
-#   frequency: viz_schema.FrequencySchema
-#   column_meta_data: MetaData
-
-#   def __post_init__(self) -> None:
-#     ...
-
-#   def check_freq(self) -> None:
-#     ...
-
-#   def check_meta_data(self) -> None:
-#     ...
-
-#   def check_rescaling(self) -> None:
-#     ...
-
-#   @property
-#   def column_from_freq(self) -> str:
-#     ...
-
-#   @property
-#   def dict_of_groupbys(self) -> dict[str, List[str]]:
-#     ...
-
-#   def filter(self,
-#              year: Optional[List[int]] = None,
-#              month: Optional[List[int]] = None,
-#              day: Optional[List[int]] = None,
-#              hour: Optional[List[int]] = None,
-#              date: Optional[List[datetime.date]] = None,
-#              inplace: bool = False) -> Self:
-#     ...
-
-#   def groupby(self,
-#               groupby_type: str = 'week_season',
-#               func: Callable[[pd.DataFrame], pd.Series] = np.mean,
-#               inplace: bool = False) -> Self:
-#     ...
-
-#   def resample(self,
-#                freq: str = 'D',
-#                func: Callable[[pd.DataFrame], pd.Series] = np.mean,
-#                inplace: bool = False) -> Self:
-#     ...
-
-#   def rolling(self,
-#               window: int = 3,
-#               func: Callable[[pd.DataFrame], pd.Series] = np.mean,
-#               inplace: bool = False) -> Self:
-#     ...
-
-
 @dataclass
 class DataViz:
   """
@@ -200,8 +143,8 @@ class DataViz:
   def show_viz(self):
     self.viz_selector.show()
 
-  def save_figure(self):
-    self.viz_selector.save()
+  def save_figure(self, save_path: Path):
+    self.viz_selector.save(save_path)
 
   def structured_data(self) -> pd.DataFrame:
     """
