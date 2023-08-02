@@ -32,6 +32,43 @@ def custom_plot_from_df(dataf: pd.DataFrame,
 
 @dataclass
 class MatPlotLibPlot():
+  """
+  This class is used to plot the data using matplotlib.
+
+  Attributes
+  ----------
+  container : Optional[plt.Axes]
+      Matplotlib container holding the Axes for plotting multiple lines on one axis.
+  plt_kwargs : Optional[dict[str, str]]
+      Dictionary containing the plot settings.
+
+  Methods
+  -------
+  plt_settings()
+      Set the plot settings for matplotlib.
+  get_column_kwargs(column, dict_kwargs)
+      Get the keyword arguments for a column.
+  set_kwargs(ax, kwargs)
+      Set the keyword arguments for a plot.
+  line_plot(dataf, plot_columns, dict_kwargs)
+      Plot a line plot.
+  stacked_plot(dataf, plot_columns, dict_kwargs)
+      Plot a stacked plot.
+  corr_plot(dataf, plot_columns, dict_kwargs)
+      Plot a correlation plot.
+  bar_plot(dataf, plot_columns, dict_kwargs)
+      Plot a bar plot.
+  dt_bar_plot(dataf, plot_columns, dict_kwargs)
+      Plot a bar plot with datetime on the x-axis.
+  box_plot(dataf, plot_columns, dict_kwargs)
+      Plot a box plot.
+  pie_chart(dataf, plot_columns, dict_kwargs)
+      Plot a pie chart.
+  show()
+      Show the plot.
+  save(save_path)
+      Save the plot.
+  """
   container: Optional[plt.Axes] = None
   plt_kwargs: Optional[dict[str, str]] = field(default_factory=dict)
 
@@ -318,6 +355,8 @@ class PlotlyPlot():
   ----------
   container : go.Figure
       Plotly figure
+  plotly_kwargs : dict[str, dict[str, str]]
+      Dictionary containing the plot settings.
   
   Methods
   -------

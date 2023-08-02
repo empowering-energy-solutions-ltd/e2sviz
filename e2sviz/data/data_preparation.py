@@ -169,34 +169,6 @@ class FillMissingData():
 
     return data
 
-  # def dropna(self,
-  #            data: npt.NDArray | pd.DataFrame) -> npt.NDArray | pd.DataFrame:
-  #   """
-  #   Drop rows with missing values from the data.
-
-  #   Parameters
-  #   ----------
-  #   data : np.ndarray or pd.DataFrame
-  #       Input data.
-
-  #   Returns
-  #   -------
-  #   np.ndarray or pd.DataFrame
-  #       Data with missing values dropped.
-
-  #   Raises
-  #   ------
-  #   ValueError
-  #       Raised when an unsupported data type is provided.
-  #   """
-  #   data_copy = deepcopy(data)
-  #   if isinstance(data_copy, pd.DataFrame):
-  #     return data_copy.dropna()
-  #   elif isinstance(data_copy, np.ndarray):
-  #     return data_copy[~np.isnan(data_copy).any(axis=1)]
-  #   else:
-  #     raise ValueError(viz_schema.MessageSchema.DATA_TYPE)
-
   def fillna_mean(self, data: pd.DataFrame) -> pd.DataFrame:
     """
     Fill missing values in the data with column means.
