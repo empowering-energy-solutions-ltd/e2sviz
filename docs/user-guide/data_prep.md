@@ -4,7 +4,6 @@
     handler: python
     options:
         members:
-          - __post_init__
           - described_data
           - clean_data
           - statistics_of_data

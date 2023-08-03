@@ -15,3 +15,6 @@ For full documentation visit [mkdocs.org](https://www.mkdocs.org).
     docs/
         index.md  # The documentation homepage.
         user-guide/data_prep.md
+        user-guide/metadata.md
+        user-guide/data_manip.md
+        user-guide/data_viz.md

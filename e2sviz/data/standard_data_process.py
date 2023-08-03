@@ -508,7 +508,7 @@ class DataManip:
     """
     Filter the data by given year, month, day or date.
 
-    Parametersd
+    Parameters
     -------
     year : list[int]
         The years to filter by.

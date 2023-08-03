@@ -143,6 +143,7 @@ class DataViz:
     ----------
     plot_kind : str
       The kind of plot to be plotted.
+      Options: `line_plot`, `stacked_plot`, `corr_plot`, `bar_plot`, `dt_bar_plot`, `box_plot`, `pie_chart`
     """
     plot_data = self.structured_data()
     dict_kwargs = self.create_dict_kwargs()
