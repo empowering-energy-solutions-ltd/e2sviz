@@ -643,7 +643,7 @@ class PlotlyPlot():
     # fig.update_layout(showlegend=True)
 
     fig.update_layout(
-        barmode='group',
+        barmode='stack',  #'group',
         title='Bar plot',
         xaxis=dict(dtick='M1'),
         xaxis_title='Months',  #kwargs['x_label'],
