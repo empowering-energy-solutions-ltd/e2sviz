@@ -360,7 +360,7 @@ class DataManip:
     self.data = self.data.copy()
     self.check_freq()
     self.check_meta_data()
-    self.check_rescaling()
+    #self.check_rescaling()
 
   def check_freq(self):
     """
