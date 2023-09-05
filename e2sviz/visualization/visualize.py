@@ -16,6 +16,7 @@ class LibraryViz(Protocol):
   """
   Selects the visualisation library to be used.
   """
+  container: Any
 
   def line_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
                 dict_kwargs: dict[str, dict[str, str]]):
