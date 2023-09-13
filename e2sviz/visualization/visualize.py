@@ -116,6 +116,7 @@ class DataViz:
   metadata: MetaData
   viz_selector: LibraryViz
   plot_columns: Optional[list[str]] = None
+  x: Optional[str] = None
 
   def __post_init__(self):
     if self.plot_columns is None:
@@ -150,7 +151,8 @@ class DataViz:
     dict_kwargs = self.create_dict_kwargs()
     self.plot_factory[plot_kind](dataf=plot_data,
                                  plot_columns=self.plot_columns,
-                                 dict_kwargs=dict_kwargs)
+                                 dict_kwargs=dict_kwargs,
+                                 x=self.x)
 
   def show_viz(self):
     """

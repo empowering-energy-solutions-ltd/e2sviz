@@ -446,8 +446,11 @@ class PlotlyPlot():
                       xaxis_title=kwargs['x_label'],
                       yaxis_title=kwargs['y_label'])
 
-  def line_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
-                dict_kwargs: dict[str, dict[str, str]]):
+  def line_plot(self,
+                dataf: pd.DataFrame,
+                plot_columns: list[str],
+                dict_kwargs: dict[str, dict[str, str]],
+                x: str | None = None):
     """
     Plot a single line plot
 
@@ -468,17 +471,19 @@ class PlotlyPlot():
     for column in plot_columns:
       kwargs = self.get_column_kwargs(column, dict_kwargs)
       y = dataf[column]
+      if x is None:
+        x = dataf.index
       if isinstance(y, pd.Series):
         fig.add_trace(
             go.Scatter(
-                x=dataf.index,
+                x=x,
                 y=y,
                 #mode='lines',
                 name=str(kwargs['legend']),
                 **self.plotly_kwargs))
       else:
         for i, column in enumerate(y.columns):
-          trace = go.Scatter(x=dataf.index,
+          trace = go.Scatter(x=x,
                              y=y[column],
                              mode='lines',
                              name=str(kwargs['legend'][i]))
