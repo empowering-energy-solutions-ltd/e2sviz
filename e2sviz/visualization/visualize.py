@@ -149,10 +149,15 @@ class DataViz:
     """
     plot_data = self.structured_data()
     dict_kwargs = self.create_dict_kwargs()
-    self.plot_factory[plot_kind](dataf=plot_data,
-                                 plot_columns=self.plot_columns,
-                                 dict_kwargs=dict_kwargs,
-                                 x=self.x)
+    if self.x is None:
+      self.plot_factory[plot_kind](dataf=plot_data,
+                                   plot_columns=self.plot_columns,
+                                   dict_kwargs=dict_kwargs)
+    else:
+      self.plot_factory[plot_kind](dataf=plot_data,
+                                   plot_columns=self.plot_columns,
+                                   dict_kwargs=dict_kwargs,
+                                   x=self.x)
 
   def show_viz(self):
     """
