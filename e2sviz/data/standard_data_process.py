@@ -5,10 +5,10 @@ from typing import Any, Callable, Literal, Optional, Self  # List,
 
 import numpy as np
 import pandas as pd
-from e2slib.structures import datetime_schema
-from e2slib.utillib import functions
 from IPython.display import display
 
+from e2sviz.data import functions
+from e2sviz.structure import datetime_schema
 from e2sviz.structure import enums as viz_enums
 from e2sviz.structure import viz_schema
 

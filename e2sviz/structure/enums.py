@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum, StrEnum, auto
 
 
 class Seasons(Enum):
@@ -7,6 +7,11 @@ class Seasons(Enum):
   SPRING = auto()
   SUMMER = auto()
   AUTUMN = auto()
+
+
+class TimeStep(Enum):
+  HALFHOUR = auto()
+  HOUR = auto()
 
 
 class DataType(Enum):
@@ -62,3 +67,10 @@ class Prefix(Enum):
   def index_val(self) -> int:
     """Get the index val for this unit."""
     return self.value[1]
+
+
+class Season(StrEnum):
+  WINTER = auto()
+  SUMMER = auto()
+  SPRING = auto()
+  AUTUMN = auto()
