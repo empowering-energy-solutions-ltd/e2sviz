@@ -448,27 +448,6 @@ files = [
 graph = ["objgraph (>=1.7.2)"]
 
 [[package]]
-name = "e2slib"
-version = "0.1.0"
-description = ""
-category = "main"
-optional = false
-python-versions = "^3.11"
-files = []
-develop = false
-
-[package.dependencies]
-numpy = "^1.24.3"
-pandas = "^2.0.1"
-seaborn = "^0.12.2"
-
-[package.source]
-type = "git"
-url = "git@github.com:empowering-energy-solutions-ltd/e2slib.git"
-reference = "main"
-resolved_reference = "22c0ef7c6394d1fd688e8ece1d206504246567d4"
-
-[[package]]
 name = "executing"
 version = "1.2.0"
 description = "Get the currently executing AST node of a frame, and other information"
@@ -2472,4 +2451,4 @@ tomli = ">=2.0.1"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "127e76e6028f02eceded44e02c581f1f789147c1a015cf7c9a11278225b0e188"
+content-hash = "270edae8a5838b198f19105dfbbd2722f0e1d901b1e1c53a9657a68cec9f4b73"
