@@ -4,10 +4,9 @@ from typing import Protocol
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
-from e2slib.structures import datetime_schema, enums
-from e2slib.utillib import functions
 
-from e2sviz.structure import viz_schema
+from e2sviz.data import functions
+from e2sviz.structure import datetime_schema, enums, viz_schema
 
 
 def create_seasonal_average_week(season: enums.Season,
