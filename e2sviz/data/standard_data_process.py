@@ -355,12 +355,14 @@ class DataManip:
   data: pd.DataFrame
   frequency: viz_schema.FrequencySchema = viz_schema.FrequencySchema.MISSING
   metadata: MetaData = field(default_factory=(lambda: MetaData({})))
+  rescale: bool = False
 
   def __post_init__(self):
     self.data = self.data.copy()
     self.check_freq()
     self.check_meta_data()
-    # self.check_rescaling()
+    if self.rescale:
+      self.check_rescaling()
 
   def check_freq(self):
     """
