@@ -299,11 +299,8 @@ class MetaData:
         viz_schema.MetaDataSchema.GROUPED_COLS]):
       gb_title: str = ''
       for key, val in dict_for_title.items():
-        # print(val)
-        # print(key)
         if val == self.metadata[viz_schema.MetaDataSchema.FRAME][
             viz_schema.MetaDataSchema.GROUPED_COLS]:
-          # print(key)
           gb_title: str = key
       title = f'{self.metadata[viz_schema.MetaDataSchema.FRAME][viz_schema.MetaDataSchema.GB_AGG]} {gb_title} {self.metadata[col][viz_schema.MetaDataSchema.NAME]} vs. {self.get_x_label}'
       if category is not None:
@@ -378,13 +375,13 @@ class DataManip:
     Check for metadata, if not provided,
     default values will be generated/infered from the data available.
     """
-    if len(self.metadata.metadata) == 0:
+    if self.metadata is None:
       default_metadata: dict[str, dict[str, Any]] = {}
       for col in self.data.columns:
         default_metadata[col] = {
             viz_schema.MetaDataSchema.NAME: col,
             viz_schema.MetaDataSchema.UNITS: viz_enums.UnitsSchema.NAN,
-            viz_schema.MetaDataSchema.PREFIX: viz_enums.UnitsSchema.NAN,
+            viz_schema.MetaDataSchema.PREFIX: viz_enums.Prefix.BASE,
             viz_schema.MetaDataSchema.TYPE: self.data[col].dtype,
             viz_schema.MetaDataSchema.LEGEND: [col]
         }
