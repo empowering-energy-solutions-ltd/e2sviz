@@ -351,7 +351,7 @@ class DataManip:
 
   data: pd.DataFrame
   frequency: viz_schema.FrequencySchema = viz_schema.FrequencySchema.MISSING
-  metadata: MetaData = field(default_factory=(lambda: MetaData({})))
+  metadata: MetaData = None
   rescale: bool = False
 
   def __post_init__(self):
