@@ -36,6 +36,7 @@ class DataPrep:
   """
   data: pd.DataFrame
   dataprep_functions: Optional[list[DatafCallable]]
+  print_outputs: bool = False
 
   def __post_init__(self):
     """
@@ -47,17 +48,18 @@ class DataPrep:
 
     """
     self.data = self.data.copy()
+    
     self.described_raw_data = self.described_data(self.data)
-    print('Prior to cleaning:')
-    display(self.described_raw_data)
+    if self.print_outputs:
+      print('Prior to cleaning:')
+      display(self.described_raw_data)
 
     if self.dataprep_functions:
       self.clean_data()
       self.described_clean_data = self.described_data(self.data)
-      print('Post cleaning:')
-      display(self.described_clean_data)
-    else:
-      print(viz_schema.MessageSchema.NO_DATA_PREP)
+      if self.print_outputs:
+        print('Post cleaning:')
+        display(self.described_clean_data)
 
   def described_data(self, data: pd.DataFrame) -> pd.DataFrame:
     """
