@@ -17,7 +17,7 @@ DatafCallable = Callable[[pd.DataFrame], pd.DataFrame]
 
 @dataclass
 class DataPrep:
-  """
+    """
   Performs data preparation steps.
 
   Parameters
@@ -48,7 +48,7 @@ class DataPrep:
 
     """
     self.data = self.data.copy()
-    
+
     self.described_raw_data = self.described_data(self.data)
     if self.print_outputs:
       print('Prior to cleaning:')
@@ -89,7 +89,7 @@ class DataPrep:
       for prep_function in self.dataprep_functions:
         self.data = prep_function(self.data)
     else:
-      pass
+        pass
 
   def statistics_of_data(self, data: pd.DataFrame) -> pd.DataFrame:
     """
@@ -107,36 +107,56 @@ class DataPrep:
 
     """
     statistics = {
-        'Count': data.count(),
-        'NaN Count': data.isna().sum(),
-        'Mean': data.mean(),
-        'StD': data.std(),
-        'Min': data.min(),
-        '1%': data.quantile(0.01),
-        '25%': data.quantile(0.25),
-        '50%': data.median(),
-        '75%': data.quantile(0.75),
-        '99%': data.quantile(0.99),
-        'Max': data.max(),
-        'Range': data.max() - data.min(),
-        'Sum': data.sum(),
-        'Variance': data.var(),
-        'Skewness': data.skew(),
-        'Kurtosis': data.kurtosis(),
-        'Unique': data.nunique(),
-        'Mode': data.mode().iloc[0],
-        'Freq': data.groupby(data.columns.tolist()).size().max(),
+        'Count':
+        data.count(),
+        'NaN Count':
+        data.isna().sum(),
+        'Mean':
+        data.mean(),
+        'StD':
+        data.std(),
+        'Min':
+        data.min(),
+        '1%':
+        data.quantile(0.01),
+        '25%':
+        data.quantile(0.25),
+        '50%':
+        data.median(),
+        '75%':
+        data.quantile(0.75),
+        '99%':
+        data.quantile(0.99),
+        'Max':
+        data.max(),
+        'Range':
+        data.max() - data.min(),
+        'Sum':
+        data.sum(),
+        'Variance':
+        data.var(),
+        'Skewness':
+        data.skew(),
+        'Kurtosis':
+        data.kurtosis(),
+        'Unique':
+        data.nunique(),
+        'Mode':
+        data.mode().iloc[0],
+        'Freq':
+        data.groupby(data.columns.tolist()).size().max(),
         'Outliers (3x STD)': (np.abs(data - data.mean())
                               > 3 * data.std()).sum(),
-        'Length': len(data)
+        'Length':
+        len(data)
     }
     describe_df = pd.DataFrame(statistics)
     return describe_df.transpose()
 
   def concat(self,
-             secondary_data: Self,
-             axis: Literal[0] | Literal[1] = 1,
-             dataprep_functions: list[DatafCallable] | None = None) -> Self:
+              secondary_data: Self,
+              axis: Literal[0] | Literal[1] = 1,
+              dataprep_functions: list[DatafCallable] | None = None) -> Self:
     """
     Concatenate two DataPrep objects.
 
@@ -156,18 +176,18 @@ class DataPrep:
 @dataclass
 class MetaData:
   """
-  Class for storing the data being manipulateds metadata.
+Class for storing the data being manipulateds metadata.
 
-  Parameters
-  ----------
-  metadata : dict[str, dict[str, Any]]
-      A dictionary of metadata for each column of data.
-  
-  Attributes
-  ----------
-  metadata : dict[str, dict[str, Any]]
-      The metadata stored.
-  """
+Parameters
+----------
+metadata : dict[str, dict[str, Any]]
+    A dictionary of metadata for each column of data.
+
+Attributes
+----------
+metadata : dict[str, dict[str, Any]]
+    The metadata stored.
+"""
   metadata: dict[str, dict[str, Any]]
 
   def units(self, col: str) -> viz_enums.UnitsSchema:
@@ -235,11 +255,14 @@ class MetaData:
   @property
   def column_from_freq(self) -> str:
     column_mapping = {
-        viz_schema.FrequencySchema.HH: datetime_schema.DateTimeSchema.HALFHOUR,
-        viz_schema.FrequencySchema.HOUR: datetime_schema.DateTimeSchema.HOUR,
+        viz_schema.FrequencySchema.HH:
+        datetime_schema.DateTimeSchema.HALFHOUR,
+        viz_schema.FrequencySchema.HOUR:
+        datetime_schema.DateTimeSchema.HOUR,
         viz_schema.FrequencySchema.DAY:
         datetime_schema.DateTimeSchema.DAYOFYEAR,
-        viz_schema.FrequencySchema.MONTH: datetime_schema.DateTimeSchema.MONTH
+        viz_schema.FrequencySchema.MONTH:
+        datetime_schema.DateTimeSchema.MONTH
     }
     return column_mapping.get(self.freq)
 
@@ -285,8 +308,10 @@ class MetaData:
     """
     freq_col = self.column_from_freq
     dict_for_title = {
-        'day of year': [datetime_schema.DateTimeSchema.WEEKDAYFLAG, freq_col],
-        'week of year': [datetime_schema.DateTimeSchema.DAYOFWEEK, freq_col],
+       'day of year':
+        [datetime_schema.DateTimeSchema.WEEKDAYFLAG, freq_col],
+        'week of year':
+        [datetime_schema.DateTimeSchema.DAYOFWEEK, freq_col],
         'day of season': [
             datetime_schema.DateTimeSchema.SEASON,
             datetime_schema.DateTimeSchema.WEEKDAYFLAG, freq_col
@@ -298,17 +323,17 @@ class MetaData:
     }
 
     if len(self.metadata[viz_schema.MetaDataSchema.FRAME][
-        viz_schema.MetaDataSchema.GROUPED_COLS]):
+              viz_schema.MetaDataSchema.GROUPED_COLS]):
       gb_title: str = ''
       for key, val in dict_for_title.items():
         if val == self.metadata[viz_schema.MetaDataSchema.FRAME][
-            viz_schema.MetaDataSchema.GROUPED_COLS]:
+                  viz_schema.MetaDataSchema.GROUPED_COLS]:
           gb_title: str = key
       title = f'{self.metadata[viz_schema.MetaDataSchema.FRAME][viz_schema.MetaDataSchema.GB_AGG]} {gb_title} {self.metadata[col][viz_schema.MetaDataSchema.NAME]} vs. {self.get_x_label}'
       if category is not None:
         title = title + f' - {category}'
     else:
-      title = f'{self.metadata[col][viz_schema.MetaDataSchema.NAME]} vs. {self.get_x_label}'
+        title = f'{self.metadata[col][viz_schema.MetaDataSchema.NAME]} vs. {self.get_x_label}'
     return title
 
   def get_legend(self, col: str) -> str:
@@ -340,7 +365,7 @@ class DataManip:
       The frequency of the data, by default viz_schema.FrequencySchema.MISSING.
   metadata : MetaData, optional
       The metadata of the data, by default MetaData({}).
-  
+
   Attributes
   ----------
   data : pd.DataFrame
@@ -361,12 +386,12 @@ class DataManip:
     self.check_freq()
     self.check_meta_data()
     if self.rescale:
-      self.check_rescaling()
+        self.check_rescaling()
 
   def check_freq(self):
     """
     Check the frequency of the data if value not provided,
-      it will be infered using pd.infer_freq().
+    it will be infered using pd.infer_freq().
 
     """
     if self.frequency is viz_schema.FrequencySchema.MISSING:
@@ -422,7 +447,7 @@ class DataManip:
     si_units_list = list(viz_enums.Prefix)
     for i, unit in enumerate(viz_enums.Prefix):
       if unit.index_val == self.metadata.metadata[column][
-          viz_schema.MetaDataSchema.PREFIX].index_val:
+              viz_schema.MetaDataSchema.PREFIX].index_val:
         next_unit = si_units_list[
             (i + step) %
             len(si_units_list)]  # Get the next unit by using modulo
@@ -448,11 +473,14 @@ class DataManip:
   @property
   def column_from_freq(self) -> str:
     column_mapping = {
-        viz_schema.FrequencySchema.HH: datetime_schema.DateTimeSchema.HALFHOUR,
-        viz_schema.FrequencySchema.HOUR: datetime_schema.DateTimeSchema.HOUR,
+        viz_schema.FrequencySchema.HH:
+        datetime_schema.DateTimeSchema.HALFHOUR,
+        viz_schema.FrequencySchema.HOUR:
+        datetime_schema.DateTimeSchema.HOUR,
         viz_schema.FrequencySchema.DAY:
         datetime_schema.DateTimeSchema.DAYOFYEAR,
-        viz_schema.FrequencySchema.MONTH: datetime_schema.DateTimeSchema.MONTH
+        viz_schema.FrequencySchema.MONTH:
+        datetime_schema.DateTimeSchema.MONTH
     }
     return column_mapping.get(self.frequency)
 
@@ -498,14 +526,16 @@ class DataManip:
     }
 
   def filter(
-      self,
-      year: Optional[list[int]] = None,
-      season: Optional[list[int]] = None,
-      month: Optional[list[int]] = None,
-      day: Optional[list[int]] = None,
-      hour: Optional[list[int]] = None,
-      date: Optional[list[datetime.date]] = None,
-      inplace: bool = False) -> Self:  # Add value limits e.g above 10kWh?
+          self,
+          year: Optional[list[int]] = None,
+          season: Optional[list[int]] = None,
+          month: Optional[list[int]] = None,
+          day: Optional[list[int]] = None,
+          hour: Optional[list[int]] = None,
+          date: Optional[list[datetime.date]] = None,
+          columns: Optional[list[str]] = None,
+          inplace: bool = False
+  ) -> Self:  # Add value limits e.g above 10kWh?
     """
     Filter the data by given year, month, day or date.
 
@@ -523,7 +553,7 @@ class DataManip:
         The dates to filter by.
     inplace : bool
         Whether to filter the data in place or return a new DataFrame.
-    
+
     Returns
     -------
     pd.DataFrame
@@ -558,6 +588,8 @@ class DataManip:
       filt &= index_data.isin(date)
 
     filtered_data = self.data.loc[filt].copy()
+    if columns is not None:
+      filtered_data = filtered_data[columns]
 
     return self.inplace_data(filtered_data, inplace=inplace)
 
@@ -586,7 +618,7 @@ class DataManip:
     grouped_data = timefeature_data.groupby(
         gb_col_data[viz_schema.MetaDataSchema.GROUPED_COLS]).agg(
             {col: func
-             for col in col_list})
+              for col in col_list})
     new_meta_data = self.update_metadata(grouped_data, gb_col_data)
     new_meta_data[viz_schema.MetaDataSchema.FRAME][
         viz_schema.MetaDataSchema.GB_AGG] = func.__name__
@@ -618,7 +650,8 @@ class DataManip:
     unique_values: dict = {}
     for level in range(num_levels):
 
-      level_values = dataf.index.get_level_values(level).unique().to_list()
+      level_values = dataf.index.get_level_values(
+          level).unique().to_list()
       unique_values[level] = level_values
     if num_levels == 1:
       result_list = unique_values[0]
@@ -630,9 +663,8 @@ class DataManip:
     return result_list
 
   def update_metadata(
-      self, grouped_data: pd.DataFrame,
-      gb_col_data: dict[str,
-                        list[str]]) -> dict[str, dict[str, str | list[str]]]:
+      self, grouped_data: pd.DataFrame, gb_col_data: dict[str, list[str]]
+  ) -> dict[str, dict[str, str | list[str]]]:
     """
     Update the metadata for the grouped data.
 
@@ -659,7 +691,8 @@ class DataManip:
       result_list = self.populate_legend(grouped_data, gb_col_data)
     for c in self.data.columns:
       if len(gb_col_data[viz_schema.MetaDataSchema.LEGEND]):
-        new_meta_data[c][viz_schema.MetaDataSchema.LEGEND] = result_list
+        new_meta_data[c][
+            viz_schema.MetaDataSchema.LEGEND] = result_list
     return new_meta_data
 
   def resampled(self,
@@ -675,7 +708,7 @@ class DataManip:
         The frequency to be used for resampling.
     func : Callable[[pd.DataFrame], pd.Series]
         Numpy function to be used for aggregation.
-    
+
     Returns
     -------
     pd.DataFrame | pd.Series
@@ -686,9 +719,9 @@ class DataManip:
     new_meta_data.metadata[viz_schema.MetaDataSchema.FRAME][
         viz_schema.MetaDataSchema.FREQ] = freq
     return self.inplace_data(resampled_data,
-                             freq,
-                             new_meta_data,
-                             inplace=inplace)
+                              freq,
+                              new_meta_data,
+                              inplace=inplace)
 
   def rolling(self,
               window: int = 3,
@@ -713,37 +746,37 @@ class DataManip:
     return self.inplace_data(rolling_data, inplace=inplace)
 
   def inplace_data(self,
-                   new_data: pd.DataFrame,
-                   new_freq: Optional[str] = None,
-                   new_meta: Optional[MetaData] = None,
-                   inplace: bool = False) -> Self:
-    """
-    Return the DataManip either as its self or as a new variable.
+                     new_data: pd.DataFrame,
+                     new_freq: Optional[str] = None,
+                     new_meta: Optional[MetaData] = None,
+                     inplace: bool = False) -> Self:
+      """
+      Return the DataManip either as its self or as a new variable.
 
-    Parameters
-    ----------
-    data : pd.DataFrame
-        The data to be set.
-    
-    Returns
-    -------
-    pd.DataFrame
-        The data.
-    """
-    if inplace:
-      self.data = new_data
-      if new_freq:
-        self.frequency = new_freq
-      if new_meta:
-        self.metadata = new_meta
-      return Self
-    else:
-      if new_freq:
-        freq = new_freq
+      Parameters
+      ----------
+      data : pd.DataFrame
+          The data to be set.
+      
+      Returns
+      -------
+      pd.DataFrame
+          The data.
+      """
+      if inplace:
+        self.data = new_data
+        if new_freq:
+          self.frequency = new_freq
+        if new_meta:
+          self.metadata = new_meta
+        return Self
       else:
-        freq = self.frequency
-      if new_meta:
-        meta = new_meta
-      else:
-        meta = self.metadata
-      return DataManip(new_data, frequency=freq, metadata=meta)
+        if new_freq:
+          freq = new_freq
+        else:
+          freq = self.frequency
+        if new_meta:
+          meta = new_meta
+        else:
+          meta = self.metadata
+        return DataManip(new_data, frequency=freq, metadata=meta)
