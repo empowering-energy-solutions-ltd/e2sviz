@@ -714,7 +714,8 @@ class DataManip:
     pd.DataFrame | pd.Series
         The resampled and aggregated data.
     """
-        resampled_data: pd.DataFrame = self.data.resample(freq).agg(func)
+        resampled_data: pd.DataFrame = self.data.resample(freq).agg(
+            func.__name__)
         new_meta_data = deepcopy(self.metadata)
         new_meta_data.metadata[viz_schema.MetaDataSchema.FRAME][
             viz_schema.MetaDataSchema.FREQ] = freq
