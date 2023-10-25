@@ -410,7 +410,7 @@ class DataManip:
                     viz_schema.MetaDataSchema.UNITS: viz_enums.UnitsSchema.NAN,
                     viz_schema.MetaDataSchema.PREFIX: viz_enums.Prefix.BASE,
                     viz_schema.MetaDataSchema.TYPE: self.data[col].dtype,
-                    viz_schema.MetaDataSchema.LEGEND: [col]
+                    viz_schema.MetaDataSchema.LEGEND: col
                 }
             default_metadata[viz_schema.MetaDataSchema.FRAME] = {
                 viz_schema.MetaDataSchema.FREQ: self.frequency,
