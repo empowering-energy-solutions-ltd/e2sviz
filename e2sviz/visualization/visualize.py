@@ -1,12 +1,8 @@
-import datetime
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, List, Optional, Protocol, Self
+from typing import Any, Callable, Optional, Protocol
 
-import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
 
 from e2sviz.structure import enums as viz_enums
 from e2sviz.structure import viz_schema
