@@ -3,7 +3,9 @@ e2sviz
 
 E2SViz is a data visualization package that allows data preprocessing, `e2sviz.data.standard_data_process.DataPrep` & `e2sviz.data.standard_data_process.DataManip`, and data visualisation, `e2sviz.visualization.visualize.DataViz`.
 
-Examples of how to use e2svizs' functionality can be found in `e2sviz_example.ipynb` which uses demo data `example_consumption_data.csv`
+Examples of how to use e2svizs' functionality can be found in `e2sviz_example.ipynb` which uses demo data `example_consumption_data.csv`.
+
+<b>NOTE:</b> We use poetry for package management. If you plan on exploring the `e2sviz_example.ipynb` ensure you initialize the `pyproject.toml` or use the `requirements.txt` to install the packages through pip.
 
 Project Organization
 ------------
@@ -12,7 +14,7 @@ Project Organization
     ├── Makefile           <- Makefile with commands like `make data` or `make train`
     ├── README.md          <- The top-level README for developers using this project.
     │
-    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering), the creator's initials, and a short `-` delimited description, e.g. `1.0-jqp-initial-data-exploration`.
+    ├── notebooks          <- Jupyter notebooks. 
     │   │
     │   ├── e2sviz_example.ipynb  <- Example notebook containing all the functions and how to use them.
     │   │
@@ -48,6 +50,8 @@ Project Organization
     ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g. generated with `pip freeze > requirements.txt`
     │
     ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
+    │
+    ├── pyproject.toml     <- Poetry .toml file for package management.
     │
     └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
 
