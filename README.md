@@ -15,6 +15,7 @@ Project Organization
     ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering), the creator's initials, and a short `-` delimited description, e.g. `1.0-jqp-initial-data-exploration`.
     │   │
     │   ├── e2sviz_example.ipynb  <- Example notebook containing all the functions and how to use them.
+    │   │
     │   └── example_consumption_data.csv  <- Example dataset for use with the example notebook.
     │
     ├── e2sviz             <- Package import when using e2sviz as an imported pacakge.
