@@ -1,7 +1,9 @@
 e2sviz
 ==============================
 
-A short description of the project.
+E2SViz is a data visualization package that allows data preprocessing, `e2sviz.data.standard_data_process.DataPrep` & `e2sviz.data.standard_data_process.DataManip`, and data visualisation, `e2sviz.visualization.visualize.DataViz`.
+
+Examples of how to use e2svizs' functionality can be found in `e2sviz_example.ipynb` which uses demo data `example_consumption_data.csv`
 
 Project Organization
 ------------
@@ -9,45 +11,42 @@ Project Organization
     ├── LICENSE
     ├── Makefile           <- Makefile with commands like `make data` or `make train`
     ├── README.md          <- The top-level README for developers using this project.
-    ├── data
-    │   ├── external       <- Data from third party sources.
-    │   ├── interim        <- Intermediate data that has been transformed.
-    │   ├── processed      <- The final, canonical data sets for modeling.
-    │   └── raw            <- The original, immutable data dump.
     │
-    ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
+    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering), the creator's initials, and a short `-` delimited description, e.g. `1.0-jqp-initial-data-exploration`.
+    │   │
+    │   ├── e2sviz_example.ipynb  <- Example notebook containing all the functions and how to use them.
+    │   └── example_consumption_data.csv  <- Example dataset for use with the example notebook.
     │
-    ├── models             <- Trained and serialized models, model predictions, or model summaries
-    │
-    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-    │                         the creator's initials, and a short `-` delimited description, e.g.
-    │                         `1.0-jqp-initial-data-exploration`.
-    │
-    ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
-    │
-    ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-    │   └── figures        <- Generated graphics and figures to be used in reporting
-    │
-    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-    │                         generated with `pip freeze > requirements.txt`
-    │
-    ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
-    ├── src                <- Source code for use in this project.
+    ├── e2sviz             <- Package import when using e2sviz as an imported pacakge.
+    │   │
     │   ├── __init__.py    <- Makes src a Python module
     │   │
-    │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
+    │   ├── data           <- Scripts for data preperation and manipulations.
+    │   │   ├── data_preperation.py    <- Contains cleaner functions used in the DataPrep
+    │   │   │   
+    │   │   ├── functions.py   <- General functions used by manipularor and cleaner functions.
+    │   │   │   
+    │   │   ├── manipulations.py   <- Classes and functions used by DataManip.
+    │   │   │   
+    │   │   └── standard_data_process.py   <- DataPrep, Metadata & DataManip classes.
     │   │
-    │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
+    │   ├── structure       <- Schemas and enums files for e2sviz
+    │   │   │   
+    │   │   ├── datetime_schema.py   <- Contains schemas for datetime variables
+    │   │   │   
+    │   │   ├── enums.py   <- Contains project enum values
+    │   │   │   
+    │   │   └── viz_schema.py   <- Contains plot schemas used by Visualization
     │   │
-    │   ├── models         <- Scripts to train models and then use trained models to make
-    │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
-    │   │
-    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-    │       └── visualize.py
+    │   └── visualization    <- Contains the plot styles and visualization class and functions.
+    │       │   
+    │       ├── plot_styles.py   <- Contains Matplotlib & Plotly plot classes that holds the figure axes passed to the DataViz obj
+    │       │   
+    │       └── visualize.py   <- DataViz object file
+    │
+    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g. generated with `pip freeze > requirements.txt`
+    │
+    ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
     │
     └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
 
