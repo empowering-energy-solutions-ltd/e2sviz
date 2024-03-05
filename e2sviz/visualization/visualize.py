@@ -160,7 +160,7 @@ class DataViz:
     """
     Shows the visualisation.
     """
-    self.viz_selector.show()
+    return self.viz_selector.show()
 
   def save_figure(self, save_path: Path):
     """

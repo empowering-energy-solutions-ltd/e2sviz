@@ -69,13 +69,15 @@ class MatPlotLibPlot():
   save(save_path)
       Save the plot.
   """
-  container: Optional[plt.Axes] = None
+  container: Optional[dict[str, Any]] = None
   plt_kwargs: Optional[dict[str, str]] = field(default_factory=dict)
 
   def __post_init__(self):
     self.plt_settings()
     if self.container is None:
-      self.container = plt.figure(figsize=(15, 8)).gca()
+      fig = plt.figure(figsize=(15, 8))
+      ax = fig.gca()
+      self.container = {'fig': fig, 'ax': ax}
 
   def plt_settings(self):
     """
@@ -146,11 +148,11 @@ class MatPlotLibPlot():
         Additional matplotlib plot settings.
     """
     for column in plot_columns:
-      ax: plt.Axes = self.container
+      ax: plt.Axes = self.container['ax']
       kwargs = self.get_column_kwargs(column, dict_kwargs)
       ax = custom_plot(dataf.index, dataf[column], ax=ax, **self.plt_kwargs)
       self.set_kwargs(ax, kwargs)
-      self.container = ax
+      self.container['ax'] = ax
 
   def stacked_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
                    dict_kwargs: dict[str, dict[str, str]]):
@@ -170,7 +172,7 @@ class MatPlotLibPlot():
     **fig_kwargs : dict
         Additional plotly figure settings
     """
-    ax = self.container
+    ax = self.container['ax']
     cum_sum = pd.Series(0, index=dataf.index)
     # ax.fill_between(dataf.index, zeros, label='zeros', alpha=0)
     # Plot the stacked lines
@@ -186,7 +188,7 @@ class MatPlotLibPlot():
     ax.set_title('Stacked Plot')
     ax.legend()
 
-    self.container = ax
+    self.container['ax'] = ax
 
   def corr_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
                 dict_kwargs: dict[str, dict[str, str]]):
@@ -205,7 +207,7 @@ class MatPlotLibPlot():
     """
     corr_matrix = dataf[plot_columns].corr()
     ax = sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', ax=None)
-    self.container = ax
+    self.container['ax'] = ax
 
   def bar_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
                dict_kwargs: dict[str, dict[str, str]]):
@@ -239,7 +241,7 @@ class MatPlotLibPlot():
     plt.tight_layout()
     ax.legend().set_visible(False)
 
-    self.container = ax
+    self.container['ax'] = ax
 
   def dt_bar_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
                   dict_kwargs: dict[str, dict[str, str]]):
@@ -258,7 +260,7 @@ class MatPlotLibPlot():
     plt.Figure
         Matplotlib figure
     """
-    ax = self.container
+    ax = self.container['ax']
     total_bars = len(plot_columns)
     bar_width = 0.8 / total_bars
     x_values = np.arange(len(dataf.index))
@@ -278,7 +280,7 @@ class MatPlotLibPlot():
     plt.xticks(x_values)
     plt.tight_layout()
 
-    self.container = ax
+    self.container['ax'] = ax
 
   def box_plot(self, dataf: pd.DataFrame, plot_columns: list[str],
                dict_kwargs: dict[str, dict[str, str]]):
@@ -308,7 +310,7 @@ class MatPlotLibPlot():
     plt.tight_layout()
     ax.legend().set_visible(False)
 
-    self.container = ax
+    self.container['ax'] = ax
 
   def pie_chart(self, dataf: pd.DataFrame, plot_columns: list[str],
                 dict_kwargs: dict[str, dict[str, str]]):
@@ -335,11 +337,11 @@ class MatPlotLibPlot():
     ax.pie(values, labels=labels, autopct='%1.1f%%', startangle=90)
 
     ax.set_title('Pie Chart')
-
-    self.container = ax
+    self.container['fig'] = fig
+    self.container['ax'] = ax
 
   def show(self) -> Any:
-    return self.container
+    return self.container['fig']
 
   def save(self, save_path: Path):
     self.container.figure.savefig(save_path, dpi=300)
