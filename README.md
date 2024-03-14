@@ -11,7 +11,6 @@ Project Organization
 ------------
 
     ├── LICENSE
-    ├── Makefile           <- Makefile with commands like `make data` or `make train`
     ├── README.md          <- The top-level README for developers using this project.
     │
     ├── notebooks          <- Jupyter notebooks. 
@@ -47,9 +46,7 @@ Project Organization
     │       │   
     │       └── visualize.py   <- DataViz object file
     │
-    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g. generated with `pip freeze > requirements.txt`
-    │
-    ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
+    ├── requirements.txt   <- The requirements file for reproducing the analysis environment.
     │
     └── pyproject.toml     <- Poetry .toml file for package management.
 
