@@ -51,9 +51,7 @@ Project Organization
     │
     ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
     │
-    ├── pyproject.toml     <- Poetry .toml file for package management.
-    │
-    └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
+    └── pyproject.toml     <- Poetry .toml file for package management.
 
 
 --------
