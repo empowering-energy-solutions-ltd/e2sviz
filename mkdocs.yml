@@ -1,0 +1,34 @@
+site_name: E2SViz
+
+nav:
+  - Home: index.md
+  - Code Reference: 
+    - reference/data/data_preparation.md
+    - reference/data/functions.md
+    - reference/data/manipulations.md
+    - reference/data/standard_data_process.md
+    - reference/visualization/plot_styles.md
+    - reference/visualization/visualize.md
+
+theme:  
+  name: material
+  palette:
+    primary: cy
+    accent: purple
+  font:
+    text: 'Roboto'
+    code: 'Roboto Mono'
+
+plugins:
+  - search
+  - mkdocstrings:
+      enabled: !ENV [ENABLE_MKDOCSTRINGS, true]
+      default_handler: python
+      handlers:
+        python: 
+          paths: [e2sviz]
+          options:
+            show_source: false
+
+extra_css:
+    - styles.css

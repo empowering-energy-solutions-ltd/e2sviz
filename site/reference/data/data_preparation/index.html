@@ -1,0 +1,2277 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../../..">
+      
+      
+        <link rel="next" href="../functions/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.14">
+    
+    
+      
+        <title>Data preparation - E2SViz</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.10ba22f1.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../styles.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="cy" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#e2sviz.data.data_preparation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="E2SViz" class="md-header__button md-logo" aria-label="E2SViz" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            E2SViz
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Data preparation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="E2SViz" class="md-nav__button md-logo" aria-label="E2SViz" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    E2SViz
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Code Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Code Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Data preparation
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Data preparation
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation" class="md-nav__link">
+    <span class="md-ellipsis">
+      data_preparation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat" class="md-nav__link">
+    <span class="md-ellipsis">
+      ConvertColumnDataFormat
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ConvertColumnDataFormat">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.convert_half_hourly_to_datetime" class="md-nav__link">
+    <span class="md-ellipsis">
+      convert_half_hourly_to_datetime
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="convert_half_hourly_to_datetime">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.convert_half_hourly_to_datetime--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.convert_half_hourly_to_datetime--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.data_cleaner" class="md-nav__link">
+    <span class="md-ellipsis">
+      data_cleaner
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="data_cleaner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.data_cleaner--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.data_cleaner--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.prep_for_formatting" class="md-nav__link">
+    <span class="md-ellipsis">
+      prep_for_formatting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="prep_for_formatting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.prep_for_formatting--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.prep_for_formatting--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData" class="md-nav__link">
+    <span class="md-ellipsis">
+      FillMissingData
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FillMissingData">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.data_cleaner" class="md-nav__link">
+    <span class="md-ellipsis">
+      data_cleaner
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="data_cleaner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.data_cleaner--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.data_cleaner--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.data_cleaner--raises" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raises
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.fillna_mean" class="md-nav__link">
+    <span class="md-ellipsis">
+      fillna_mean
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="fillna_mean">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.fillna_mean--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.fillna_mean--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.fillna_mean--raises" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raises
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.fillna_rolling" class="md-nav__link">
+    <span class="md-ellipsis">
+      fillna_rolling
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="fillna_rolling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.fillna_rolling--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.fillna_rolling--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.fillna_rolling--raises" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raises
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.GenerateDatetime" class="md-nav__link">
+    <span class="md-ellipsis">
+      GenerateDatetime
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GenerateDatetime">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.GenerateDatetime.data_cleaner" class="md-nav__link">
+    <span class="md-ellipsis">
+      data_cleaner
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="data_cleaner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.GenerateDatetime.data_cleaner--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.GenerateDatetime.data_cleaner--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.GenerateDatetime.data_cleaner--raises" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raises
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.OutlierRemover" class="md-nav__link">
+    <span class="md-ellipsis">
+      OutlierRemover
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OutlierRemover">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.OutlierRemover.data_cleaner" class="md-nav__link">
+    <span class="md-ellipsis">
+      data_cleaner
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="data_cleaner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.OutlierRemover.data_cleaner--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.OutlierRemover.data_cleaner--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.OutlierRemover.iqr_outliers" class="md-nav__link">
+    <span class="md-ellipsis">
+      iqr_outliers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="iqr_outliers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.OutlierRemover.iqr_outliers--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.OutlierRemover.iqr_outliers--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.convert_data_types" class="md-nav__link">
+    <span class="md-ellipsis">
+      convert_data_types
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="convert_data_types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.convert_data_types--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.convert_data_types--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.convert_data_types--raises" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raises
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.retrieve_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      retrieve_data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="retrieve_data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.retrieve_data--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.retrieve_data--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.retrieve_data--raises" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raises
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Functions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../manipulations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Manipulations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../standard_data_process/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Standard data process
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../visualization/plot_styles/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plot styles
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../visualization/visualize/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Visualize
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation" class="md-nav__link">
+    <span class="md-ellipsis">
+      data_preparation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat" class="md-nav__link">
+    <span class="md-ellipsis">
+      ConvertColumnDataFormat
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ConvertColumnDataFormat">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.convert_half_hourly_to_datetime" class="md-nav__link">
+    <span class="md-ellipsis">
+      convert_half_hourly_to_datetime
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="convert_half_hourly_to_datetime">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.convert_half_hourly_to_datetime--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.convert_half_hourly_to_datetime--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.data_cleaner" class="md-nav__link">
+    <span class="md-ellipsis">
+      data_cleaner
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="data_cleaner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.data_cleaner--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.data_cleaner--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.prep_for_formatting" class="md-nav__link">
+    <span class="md-ellipsis">
+      prep_for_formatting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="prep_for_formatting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.prep_for_formatting--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.prep_for_formatting--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData" class="md-nav__link">
+    <span class="md-ellipsis">
+      FillMissingData
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FillMissingData">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.data_cleaner" class="md-nav__link">
+    <span class="md-ellipsis">
+      data_cleaner
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="data_cleaner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.data_cleaner--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.data_cleaner--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.data_cleaner--raises" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raises
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.fillna_mean" class="md-nav__link">
+    <span class="md-ellipsis">
+      fillna_mean
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="fillna_mean">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.fillna_mean--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.fillna_mean--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.fillna_mean--raises" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raises
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.fillna_rolling" class="md-nav__link">
+    <span class="md-ellipsis">
+      fillna_rolling
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="fillna_rolling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.fillna_rolling--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.fillna_rolling--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.FillMissingData.fillna_rolling--raises" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raises
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.GenerateDatetime" class="md-nav__link">
+    <span class="md-ellipsis">
+      GenerateDatetime
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GenerateDatetime">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.GenerateDatetime.data_cleaner" class="md-nav__link">
+    <span class="md-ellipsis">
+      data_cleaner
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="data_cleaner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.GenerateDatetime.data_cleaner--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.GenerateDatetime.data_cleaner--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.GenerateDatetime.data_cleaner--raises" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raises
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.OutlierRemover" class="md-nav__link">
+    <span class="md-ellipsis">
+      OutlierRemover
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OutlierRemover">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.OutlierRemover.data_cleaner" class="md-nav__link">
+    <span class="md-ellipsis">
+      data_cleaner
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="data_cleaner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.OutlierRemover.data_cleaner--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.OutlierRemover.data_cleaner--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.OutlierRemover.iqr_outliers" class="md-nav__link">
+    <span class="md-ellipsis">
+      iqr_outliers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="iqr_outliers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.OutlierRemover.iqr_outliers--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.OutlierRemover.iqr_outliers--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.convert_data_types" class="md-nav__link">
+    <span class="md-ellipsis">
+      convert_data_types
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="convert_data_types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.convert_data_types--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.convert_data_types--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.convert_data_types--raises" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raises
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.retrieve_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      retrieve_data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="retrieve_data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.retrieve_data--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.retrieve_data--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e2sviz.data.data_preparation.retrieve_data--raises" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raises
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>Data preparation</h1>
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="e2sviz.data.data_preparation"></a>
+  <div class="doc doc-contents first">
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="e2sviz.data.data_preparation.ConvertColumnDataFormat" class="doc doc-heading">
+          <code>ConvertColumnDataFormat</code>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+
+  
+      <p>Converts column wise data to row wise.</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code><span title="e2sviz.data.data_preparation.ConvertColumnDataFormat.freq">freq</span></code></td>
+          <td>
+                <code>Optional[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Frequency of the data, by default '30T'.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="e2sviz.data.data_preparation.ConvertColumnDataFormat.datetime_format">datetime_format</span></code></td>
+          <td>
+                <code>Optional[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Datetime format of the data, by default '%d/%m/%Y'.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="e2sviz.data.data_preparation.ConvertColumnDataFormat.date_column">date_column</span></code></td>
+          <td>
+                <code>Optional[str]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Column name of the date column, by default 'Settlement Date'.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Methods:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="e2sviz.data.data_preparation.ConvertColumnDataFormat.data_cleaner" href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.data_cleaner">data_cleaner</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Reorder data from column wise to row wise.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="e2sviz.data.data_preparation.ConvertColumnDataFormat.convert_half_hourly_to_datetime" href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.convert_half_hourly_to_datetime">convert_half_hourly_to_datetime</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Convert half hourly data to datetime.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="e2sviz.data.data_preparation.ConvertColumnDataFormat.prep_for_formatting" href="#e2sviz.data.data_preparation.ConvertColumnDataFormat.prep_for_formatting">prep_for_formatting</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Prepare data for formatting.</p>
+              </div>
+            </td>
+          </tr>
+    </tbody>
+  </table>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="e2sviz.data.data_preparation.ConvertColumnDataFormat.convert_half_hourly_to_datetime" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">convert_half_hourly_to_datetime</span><span class="p">(</span><span class="n">datetime_str</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Convert half hourly data to datetime.</p>
+<h5 id="e2sviz.data.data_preparation.ConvertColumnDataFormat.convert_half_hourly_to_datetime--parameters">Parameters</h5>
+<p><code>datetime_str</code> : <code>str</code>
+    Half hourly data.</p>
+<h5 id="e2sviz.data.data_preparation.ConvertColumnDataFormat.convert_half_hourly_to_datetime--returns">Returns</h5>
+<p><code>datetime.datetime</code>
+    Datetime object.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="e2sviz.data.data_preparation.ConvertColumnDataFormat.data_cleaner" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">data_cleaner</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Reorder data from column wise to row wise.</p>
+<h5 id="e2sviz.data.data_preparation.ConvertColumnDataFormat.data_cleaner--parameters">Parameters</h5>
+<p><code>data</code> : <code>pd.DataFrame</code>
+    Raw data in a dataframe.</p>
+<h5 id="e2sviz.data.data_preparation.ConvertColumnDataFormat.data_cleaner--returns">Returns</h5>
+<p><code>pd.DataFrame</code>
+    DataFrame, with values reordered.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="e2sviz.data.data_preparation.ConvertColumnDataFormat.prep_for_formatting" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">prep_for_formatting</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Prepare data for formatting.</p>
+<h5 id="e2sviz.data.data_preparation.ConvertColumnDataFormat.prep_for_formatting--parameters">Parameters</h5>
+<p><code>data</code> : <code>pd.DataFrame</code>
+    Raw data in a dataframe.</p>
+<h5 id="e2sviz.data.data_preparation.ConvertColumnDataFormat.prep_for_formatting--returns">Returns</h5>
+<p><code>df_long</code> : <code>pd.DataFrame</code>
+    DataFrame, with values reordered.</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="e2sviz.data.data_preparation.FillMissingData" class="doc doc-heading">
+          <code>FillMissingData</code>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+
+  
+      <p>Fills missing values in dataframe.</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code><span title="e2sviz.data.data_preparation.FillMissingData.func">func</span></code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Method to use for filling missing values.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Methods:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="e2sviz.data.data_preparation.FillMissingData.data_cleaner" href="#e2sviz.data.data_preparation.FillMissingData.data_cleaner">data_cleaner</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Fill missing values in the data.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="e2sviz.data.data_preparation.FillMissingData.fillna_mean" href="#e2sviz.data.data_preparation.FillMissingData.fillna_mean">fillna_mean</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Fill missing values with column means.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="e2sviz.data.data_preparation.FillMissingData.fillna_rolling" href="#e2sviz.data.data_preparation.FillMissingData.fillna_rolling">fillna_rolling</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Fill missing values using rolling mean.</p>
+              </div>
+            </td>
+          </tr>
+    </tbody>
+  </table>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="e2sviz.data.data_preparation.FillMissingData.data_cleaner" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">data_cleaner</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Fill missing values in the data.</p>
+<h5 id="e2sviz.data.data_preparation.FillMissingData.data_cleaner--parameters">Parameters</h5>
+<p><code>data</code> : <code>pd.DataFrame</code>
+    Pandas dataframe.
+<code>func</code> : <code>str</code>
+    'meanfill' or 'rollingfill'.</p>
+<h5 id="e2sviz.data.data_preparation.FillMissingData.data_cleaner--returns">Returns</h5>
+<p><code>pd.DataFrame</code>
+    DataFrame, with values filled.</p>
+<h5 id="e2sviz.data.data_preparation.FillMissingData.data_cleaner--raises">Raises</h5>
+<p><code>ValueError</code>
+    Raised when an unsupported fill method is provided.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="e2sviz.data.data_preparation.FillMissingData.fillna_mean" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">fillna_mean</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Fill missing values in the data with column means.</p>
+<h5 id="e2sviz.data.data_preparation.FillMissingData.fillna_mean--parameters">Parameters</h5>
+<p><code>data</code> : <code>pd.DataFrame</code>
+    Input data.</p>
+<h5 id="e2sviz.data.data_preparation.FillMissingData.fillna_mean--returns">Returns</h5>
+<p><code>pd.DataFrame</code>
+    Data with missing values filled with column means.</p>
+<h5 id="e2sviz.data.data_preparation.FillMissingData.fillna_mean--raises">Raises</h5>
+<p><code>ValueError</code>
+    Raised when an unsupported data type is provided.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="e2sviz.data.data_preparation.FillMissingData.fillna_rolling" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">fillna_rolling</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Fill missing values in the data using rolling mean.</p>
+<h5 id="e2sviz.data.data_preparation.FillMissingData.fillna_rolling--parameters">Parameters</h5>
+<p><code>data</code> : <code>pd.DataFrame</code>
+    Input data.</p>
+<h5 id="e2sviz.data.data_preparation.FillMissingData.fillna_rolling--returns">Returns</h5>
+<p><code>pd.DataFrame</code>
+    Data with missing values filled using rolling mean.</p>
+<h5 id="e2sviz.data.data_preparation.FillMissingData.fillna_rolling--raises">Raises</h5>
+<p><code>ValueError</code>
+    Raised when an unsupported data type is provided.</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="e2sviz.data.data_preparation.GenerateDatetime" class="doc doc-heading">
+          <code>GenerateDatetime</code>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+
+  
+      <p>Creates a datetime for dataset or without one.</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code><span title="e2sviz.data.data_preparation.GenerateDatetime.start_date">start_date</span></code></td>
+          <td>
+                <code><span title="datetime.datetime">datetime</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>When the datetime series will start, by default <code>datetime(2022, 1, 1)</code>.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="e2sviz.data.data_preparation.GenerateDatetime.freq">freq</span></code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Frequency of the datetime series, by default "30T".</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="e2sviz.data.data_preparation.GenerateDatetime.periods">periods</span></code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Length used to set the length of the array if no data is given, by default 48.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="e2sviz.data.data_preparation.GenerateDatetime.tz">tz</span></code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Timezone for the datetime series, by default 'UTC'.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Methods:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="e2sviz.data.data_preparation.GenerateDatetime.data_cleaner" href="#e2sviz.data.data_preparation.GenerateDatetime.data_cleaner">data_cleaner</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Add datetime column to the data.</p>
+              </div>
+            </td>
+          </tr>
+    </tbody>
+  </table>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="e2sviz.data.data_preparation.GenerateDatetime.data_cleaner" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">data_cleaner</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Add datetime column to the data.</p>
+<h5 id="e2sviz.data.data_preparation.GenerateDatetime.data_cleaner--parameters">Parameters</h5>
+<p><code>data</code> : <code>pd.DataFrame</code>
+    Either numpy array or pandas dataframe.<br />
+<code>start_date</code> : <code>Optional[datetime.datetime]</code>
+    When the datetime series will start, by default datetime(2022, 1, 1).<br />
+<code>freq</code> : <code>Optional[str]</code>
+    Frequency of the datetime series, by default "30T".<br />
+<code>periods</code> : <code>Optional[int]</code>
+    Length used to set the length of the array if no data is given, by default 48.<br />
+<code>tz</code> : <code>Optional[str]</code>
+    Timezone for the datetime series, by default 'UTC'.  </p>
+<h5 id="e2sviz.data.data_preparation.GenerateDatetime.data_cleaner--returns">Returns</h5>
+<p><code>pd.DataFrame</code>
+    Input data with datetime column (index if DataFrame, column zero if array).</p>
+<h5 id="e2sviz.data.data_preparation.GenerateDatetime.data_cleaner--raises">Raises</h5>
+<p><code>ValueError</code>
+    Raised when an unsupported data type is provided.</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="e2sviz.data.data_preparation.OutlierRemover" class="doc doc-heading">
+          <code>OutlierRemover</code>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+
+  
+      <p>Removes outliers from dataframe.</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code><span title="e2sviz.data.data_preparation.OutlierRemover.method">method</span></code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Method to use for outlier removal.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Methods:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="e2sviz.data.data_preparation.OutlierRemover.data_cleaner" href="#e2sviz.data.data_preparation.OutlierRemover.data_cleaner">data_cleaner</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Remove outliers from the data.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="e2sviz.data.data_preparation.OutlierRemover.iqr_outliers" href="#e2sviz.data.data_preparation.OutlierRemover.iqr_outliers">iqr_outliers</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Use interquartile range to find outliers.</p>
+              </div>
+            </td>
+          </tr>
+    </tbody>
+  </table>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="e2sviz.data.data_preparation.OutlierRemover.data_cleaner" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">data_cleaner</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Remove outliers from the data.</p>
+<h5 id="e2sviz.data.data_preparation.OutlierRemover.data_cleaner--parameters">Parameters</h5>
+<p><code>data</code> : <code>pd.DataFrame</code>
+    Either numpy array or pandas dataframe.</p>
+<h5 id="e2sviz.data.data_preparation.OutlierRemover.data_cleaner--returns">Returns</h5>
+<p><code>pd.DataFrame</code>
+    Dataframe of cleaned data.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="e2sviz.data.data_preparation.OutlierRemover.iqr_outliers" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">iqr_outliers</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Use interquartile range to find outliers.</p>
+<h5 id="e2sviz.data.data_preparation.OutlierRemover.iqr_outliers--parameters">Parameters</h5>
+<p><code>values</code> : <code>np.ndarray</code>
+    Input array to find outliers.</p>
+<h5 id="e2sviz.data.data_preparation.OutlierRemover.iqr_outliers--returns">Returns</h5>
+<p><code>np.ndarray</code>
+    Boolean array indicating outliers.</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+
+</div>
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="e2sviz.data.data_preparation.convert_data_types" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">convert_data_types</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Convert data types between NumPy ndarray and pandas DataFrame.</p>
+<h4 id="e2sviz.data.data_preparation.convert_data_types--parameters">Parameters</h4>
+<p><code>data</code> : <code>np.ndarray | pd.DataFrame</code>
+    Input data to be converted.<br />
+<code>columns</code> : <code>List[str] | None</code>
+    List of column names for DataFrame conversion. Defaults to None.  </p>
+<h4 id="e2sviz.data.data_preparation.convert_data_types--returns">Returns</h4>
+<p><code>np.ndarray | pd.DataFrame</code>
+    Converted data in the specified type.</p>
+<h4 id="e2sviz.data.data_preparation.convert_data_types--raises">Raises</h4>
+<p><code>ValueError</code>
+    Raised when an unsupported data type is provided.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="e2sviz.data.data_preparation.retrieve_data" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">retrieve_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Retrieve the underlying NumPy ndarray from the input data.</p>
+<h4 id="e2sviz.data.data_preparation.retrieve_data--parameters">Parameters</h4>
+<p><code>data</code> : <code>np.ndarray | pd.DataFrame</code>
+    Input data from which to retrieve the ndarray.</p>
+<h4 id="e2sviz.data.data_preparation.retrieve_data--returns">Returns</h4>
+<p><code>np.ndarray</code>
+    NumPy ndarray representing the input data.</p>
+<h4 id="e2sviz.data.data_preparation.retrieve_data--raises">Raises</h4>
+<p><code>ValueError</code>
+    Raised when an unsupported data type is provided.</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+    
+  </body>
+</html>

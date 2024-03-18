@@ -19,19 +19,19 @@ def convert_data_types(
 
   Parameters
   ----------
-  data : np.ndarray or pd.DataFrame
-      Input data to be converted.
-  columns : List[str], None
-      List of column names for DataFrame conversion. Defaults to None.
+  `data` : `np.ndarray | pd.DataFrame`
+      Input data to be converted.  
+  `columns` : `List[str] | None`
+      List of column names for DataFrame conversion. Defaults to None.  
 
   Returns
   -------
-  np.ndarray or pd.DataFrame
+  `np.ndarray | pd.DataFrame`
       Converted data in the specified type.
 
   Raises
   ------
-  ValueError
+  `ValueError`
       Raised when an unsupported data type is provided.
   """
   if isinstance(data, pd.DataFrame):
@@ -51,17 +51,17 @@ def retrieve_data(data: npt.NDArray | pd.DataFrame) -> np.ndarray:
 
   Parameters
   ----------
-  data : np.ndarray or pd.DataFrame
+  `data` : `np.ndarray | pd.DataFrame`
       Input data from which to retrieve the ndarray.
 
   Returns
   -------
-  np.ndarray
+  `np.ndarray`
       NumPy ndarray representing the input data.
 
   Raises
   ------
-  ValueError
+  `ValueError`
       Raised when an unsupported data type is provided.
   """
   if isinstance(data, pd.DataFrame):
@@ -76,7 +76,17 @@ OutlierCallable = Callable[[pd.DataFrame], pd.DataFrame]
 @dataclass
 class OutlierRemover:
   """
-  Removes outliers from array/dataframe.
+  Removes outliers from dataframe.
+
+  Attributes:
+    method str:
+        Method to use for outlier removal.
+
+  Methods:
+    data_cleaner:
+        Remove outliers from the data.
+    iqr_outliers:
+        Use interquartile range to find outliers.
   """
   method: str = 'iqr'
 
@@ -86,13 +96,13 @@ class OutlierRemover:
 
     Parameters
     ----------
-    data : np.ndarray | pd.DataFrame
+    `data` : `pd.DataFrame`
         Either numpy array or pandas dataframe.
 
     Returns
     -------
-    np.ndarray | pd.DataFrame
-        Array or Dataframe, whichever was given as input.
+    `pd.DataFrame`
+        Dataframe of cleaned data.
     """
 
     data_copy = deepcopy(data)
@@ -105,12 +115,12 @@ class OutlierRemover:
 
     Parameters
     ----------
-    values : np.ndarray
+    `values` : `np.ndarray`
         Input array to find outliers.
 
     Returns
     -------
-    np.ndarray
+    `np.ndarray`
         Boolean array indicating outliers.
     """
     values = retrieve_data(data)
@@ -133,6 +143,18 @@ class OutlierRemover:
 class FillMissingData():
   """
   Fills missing values in dataframe.
+
+  Attributes:
+    func str:
+        Method to use for filling missing values.
+
+  Methods:
+    data_cleaner:
+        Fill missing values in the data.
+    fillna_mean:
+        Fill missing values with column means.
+    fillna_rolling:
+        Fill missing values using rolling mean.
   """
   func: str = 'rollingfill'
 
@@ -142,19 +164,19 @@ class FillMissingData():
 
     Parameters
     ----------
-    data : pd.DataFrame
+    `data` : `pd.DataFrame`
         Pandas dataframe.
-    func : str
+    `func` : `str`
         'meanfill' or 'rollingfill'.
 
     Returns
     -------
-    pd.DataFrame
+    `pd.DataFrame`
         DataFrame, with values filled.
 
     Raises
     ------
-    ValueError
+    `ValueError`
         Raised when an unsupported fill method is provided.
     """
     if self.func == 'meanfill':
@@ -175,17 +197,17 @@ class FillMissingData():
 
     Parameters
     ----------
-    data : np.ndarray or pd.DataFrame
+    `data` : `pd.DataFrame`
         Input data.
 
     Returns
     -------
-    np.ndarray or pd.DataFrame
+    `pd.DataFrame`
         Data with missing values filled with column means.
 
     Raises
     ------
-    ValueError
+    `ValueError`
         Raised when an unsupported data type is provided.
     """
     data_copy = deepcopy(data)
@@ -197,17 +219,17 @@ class FillMissingData():
 
     Parameters
     ----------
-    data : np.ndarray or pd.DataFrame
+    `data` : `pd.DataFrame`
         Input data.
 
     Returns
     -------
-    np.ndarray or pd.DataFrame
+    `pd.DataFrame`
         Data with missing values filled using rolling mean.
 
     Raises
     ------
-    ValueError
+    `ValueError`
         Raised when an unsupported data type is provided.
     """
     data_copy = deepcopy(data)
@@ -223,19 +245,21 @@ class ConvertColumnDataFormat():
   """
   Converts column wise data to row wise.
 
-  Parameters
-  ----------
-  freq : str, optional
-      Frequency of the data, by default '30T'.
-  datetime_format : str, optional
-      Datetime format of the data, by default '%d/%m/%Y'.
-  date_column : str, optional
-      Column name of the date column, by default 'Settlement Date'.
+  Attributes:
+    freq Optional[str]:
+        Frequency of the data, by default '30T'.
+    datetime_format Optional[str]:
+        Datetime format of the data, by default '%d/%m/%Y'.
+    date_column Optional[str]:
+        Column name of the date column, by default 'Settlement Date'.
 
-  Returns
-  -------
-  df_long : pd.DataFrame
-      DataFrame, with values reordered.
+  Methods:
+    data_cleaner:
+        Reorder data from column wise to row wise.
+    convert_half_hourly_to_datetime:
+        Convert half hourly data to datetime.
+    prep_for_formatting:
+        Prepare data for formatting.
   """
   freq: str = '30T'
   datetime_format: str = '%Y-%m-%d'
@@ -247,12 +271,12 @@ class ConvertColumnDataFormat():
 
     Parameters
     ----------
-    data : pd.DataFrame
+    `data` : `pd.DataFrame`
         Raw data in a dataframe.
     
     Returns
     -------
-    pd.DataFrame
+    `pd.DataFrame`
         DataFrame, with values reordered.
     """
     data = data.copy().reset_index()
@@ -270,12 +294,12 @@ class ConvertColumnDataFormat():
 
     Parameters
     ----------
-    datetime_str : str
+    `datetime_str` : `str`
         Half hourly data.
     
     Returns
     -------
-    datetime
+    `datetime.datetime`
         Datetime object.
     """
     dt = datetime.strptime(datetime_str.split()[0], self.datetime_format)
@@ -290,12 +314,12 @@ class ConvertColumnDataFormat():
 
     Parameters
     ----------
-    data : pd.DataFrame
+    `data` : `pd.DataFrame`
         Raw data in a dataframe.
     
     Returns
     -------
-    df_long : pd.DataFrame
+    `df_long` : `pd.DataFrame`
         DataFrame, with values reordered.
     """
     data[self.date_column] = data[self.date_column].astype(str)
@@ -313,6 +337,20 @@ class ConvertColumnDataFormat():
 class GenerateDatetime():
   """
   Creates a datetime for dataset or without one.
+
+  Attributes:
+    start_date datetime:
+        When the datetime series will start, by default `datetime(2022, 1, 1)`.
+    freq str:
+        Frequency of the datetime series, by default "30T".
+    periods int:
+        Length used to set the length of the array if no data is given, by default 48.
+    tz str:
+        Timezone for the datetime series, by default 'UTC'.
+
+  Methods:
+    data_cleaner:
+        Add datetime column to the data.
   """
   start_date: datetime = datetime(2022, 1, 1)
   freq: str = '30T'
@@ -325,25 +363,25 @@ class GenerateDatetime():
 
     Parameters
     ----------
-    data : np.ndarray or pd.DataFrame
-        Either numpy array or pandas dataframe.
-    start_date : datetime, optional
-        When the datetime series will start, by default datetime(2022, 1, 1).
-    freq : str, optional
-        Frequency of the datetime series, by default "30T".
-    periods : int, optional
-        Length used to set the length of the array if no data is given, by default 48.
-    tz : str, optional
-        Timezone for the datetime series, by default 'UTC'.
+    `data` : `pd.DataFrame`
+        Either numpy array or pandas dataframe.  
+    `start_date` : `Optional[datetime.datetime]`
+        When the datetime series will start, by default datetime(2022, 1, 1).  
+    `freq` : `Optional[str]`
+        Frequency of the datetime series, by default "30T".  
+    `periods` : `Optional[int]`
+        Length used to set the length of the array if no data is given, by default 48.  
+    `tz` : `Optional[str]`
+        Timezone for the datetime series, by default 'UTC'.  
 
     Returns
     -------
-    np.ndarray or pd.DataFrame
+    `pd.DataFrame`
         Input data with datetime column (index if DataFrame, column zero if array).
 
     Raises
     ------
-    ValueError
+    `ValueError`
         Raised when an unsupported data type is provided.
     """
     data_copy = deepcopy(data)

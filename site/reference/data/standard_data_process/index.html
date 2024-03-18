@@ -1,0 +1,3258 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../manipulations/">
+      
+      
+        <link rel="next" href="../../visualization/plot_styles/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.14">
+    
+    
+      
+        <title>Standard data process - E2SViz</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.10ba22f1.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../styles.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="cy" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#data.standard_data_process" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="E2SViz" class="md-header__button md-logo" aria-label="E2SViz" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            E2SViz
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Standard data process
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="E2SViz" class="md-nav__button md-logo" aria-label="E2SViz" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    E2SViz
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Code Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Code Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_preparation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data preparation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Functions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../manipulations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Manipulations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Standard data process
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Standard data process
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#data.standard_data_process" class="md-nav__link">
+    <span class="md-ellipsis">
+      standard_data_process
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip" class="md-nav__link">
+    <span class="md-ellipsis">
+      DataManip
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DataManip">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.column_from_freq" class="md-nav__link">
+    <span class="md-ellipsis">
+      column_from_freq
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="column_from_freq">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.column_from_freq--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.dict_of_groupbys" class="md-nav__link">
+    <span class="md-ellipsis">
+      dict_of_groupbys
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="dict_of_groupbys">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.dict_of_groupbys--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.check_freq" class="md-nav__link">
+    <span class="md-ellipsis">
+      check_freq
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.check_meta_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      check_meta_data
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.check_rescaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      check_rescaling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      filter
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="filter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.filter--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.filter--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.groupby" class="md-nav__link">
+    <span class="md-ellipsis">
+      groupby
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="groupby">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.groupby--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.groupby--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.inplace_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      inplace_data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="inplace_data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.inplace_data--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.inplace_data--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.populate_legend" class="md-nav__link">
+    <span class="md-ellipsis">
+      populate_legend
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="populate_legend">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.populate_legend--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.populate_legend--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.resampled" class="md-nav__link">
+    <span class="md-ellipsis">
+      resampled
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="resampled">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.resampled--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.resampled--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.rolling" class="md-nav__link">
+    <span class="md-ellipsis">
+      rolling
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="rolling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.rolling--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.rolling--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.unit_rescaler" class="md-nav__link">
+    <span class="md-ellipsis">
+      unit_rescaler
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="unit_rescaler">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.unit_rescaler--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.unit_rescaler--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.update_metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      update_metadata
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="update_metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.update_metadata--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.update_metadata--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.val_rescaler" class="md-nav__link">
+    <span class="md-ellipsis">
+      val_rescaler
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="val_rescaler">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.val_rescaler--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.val_rescaler--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep" class="md-nav__link">
+    <span class="md-ellipsis">
+      DataPrep
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DataPrep">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.clean_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      clean_data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="clean_data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.clean_data--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.concat" class="md-nav__link">
+    <span class="md-ellipsis">
+      concat
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="concat">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.concat--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.concat--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.described_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      described_data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="described_data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.described_data--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.described_data--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.statistics_of_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      statistics_of_data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="statistics_of_data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.statistics_of_data--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.statistics_of_data--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData" class="md-nav__link">
+    <span class="md-ellipsis">
+      MetaData
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MetaData">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.freq" class="md-nav__link">
+    <span class="md-ellipsis">
+      freq
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="freq">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.freq--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.freq--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_x_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_x_label
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="get_x_label">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_x_label--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.dtype" class="md-nav__link">
+    <span class="md-ellipsis">
+      dtype
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="dtype">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.dtype--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.dtype--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_legend" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_legend
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="get_legend">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_legend--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_legend--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_title" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_title
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="get_title">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_title--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_title--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_y_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_y_label
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="get_y_label">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_y_label--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_y_label--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.siunits" class="md-nav__link">
+    <span class="md-ellipsis">
+      siunits
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="siunits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.siunits--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.siunits--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.units" class="md-nav__link">
+    <span class="md-ellipsis">
+      units
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="units">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.units--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.units--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../visualization/plot_styles/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plot styles
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../visualization/visualize/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Visualize
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#data.standard_data_process" class="md-nav__link">
+    <span class="md-ellipsis">
+      standard_data_process
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip" class="md-nav__link">
+    <span class="md-ellipsis">
+      DataManip
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DataManip">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.column_from_freq" class="md-nav__link">
+    <span class="md-ellipsis">
+      column_from_freq
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="column_from_freq">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.column_from_freq--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.dict_of_groupbys" class="md-nav__link">
+    <span class="md-ellipsis">
+      dict_of_groupbys
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="dict_of_groupbys">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.dict_of_groupbys--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.check_freq" class="md-nav__link">
+    <span class="md-ellipsis">
+      check_freq
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.check_meta_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      check_meta_data
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.check_rescaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      check_rescaling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      filter
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="filter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.filter--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.filter--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.groupby" class="md-nav__link">
+    <span class="md-ellipsis">
+      groupby
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="groupby">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.groupby--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.groupby--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.inplace_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      inplace_data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="inplace_data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.inplace_data--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.inplace_data--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.populate_legend" class="md-nav__link">
+    <span class="md-ellipsis">
+      populate_legend
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="populate_legend">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.populate_legend--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.populate_legend--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.resampled" class="md-nav__link">
+    <span class="md-ellipsis">
+      resampled
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="resampled">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.resampled--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.resampled--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.rolling" class="md-nav__link">
+    <span class="md-ellipsis">
+      rolling
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="rolling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.rolling--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.rolling--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.unit_rescaler" class="md-nav__link">
+    <span class="md-ellipsis">
+      unit_rescaler
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="unit_rescaler">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.unit_rescaler--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.unit_rescaler--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.update_metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      update_metadata
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="update_metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.update_metadata--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.update_metadata--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.val_rescaler" class="md-nav__link">
+    <span class="md-ellipsis">
+      val_rescaler
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="val_rescaler">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.val_rescaler--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataManip.val_rescaler--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep" class="md-nav__link">
+    <span class="md-ellipsis">
+      DataPrep
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DataPrep">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.clean_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      clean_data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="clean_data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.clean_data--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.concat" class="md-nav__link">
+    <span class="md-ellipsis">
+      concat
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="concat">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.concat--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.concat--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.described_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      described_data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="described_data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.described_data--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.described_data--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.statistics_of_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      statistics_of_data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="statistics_of_data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.statistics_of_data--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.DataPrep.statistics_of_data--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData" class="md-nav__link">
+    <span class="md-ellipsis">
+      MetaData
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MetaData">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.freq" class="md-nav__link">
+    <span class="md-ellipsis">
+      freq
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="freq">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.freq--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.freq--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_x_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_x_label
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="get_x_label">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_x_label--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.dtype" class="md-nav__link">
+    <span class="md-ellipsis">
+      dtype
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="dtype">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.dtype--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.dtype--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_legend" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_legend
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="get_legend">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_legend--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_legend--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_title" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_title
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="get_title">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_title--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_title--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_y_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_y_label
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="get_y_label">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_y_label--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.get_y_label--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.siunits" class="md-nav__link">
+    <span class="md-ellipsis">
+      siunits
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="siunits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.siunits--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.siunits--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.units" class="md-nav__link">
+    <span class="md-ellipsis">
+      units
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="units">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.units--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data.standard_data_process.MetaData.units--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>Standard data process</h1>
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="data.standard_data_process"></a>
+  <div class="doc doc-contents first">
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="data.standard_data_process.DataManip" class="doc doc-heading">
+          <code>DataManip</code>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+
+  
+      <p>Class for manipulating data.</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code><span title="data.standard_data_process.DataManip.data">data</span></code></td>
+          <td>
+                <code><span title="pandas.DataFrame">DataFrame</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The input DataFrame.  </p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="data.standard_data_process.DataManip.frequency">frequency</span></code></td>
+          <td>
+                <code><span title="e2sviz.structure.viz_schema.FrequencySchema">FrequencySchema</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The frequency of the data, by default viz_schema.FrequencySchema.MISSING.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Methods:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.DataManip.check_freq" href="#data.standard_data_process.DataManip.check_freq">check_freq</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Check the frequency of the data.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.DataManip.check_meta_data" href="#data.standard_data_process.DataManip.check_meta_data">check_meta_data</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Check for metadata.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.DataManip.val_rescaler" href="#data.standard_data_process.DataManip.val_rescaler">val_rescaler</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Rescale the values of the column data.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.DataManip.unit_rescaler" href="#data.standard_data_process.DataManip.unit_rescaler">unit_rescaler</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Rescale the units of the column data.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.DataManip.check_rescaling" href="#data.standard_data_process.DataManip.check_rescaling">check_rescaling</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Check if the column data requires rescaling.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.DataManip.filter" href="#data.standard_data_process.DataManip.filter">filter</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Filter the data by given year, month, day or date.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.DataManip.groupby" href="#data.standard_data_process.DataManip.groupby">groupby</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Group the data by given column/s and aggregate by a given function.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.DataManip.populate_legend" href="#data.standard_data_process.DataManip.populate_legend">populate_legend</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Populate the legend column of the metadata.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.DataManip.update_metadata" href="#data.standard_data_process.DataManip.update_metadata">update_metadata</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Update the metadata for the grouped data.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.DataManip.resampled" href="#data.standard_data_process.DataManip.resampled">resampled</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Resample the data by given frequency and aggregate by a given function.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.DataManip.rolling" href="#data.standard_data_process.DataManip.rolling">rolling</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Rolling window function.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.DataManip.inplace_data" href="#data.standard_data_process.DataManip.inplace_data">inplace_data</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Return the DataManip either as its self or as a new variable.</p>
+              </div>
+            </td>
+          </tr>
+    </tbody>
+  </table>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="data.standard_data_process.DataManip.column_from_freq" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">column_from_freq</span><span class="p">:</span> <span class="nb">str</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Get the column name from the frequency.</p>
+<h5 id="data.standard_data_process.DataManip.column_from_freq--returns">Returns</h5>
+<p><code>str</code>
+    The column name from the frequency.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="data.standard_data_process.DataManip.dict_of_groupbys" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">dict_of_groupbys</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Get the dictionary of groupby columns.</p>
+<h5 id="data.standard_data_process.DataManip.dict_of_groupbys--returns">Returns</h5>
+<p><code>dict[str, dict[str, list[str]]]</code>
+    The dictionary of groupby columns.</p>
+  </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.DataManip.check_freq" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">check_freq</span><span class="p">()</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Check the frequency of the data if value not provided,
+it will be infered using pd.infer_freq().</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.DataManip.check_meta_data" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">check_meta_data</span><span class="p">()</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Check for metadata, if not provided,
+default values will be generated/infered from the data available.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.DataManip.check_rescaling" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">check_rescaling</span><span class="p">()</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Checks if the column data requires rescaling.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.DataManip.filter" class="doc doc-heading">
+          <code class="highlight language-python"><span class="nb">filter</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">season</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Filter the data by given year, month, day or date.</p>
+<h5 id="data.standard_data_process.DataManip.filter--parameters">Parameters</h5>
+<p><code>year</code> : <code>list[int]</code>
+    The years to filter by.<br />
+<code>season</code> : <code>list[int]</code>
+    The seasons to filter by (1: Winter, 2: Spring, 3: Summer, 4: Autumn).<br />
+<code>month</code> : <code>list[int]</code>
+    The months to filter by.<br />
+<code>day</code> : <code>list[int]</code>
+    The days to filter by.<br />
+<code>date</code> : <code>list[datetime.date]</code>
+    The dates to filter by.<br />
+<code>inplace</code> : <code>bool</code>
+    Whether to filter the data in place or return a new DataFrame.  </p>
+<h5 id="data.standard_data_process.DataManip.filter--returns">Returns</h5>
+<p><code>pd.DataFrame</code>
+    The filtered DataFrame.<br />
+<code>None</code>
+    If inplace is True filtered data is set to self.data.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.DataManip.groupby" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">groupby</span><span class="p">(</span><span class="n">groupby_type</span><span class="o">=</span><span class="n">viz_schema</span><span class="o">.</span><span class="n">GroupingKeySchema</span><span class="o">.</span><span class="n">WEEK_SEASON</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Group the data by given column/s and aggregate by a given function.</p>
+<h5 id="data.standard_data_process.DataManip.groupby--parameters">Parameters</h5>
+<p><code>func</code> : <code>str</code>
+    Numpy function to be used for aggregation.<br />
+<code>groupby_type</code> : <code>Callable[[pd.DataFrame], pd.Series]</code>
+    The key for dict_of_groupbys used to return groupby columns.  </p>
+<h5 id="data.standard_data_process.DataManip.groupby--returns">Returns</h5>
+<p><code>pd.DataFrame | pd.Series</code>
+    The grouped and aggregated data.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.DataManip.inplace_data" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">inplace_data</span><span class="p">(</span><span class="n">new_data</span><span class="p">,</span> <span class="n">new_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">new_meta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Return the DataManip either as its self or as a new variable.</p>
+<h5 id="data.standard_data_process.DataManip.inplace_data--parameters">Parameters</h5>
+<p><code>data</code> : <code>pd.DataFrame</code>
+    The data to be set.</p>
+<h5 id="data.standard_data_process.DataManip.inplace_data--returns">Returns</h5>
+<p><code>pd.DataFrame</code>
+    The data.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.DataManip.populate_legend" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">populate_legend</span><span class="p">(</span><span class="n">dataf</span><span class="p">,</span> <span class="n">gb_col_data</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Populate the legend column of the metadata.</p>
+<h5 id="data.standard_data_process.DataManip.populate_legend--parameters">Parameters</h5>
+<p><code>dataf</code> : <code>pd.DataFrame</code>
+    The grouped and aggregated data.<br />
+<code>gb_col_data</code> : <code>dict[str, list[str]]</code>
+    The dictionary of groupby columns.  </p>
+<h5 id="data.standard_data_process.DataManip.populate_legend--returns">Returns</h5>
+<p><code>list[str]</code>
+    The list of legend values.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.DataManip.resampled" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">resampled</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Resample the data by given frequency and aggregate by a given function.</p>
+<h5 id="data.standard_data_process.DataManip.resampled--parameters">Parameters</h5>
+<p><code>freq</code> : <code>str</code>
+    The frequency to be used for resampling.<br />
+<code>func</code> : <code>Callable[[pd.DataFrame], pd.Series]</code>
+    Numpy function to be used for aggregation.  </p>
+<h5 id="data.standard_data_process.DataManip.resampled--returns">Returns</h5>
+<p><code>pd.DataFrame | pd.Series</code>
+    The resampled and aggregated data.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.DataManip.rolling" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">rolling</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Rolling window function.</p>
+<h5 id="data.standard_data_process.DataManip.rolling--parameters">Parameters</h5>
+<p><code>window</code> : <code>int</code>
+    The window size.<br />
+<code>func</code> : <code>Callable[[pd.DataFrame], pd.Series]</code>
+    Numpy function to be used for aggregation.  </p>
+<h5 id="data.standard_data_process.DataManip.rolling--returns">Returns</h5>
+<p><code>pd.DataFrame | pd.Series</code>
+    The rolled and aggregated data.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.DataManip.unit_rescaler" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">unit_rescaler</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Rescale the units of the column data.</p>
+<h5 id="data.standard_data_process.DataManip.unit_rescaler--parameters">Parameters</h5>
+<p><code>column</code> : <code>str</code>
+    The column to rescale.<br />
+<code>step</code> : <code>int</code>
+    The step to rescale the column data by.  </p>
+<h5 id="data.standard_data_process.DataManip.unit_rescaler--returns">Returns</h5>
+<p><code>None</code></p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.DataManip.update_metadata" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">update_metadata</span><span class="p">(</span><span class="n">grouped_data</span><span class="p">,</span> <span class="n">gb_col_data</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Update the metadata for the grouped data.</p>
+<h5 id="data.standard_data_process.DataManip.update_metadata--parameters">Parameters</h5>
+<p><code>grouped_data</code> : <code>pd.DataFrame</code>
+    The grouped and aggregated data.<br />
+<code>gb_col_data</code> : <code>dict[str, list[str]]</code>
+    The dictionary of groupby columns.  </p>
+<h5 id="data.standard_data_process.DataManip.update_metadata--returns">Returns</h5>
+<p><code>dict[str, dict[str, str | list[str]]]</code>
+    The updated metadata.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.DataManip.val_rescaler" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">val_rescaler</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Rescale the values of the column data.</p>
+<h5 id="data.standard_data_process.DataManip.val_rescaler--parameters">Parameters</h5>
+<p><code>column</code> : <code>str</code>
+    The column to rescale.<br />
+<code>multiplier</code> : <code>float</code>
+    The multiplier to rescale the column data by.  </p>
+<h5 id="data.standard_data_process.DataManip.val_rescaler--returns">Returns</h5>
+<p><code>None</code></p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="data.standard_data_process.DataPrep" class="doc doc-heading">
+          <code>DataPrep</code>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+
+  
+      <p>Performs data preparation steps.</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code><span title="data.standard_data_process.DataPrep.data">data</span></code></td>
+          <td>
+                <code><span title="pandas.DataFrame">DataFrame</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The input DataFrame.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><code><span title="data.standard_data_process.DataPrep.dataprep_functions">dataprep_functions</span></code></td>
+          <td>
+                <code>list[dataf_callable]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The list of data preparation functions to be applied to the data.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Methods:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.DataPrep.described_data" href="#data.standard_data_process.DataPrep.described_data">described_data</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Returns a DataFrame containing statistics of the input data.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.DataPrep.clean_data" href="#data.standard_data_process.DataPrep.clean_data">clean_data</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Applies the data preparation functions to the data.</p>
+              </div>
+            </td>
+          </tr>
+    </tbody>
+  </table>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.DataPrep.clean_data" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">clean_data</span><span class="p">()</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Clean the data by applying specific data preparation steps.</p>
+<h5 id="data.standard_data_process.DataPrep.clean_data--returns">Returns</h5>
+<p><code>None</code></p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.DataPrep.concat" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">concat</span><span class="p">(</span><span class="n">secondary_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dataprep_functions</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Concatenate two DataPrep objects.</p>
+<h5 id="data.standard_data_process.DataPrep.concat--parameters">Parameters</h5>
+<p><code>secondary_data</code> : <code>DataPrep</code>
+    The secondary DataPrep object to be concatenated to the current one.</p>
+<h5 id="data.standard_data_process.DataPrep.concat--returns">Returns</h5>
+<p><code>DataPrep</code>
+    The concatenated DataPrep objects.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.DataPrep.described_data" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">described_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns a DataFrame containing statistics of the input data.</p>
+<h5 id="data.standard_data_process.DataPrep.described_data--parameters">Parameters</h5>
+<p><code>data</code> : <code>pd.DataFrame</code>
+    The input DataFrame.</p>
+<h5 id="data.standard_data_process.DataPrep.described_data--returns">Returns</h5>
+<p><code>pd.DataFrame</code>
+    A DataFrame containing the calculated statistics.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.DataPrep.statistics_of_data" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">statistics_of_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Calculate statistics for the input data.</p>
+<h5 id="data.standard_data_process.DataPrep.statistics_of_data--parameters">Parameters</h5>
+<p><code>data</code> : <code>pd.DataFrame</code>
+    The input DataFrame.</p>
+<h5 id="data.standard_data_process.DataPrep.statistics_of_data--returns">Returns</h5>
+<p><code>pd.DataFrame</code>
+    A DataFrame containing the calculated statistics.</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="data.standard_data_process.MetaData" class="doc doc-heading">
+          <code>MetaData</code>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+
+  
+      <p>Class for storing the metadata for the dataframe.</p>
+
+
+
+  <p><strong>Attributes:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code><span title="data.standard_data_process.MetaData.metadata">metadata</span></code></td>
+          <td>
+                <code> dict[str, dict[str, Any]]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>A dictionary of metadata for each column of data.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Methods:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.MetaData.units" href="#data.standard_data_process.MetaData.units">units</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Get the units schema of the column data.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.MetaData.siunits" href="#data.standard_data_process.MetaData.siunits">siunits</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Get the SI units of the column data.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.MetaData.freq" href="#data.standard_data_process.MetaData.freq">freq</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Get the frequency schema of the column data.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.MetaData.dtype" href="#data.standard_data_process.MetaData.dtype">dtype</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Get the data type of the column.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><span title="data.standard_data_process.MetaData.column_from_freq">column_from_freq</span></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Get the column name from the frequency.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.MetaData.get_x_label" href="#data.standard_data_process.MetaData.get_x_label">get_x_label</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Get the label for the x-axis of the plot.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.MetaData.get_y_label" href="#data.standard_data_process.MetaData.get_y_label">get_y_label</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Get the label for the y-axis of the plot.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.MetaData.get_title" href="#data.standard_data_process.MetaData.get_title">get_title</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Get the title of the plot.</p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><code><a class="autorefs autorefs-internal" title="data.standard_data_process.MetaData.get_legend" href="#data.standard_data_process.MetaData.get_legend">get_legend</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Get the legend of the plot.</p>
+              </div>
+            </td>
+          </tr>
+    </tbody>
+  </table>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="data.standard_data_process.MetaData.freq" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">freq</span><span class="p">:</span> <span class="n">viz_schema</span><span class="o">.</span><span class="n">FrequencySchema</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Get the frequency schema of the column data.</p>
+<h5 id="data.standard_data_process.MetaData.freq--parameters">Parameters</h5>
+<p><code>col</code> : <code>str</code>
+    The column to get the frequency schema of.</p>
+<h5 id="data.standard_data_process.MetaData.freq--returns">Returns</h5>
+<p><code>viz_schema.FrequencySchema</code>
+    The frequency schema of the column data.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="data.standard_data_process.MetaData.get_x_label" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">get_x_label</span><span class="p">:</span> <span class="nb">str</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Get the label for the x-axis of the plot.</p>
+<h5 id="data.standard_data_process.MetaData.get_x_label--returns">Returns</h5>
+<p><code>str</code>
+    The label for the x-axis of the plot.</p>
+  </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.MetaData.dtype" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">dtype</span><span class="p">(</span><span class="n">col</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Get the data type of the column.</p>
+<h5 id="data.standard_data_process.MetaData.dtype--parameters">Parameters</h5>
+<p><code>col</code> : <code>str</code>
+    The column to get the data type of.</p>
+<h5 id="data.standard_data_process.MetaData.dtype--returns">Returns</h5>
+<p><code>viz_enums.DataType</code>
+    The data type of the column.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.MetaData.get_legend" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">get_legend</span><span class="p">(</span><span class="n">col</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Get the legend of the plot.</p>
+<h5 id="data.standard_data_process.MetaData.get_legend--parameters">Parameters</h5>
+<p><code>col</code> : <code>str</code>
+    The column to get the legend for.</p>
+<h5 id="data.standard_data_process.MetaData.get_legend--returns">Returns</h5>
+<p><code>str</code>
+    The legend of the plot.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.MetaData.get_title" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">get_title</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Get the title of the plot.</p>
+<h5 id="data.standard_data_process.MetaData.get_title--parameters">Parameters</h5>
+<p><code>col</code> : <code>str</code>
+    The column to get the title for.</p>
+<h5 id="data.standard_data_process.MetaData.get_title--returns">Returns</h5>
+<p><code>str</code>
+    The title of the plot.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.MetaData.get_y_label" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">get_y_label</span><span class="p">(</span><span class="n">col</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Get the label for the y-axis of the plot.</p>
+<h5 id="data.standard_data_process.MetaData.get_y_label--parameters">Parameters</h5>
+<p><code>col</code> : <code>str</code>
+    The column to get the label for.</p>
+<h5 id="data.standard_data_process.MetaData.get_y_label--returns">Returns</h5>
+<p><code>str</code>
+    The label for the y-axis of the plot.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.MetaData.siunits" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">siunits</span><span class="p">(</span><span class="n">col</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Get the SI units of the column data.</p>
+<h5 id="data.standard_data_process.MetaData.siunits--parameters">Parameters</h5>
+<p><code>col</code> : <code>str</code>
+    The column to get the SI units of.</p>
+<h5 id="data.standard_data_process.MetaData.siunits--returns">Returns</h5>
+<p><code>viz_enums.SIUnits</code>
+    The SI units of the column data.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="data.standard_data_process.MetaData.units" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">units</span><span class="p">(</span><span class="n">col</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Get the units schema of the column data.</p>
+<h5 id="data.standard_data_process.MetaData.units--parameters">Parameters</h5>
+<p><code>col</code> : <code>str</code>
+    The column to get the units schema of.</p>
+<h5 id="data.standard_data_process.MetaData.units--returns">Returns</h5>
+<p><code>viz_enums.UnitsSchema</code>
+    The units schema of the column data.</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+    
+  </body>
+</html>

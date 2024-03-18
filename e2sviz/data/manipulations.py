@@ -17,18 +17,18 @@ def create_seasonal_average_week(season: enums.Season,
 
   Parameters
   ----------
-  season : enums.Season
-      The season for which to calculate the average week.
-  dataf : pd.DataFrame
-      The input DataFrame.
-  target_col : str or None, optional
-      The target column for aggregation. If None, the first column of the DataFrame is used, by default None.
-  func : callable, optional
+  `season` : `enums.Season`
+      The season for which to calculate the average week.  
+  `dataf` : `pd.DataFrame`
+      The input DataFrame.  
+  `target_col` : `str | None`
+      The target column for aggregation. If None, the first column of the DataFrame is used, by default None.  
+  `func` : `callable`
       The aggregation function to use, by default np.mean.
 
   Returns
   -------
-  pd.DataFrame
+  `pd.DataFrame`
       The seasonal average week.
 
   """
@@ -57,12 +57,12 @@ def seasonal_avg_week_plot_data(
 
   Parameters
   ----------
-  plot_data : pd.DataFrame
+  `plot_data` : `pd.DataFrame`
       The input DataFrame.
 
   Returns
   -------
-  tuple[pd.Index, pd.DataFrame, pd.DataFrame, pd.DataFrame]
+  `tuple[pd.Index, pd.DataFrame, pd.DataFrame, pd.DataFrame]`
       A tuple containing the datetime index and the average, maximum, and minimum seasonal average week data.
 
   """
@@ -84,12 +84,12 @@ def get_seasonal_week(data: pd.DataFrame) -> list[pd.DataFrame]:
 
   Parameters
   ----------
-  data : pd.DataFrame
+  `data` : `pd.DataFrame`
       The input DataFrame.
 
   Returns
   -------
-  list[pd.DataFrame]
+  `list[pd.DataFrame]`
       A list of DataFrames containing the weekly data for each season.
 
   """
@@ -101,11 +101,12 @@ def get_seasonal_week(data: pd.DataFrame) -> list[pd.DataFrame]:
 
 class ResampleManipulator():
   """
-  Manipulate data by resampling.
+  Resampler class.
 
-  Returns
-  -------
-  Resampled data.
+  Methods:
+    data_formatter:
+      Resample the data.
+
   """
 
   def data_formatter(self, data: npt.NDArray | pd.DataFrame, split_by: str,
@@ -115,16 +116,16 @@ class ResampleManipulator():
 
     Parameters
     ----------
-    data : np.ndarray or pd.DataFrame
-        The input data.
-    split_by : str
-        The resampling method.
-    aggregation : str
-        The aggregation method.
+    `data` : `np.ndarray | pd.DataFrame`
+        The input data.  
+    `split_by` : `str`
+        The resampling method.  
+    `aggregation` : `str`
+        The aggregation method.  
 
     Returns
     -------
-    np.ndarray or pd.DataFrame
+    `np.ndarray | pd.DataFrame`
         The resampled data.
 
     """
@@ -141,9 +142,9 @@ class GroupbyManipulator():
   """
   Manipulate data by grouping.
 
-  Returns
-  -------
-  Data grouped by the chosen column.
+  Methods:
+    data_formatter:
+      Format the data by grouping.
   """
 
   def data_formatter(
@@ -157,18 +158,18 @@ class GroupbyManipulator():
 
     Parameters
     ----------
-    data : np.ndarray or pd.DataFrame
-        The input data.
-    groupby : list[int or str]
-        The columns to group by.
-    agg : str
-        The aggregation method.
-    target : int or str or None, optional
-        The column to aggregate, by default None.
+    `data` : `np.ndarray | pd.DataFrame`
+        The input data.  
+    `groupby` : `list[int | str]`
+        The columns to group by.  
+    `agg` : `str`
+        The aggregation method.  
+    `target` : `int | str | None`
+        The column to aggregate, by default None.  
 
     Returns
     -------
-    np.ndarray or pd.DataFrame
+    `np.ndarray | pd.DataFrame`
         The grouped data.
 
     """
@@ -185,9 +186,9 @@ class EquationManipulator():
   """
   Manipulate data by applying equations.
 
-  Returns
-  -------
-  Data with a new column of aggregated values.
+  Methods:
+    data_formatter:
+      Format the data by applying equations.
   """
 
   def data_formatter(
@@ -201,18 +202,18 @@ class EquationManipulator():
 
     Parameters
     ----------
-    data : np.ndarray or pd.DataFrame
-        The input data.
-    target_col : str or int
-        The target column to aggregate.
-    func : str
-        The aggregation function as a string.
-    new_col : str or float, optional
-        The name for the new column, by default 'New column'.
+    `data` : `np.ndarray  pd.DataFrame`
+        The input data.  
+    `target_col` : `str | int`
+        The target column to aggregate.  
+    `func` : `str`
+        The aggregation function as a string.  
+    `new_col` : `str | float`
+        The name for the new column, by default 'New column'.  
 
     Returns
     -------
-    np.ndarray or pd.DataFrame
+    `np.ndarray | pd.DataFrame`
         The data with a new column of aggregated values.
 
     """
@@ -230,9 +231,9 @@ class CombineColumnManipulator():
   """
   Manipulate data by combining columns.
 
-  Returns
-  -------
-  Data with a new column containing the combined values.
+  Methods:
+    data_formatter:
+      Format the data by combining columns.
   """
 
   def data_formatter(self, data: npt.NDArray | pd.DataFrame, col_1: str | int,
@@ -242,16 +243,16 @@ class CombineColumnManipulator():
 
     Parameters
     ----------
-    data : np.ndarray or pd.DataFrame
-        The input data.
-    col_1 : str or int
-        The first column to combine.
-    col_2 : str or int
-        The second column to combine.
+    `data` : `np.ndarray | pd.DataFrame`
+        The input data.  
+    `col_1` : `str | int`
+        The first column to combine.  
+    `col_2` : `str | int`
+        The second column to combine.  
 
     Returns
     -------
-    np.ndarray or pd.DataFrame
+    `np.ndarray | pd.DataFrame`
         The data with a new column containing the combined values.
 
     """
@@ -273,12 +274,12 @@ def find_week_in_season(loop_data: pd.DataFrame) -> list[pd.DataFrame]:
 
   Parameters
   ----------
-  loop_data : pd.DataFrame
+  `loop_data` : `pd.DataFrame`
       The input DataFrame.
 
   Returns
   -------
-  list[pd.DataFrame]
+  `list[pd.DataFrame]`
       A list of DataFrames containing the weekly data for each season.
 
   """
