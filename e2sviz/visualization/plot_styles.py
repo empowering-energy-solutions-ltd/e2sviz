@@ -12,24 +12,24 @@ import seaborn as sns
 font_size = 12
 
 
-def custom_plot(x: Any, y: Any, ax=None, **plt_kwargs) -> plt.Axes:
+def custom_plot(x: Any,
+                y: Any,
+                ax=None,
+                **plt_kwargs: dict[str, str]) -> plt.Axes:
   """ 
   Create a custom plot using matplotlib.
 
-  Parameters
-  ----------
-  `x` : `Any`
-      x-axis values  
-  `y` : `Any`
-      y-axis values  
-  `ax` : `plt.Axes`, optional
-      Matplotlib axes, by default None  
-  `**plt_kwargs` : `dict`
-      Additional matplotlib plot settings  
+  Parameters:
+      x Any:
+          x-axis values  
+      y Any:
+          y-axis values  
+      ax plt.Axes | None:
+          Matplotlib axes, by default None  
+      **plt_kwargs dict[str,str]:
+          Additional matplotlib plot settings  
 
-  Returns
-  -------
-  `plt.Axes`
+  Returns:
       Matplotlib axes
   """
   if ax is None:
@@ -40,22 +40,19 @@ def custom_plot(x: Any, y: Any, ax=None, **plt_kwargs) -> plt.Axes:
 
 def custom_plot_from_df(dataf: pd.DataFrame,
                         ax: plt.Axes = None,
-                        **plt_kwargs) -> plt.Axes:
+                        **plt_kwargs: dict[str, str]) -> plt.Axes:
   """
   Create a custom plot using matplotlib from a DataFrame.
   
-  Parameters
-  ----------
-  `dataf` : `pd.DataFrame`
-      Data to plot  
-  `ax` : `plt.Axes`, optional
-      Matplotlib axes, by default None  
-  `**plt_kwargs` : `dict`
-      Additional matplotlib plot settings  
+  Parameters:
+      dataf pd.DataFrame:
+          Data to plot  
+      ax plt.Axes:
+          Matplotlib axes, by default None  
+      **plt_kwargs dict[str, str]:
+          Additional matplotlib plot settings  
 
-  Returns
-  -------
-  `plt.Axes`
+  Returns:
       Matplotlib axes
   """
   if ax is None:
@@ -116,10 +113,6 @@ class MatPlotLibPlot():
   def plt_settings(self):
     """
     Set the plot settings for matplotlib
-
-    Returns
-    -------
-    `None`
     """
 
     plt.rcParams['font.family'] = 'Times New Roman'
@@ -143,16 +136,13 @@ class MatPlotLibPlot():
     """
     Get the keyword arguments for a column
     
-    Parameters
-    ----------
-    `column` : `str`
-        Column name  
-    `dict_kwargs` : `dict[str, dict[str, str]]`
-        Dictionary containing the plot settings  
+    Parameters:
+        column str:
+            Column name  
+        dict_kwargs dict[str, dict[str, str]]:
+            Dictionary containing the plot settings  
         
-    Returns
-    -------
-    `dict[str, str]`
+    Returns:
         Dictionary containing the keyword arguments
     """
     return dict_kwargs[column]
@@ -161,16 +151,11 @@ class MatPlotLibPlot():
     """
     Set the keyword arguments for a plot
     
-    Parameters
-    ----------
-    `ax` : `plt.Axes`
-        Matplotlib axes  
-    `kwargs` : `dict[str, str]`
-        Dictionary containing the plot settings  
-    
-    Returns
-    -------
-    `None`
+    Parameters:
+        ax plt.Axes:
+            Matplotlib axes  
+        kwargs dict[str, str]:
+            Dictionary containing the plot settings 
     """
     ax.set_title(kwargs['title'])
     ax.set_xlabel(kwargs['x_label'])
@@ -182,18 +167,15 @@ class MatPlotLibPlot():
     """
     Plot a single line plot.
 
-    Parameters
-    ----------
-    `dataf` : `pd.DataFrame`
-        Data to plot.  
-    `dict_kwargs` : `dict[str, dict[str, str]]`
-        Dictionary containing the kwargs for each column.  
-    `**plt_kwargs` : `dict`
-        Additional matplotlib plot settings.  
+    Parameters:
+        dataf pd.DataFrame:
+            Data to plot.  
+        dict_kwargs dict[str, dict[str, str]]:
+            Dictionary containing the kwargs for each column.  
+        **plt_kwargs dict:
+            Additional matplotlib plot settings.  
 
-    Returns
-    -------
-    `plt.Figure`
+    Returns:
         Matplotlib figure.
     """
     for column in plot_columns:
@@ -208,24 +190,19 @@ class MatPlotLibPlot():
     """
     Plot a stacked line plot
 
-    Parameters
-    ----------
-    `dataf` : `pd.DataFrame`
-        Data to plot  
-    `plot_columns` : `list[str]`
-        Columns to plot  
-    `dict_kwargs` : `dict[str, dict[str, str]]`
-        Dictionary containing the plot settings  
+    Parameters:
+        dataf pd.DataFrame:
+            Data to plot  
+        plot_columns list[str]:
+            Columns to plot  
+        dict_kwargs dict[str, dict[str, str]]:
+            Dictionary containing the plot settings  
 
-    Returns
-    -------
-    `None`
+    Returns:
         Fig axes are saved to the container object
     """
     ax = self.container['ax']
     cum_sum = pd.Series(0, index=dataf.index)
-    # ax.fill_between(dataf.index, zeros, label='zeros', alpha=0)
-    # Plot the stacked lines
     for column in plot_columns:
       kwargs = self.get_column_kwargs(column, dict_kwargs)
       self.set_kwargs(ax, kwargs)
@@ -245,18 +222,15 @@ class MatPlotLibPlot():
     """
     Plot a correlation matrix
     
-    Parameters
-    ----------
-    `data` : `pd.DataFrame`
-        Data to plot  
-    `plot_columns` : `list[str]`
-        Columns to plot  
-    `dict_kwargs` : `dict[str, dict[str, str]]`
-        Dictionary containing the plot settings  
+    Parameters:
+        data pd.DataFrame:
+            Data to plot  
+        plot_columns list[str]:
+            Columns to plot  
+        dict_kwargs dict[str, dict[str, str]]:
+            Dictionary containing the plot settings  
     
-    Returns
-    -------
-    `None`
+    Returns:
         Fig axes are saved to the container object
     """
     corr_matrix = dataf[plot_columns].corr()
@@ -268,16 +242,13 @@ class MatPlotLibPlot():
     """
     Plot a bar plot
     
-    Parameters
-    ----------
-    `data` : `pd.DataFrame`
-        Data to plot  
-    `dict_kwargs` : `dict[str, dict[str, str]]`
-        Dictionary containing the plot settings  
+    Parameters:
+        data pd.DataFrame
+            Data to plot  
+        dict_kwargs dict[str, dict[str, str]]
+            Dictionary containing the plot settings  
         
-    Returns
-    -------
-    `None`
+    Returns:
         Fig axes are saved to the container object
     """
 
@@ -302,18 +273,15 @@ class MatPlotLibPlot():
     """
     Plot a bar plot
 
-    Parameters
-    ----------
-    `dataf` : `pd.DataFrame`
-        Data to plot  
-    `plot_columns` : `list[str]`
-        Columns to plot  
-    `dict_kwargs` : `dict[str, dict[str, str]]`
-        Dictionary containing the plot settings  
+    Parameters:
+        dataf pd.DataFrame:
+            Data to plot  
+        plot_columns list[str]:
+            Columns to plot  
+        dict_kwargs dict[str, dict[str, str]]:
+            Dictionary containing the plot settings  
 
-    Returns
-    -------
-    `None`
+    Returns:
         Fig axes are saved to the container object
     """
     ax = self.container['ax']
@@ -343,18 +311,15 @@ class MatPlotLibPlot():
     """
     Plot a box plot
     
-    Parameters
-    ----------
-    `data` : `pd.DataFrame`
-        Data to plot  
-    `plot_columns` : `list[str]`
-        Columns to plot  
-    `dict_kwargs` : `dict[str, dict[str, str]]`
-        Dictionary containing the plot settings  
+    Parameters:
+        data pd.DataFrame:
+            Data to plot  
+        plot_columns list[str]:
+            Columns to plot  
+        dict_kwargs dict[str, dict[str, str]]:
+            Dictionary containing the plot settings  
     
-    Returns
-    -------
-    `None`
+    Returns:
         Fig axes are saved to the container object
     """
     ax = plt.figure(figsize=(15, 8)).gca()
@@ -375,18 +340,15 @@ class MatPlotLibPlot():
     """
     Plot a pie chart
 
-    Parameters
-    ----------
-    `data` : `pd.Series`
-        Data to plot  
-    `plot_columns` : `list[str]`
-        Columns to plot  
-    `dict_kwargs`: `dict[str, dict[str, str]]`
-        Dictionary containing the plot settings  
+    Parameters:
+        data pd.Series:
+            Data to plot  
+        plot_columns list[str]:
+            Columns to plot  
+        dict_kwargs dict[str, dict[str, str]]:
+            Dictionary containing the plot settings  
 
-    Returns
-    -------
-    `None`
+    Returns:
         Fig axes are saved to the container object
     """
     column_sums = dataf[plot_columns].sum()
@@ -447,14 +409,11 @@ class PlotlyPlot():
     """
     Set the plotly figure settings
 
-    Parameters
-    ----------
-    `fig` : `go.Figure`
-        Plotly figure
+    Parameters:
+        fig go.Figure
+            Plotly figure
 
-    Returns
-    -------
-    `None`
+    Returns:
         The `self.container` is updated with the figure
     """
 
@@ -473,16 +432,13 @@ class PlotlyPlot():
     """
     Get the keyword arguments for a column
     
-    Parameters
-    ----------
-    `column` : `str`
-        Column name  
-    `dict_kwargs` : `dict[str, dict[str, str]]`
-        Dictionary containing the plot settings
+    Parameters:
+        column str:
+            Column name  
+        dict_kwargs dict[str, dict[str, str]]:
+            Dictionary containing the plot settings
         
-    Returns
-    -------
-    `dict[str, str]`
+    Returns:
         Dictionary containing the keyword arguments
     """
     return dict_kwargs[column]
@@ -491,16 +447,13 @@ class PlotlyPlot():
     """
     Set the keyword arguments for a plot
     
-    Parameters
-    ----------
-    `fig` : `go.Figure`
-        Plotly figure  
-    `kwargs` : `dict[str, str]`
-        Dictionary containing the plot settings  
+    Parameters:
+        fig go.Figure:
+            Plotly figure  
+        kwargs dict[str, str]:
+            Dictionary containing the plot settings  
     
     Returns
-    -------
-    `None`
         Updates the figure with the keyword arguments
     """
     fig.update_layout(title=kwargs['title'],
@@ -515,20 +468,17 @@ class PlotlyPlot():
     """
     Plot a single line plot
 
-    Parameters
-    ----------
-    `dataf` : `pd.DataFrame`
-        Dataframe to plot  
-    `plot_columns` : `list[str]`
-        Columns to plot  
-    `dict_kwargs` : `dict[str, dict[str, str]]`
-        Dictionary containing the plot settings  
-    `x` : `str`, optional
-        x-axis column name, by default None, in which case datetime index is used.  
+    Parameters:
+        dataf pd.DataFrame:
+            Dataframe to plot  
+        plot_columns list[str]:
+            Columns to plot  
+        dict_kwargs dict[str, dict[str, str]]:
+            Dictionary containing the plot settings  
+        x str:
+            x-axis column name, by default None, in which case datetime index is used.  
     
-    Returns
-    -------
-    `None`
+    Returns:
         Updates the figure with the line plot
     """
     fig = self.container
@@ -561,18 +511,15 @@ class PlotlyPlot():
     """
     Plot a stacked line plot
 
-    Parameters
-    ----------
-    `dataf` : `pd.DataFrame`
-        Dataframe to plot.  
-    `plot_columns` : `list[str]`
-        Columns to plot.  
-    `dict_kwargs` : `dict[str, dict[str, str]]`
-        Dictionary containing the plot settings.  
+    Parameters:
+        dataf pd.DataFrame:
+            Dataframe to plot.  
+        plot_columns list[str]:
+            Columns to plot.  
+        dict_kwargs dict[str, dict[str, str]]:
+            Dictionary containing the plot settings.  
 
-    Returns
-    -------
-    `None`
+    Returns:
         Updates the figure with the stacked line plot
     """
     fig = self.container
@@ -609,18 +556,15 @@ class PlotlyPlot():
     """
     Plot a correlation matrix
 
-    Parameters
-    ----------
-    `dataf` : `pd.DataFrame`
-        Dataframe to plot.  
-    `plot_columns` : `list[str]`
-        Columns to plot.  
-    `dict_kwargs` : `dict[str, dict[str, str]]`
-        Dictionary containing the plot settings.  
+    Parameters:
+        dataf pd.DataFrame:
+            Dataframe to plot.  
+        plot_columns list[str]:
+            Columns to plot.  
+        dict_kwargs dict[str, dict[str, str]]:
+            Dictionary containing the plot settings.  
 
-    Returns
-    -------
-    `None`
+    Returns:
         Updates the figure with the correlation plot
     """
     fig = go.Figure()
@@ -654,18 +598,15 @@ class PlotlyPlot():
     """
     Plot a bar plot using Plotly
 
-    Parameters
-    ----------
-    `dataf` : `pd.DataFrame`
-        Data to plot  
-    `plot_columns` : `list[str]`
-        Columns to plot  
-    `dict_kwargs` : `dict[str, dict[str, str]]`
-        Dictionary containing the plot settings  
+    Parameters:
+      dataf pd.DataFrame:
+          Data to plot  
+      plot_columns list[str]:
+          Columns to plot  
+      dict_kwargs dict[str, dict[str, str]]:
+          Dictionary containing the plot settings  
 
-    Returns
-    -------
-    `None`
+    Returns:
         Updates the figure with the bar plot
     """
     fig = go.Figure()
@@ -694,18 +635,15 @@ class PlotlyPlot():
     """
     Plot a datetime bar plot using Plotly.
 
-    Parameters
-    ----------
-    `dataf` : `pd.DataFrame`
-        Data to plot  
-    `plot_columns` : `list[str]`
-        Columns to plot  
-    `dict_kwargs` : `dict[str, dict[str, str]]`
-        Dictionary containing the plot settings  
+    Parameters:
+        dataf pd.DataFrame:
+            Data to plot  
+        plot_columns list[str]:
+            Columns to plot  
+        dict_kwargs dict[str, dict[str, str]]:
+            Dictionary containing the plot settings  
         
-    Returns
-    -------
-    `None`
+    Returns:
         Updates the figure with the bar plot
     """
 
@@ -733,18 +671,15 @@ class PlotlyPlot():
     """
     Create a box plot.
 
-    Parameters
-    ----------
-    `dataf` : `pd.DataFrame`
-        Data to plot  
-    `plot_columns` : `list[str]`
-        Columns to plot  
-    `dict_kwargs` : `dict[str, dict[str, str]]`
-        Plot settings  
+    Parameters:
+      dataf pd.DataFrame:
+          Data to plot  
+      plot_columns list[str]:
+          Columns to plot  
+      dict_kwargs dict[str, dict[str, str]]:
+          Plot settings  
 
-    Returns
-    -------
-    `None`
+    Returns:
         Updates the figure with the box plot
     """
     fig = go.Figure()
@@ -768,18 +703,15 @@ class PlotlyPlot():
     """
     Create a pie chart.
 
-    Parameters
-    ----------
-    `data` : `pd.Series`
-        Data to plot  
-    `plot_columns` : `list[str]`
-        Columns to plot  
-    `dict_kwargs`: `dict[str, dict[str, str]]`
-        Plot settings  
+    Parameters:
+        data pd.Series:
+            Data to plot  
+        plot_columns list[str]:
+            Columns to plot  
+        dict_kwargs dict[str, dict[str, str]]:
+            Plot settings  
 
-    Returns
-    -------
-    `None`
+    Returns:
         Updates the figure with the pie chart
     """
     column_sums = dataf[plot_columns].sum()
@@ -799,8 +731,7 @@ class PlotlyPlot():
   def save(self, save_path: Path):
     """ Saves the plot 
     
-    Parameters
-    ----------
-    `save_path` : `Path`
+    Parameters:
+    `save_path Path`
         Path to save the plot"""
     self.container.write_html(save_path)

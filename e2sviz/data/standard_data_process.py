@@ -55,14 +55,11 @@ class DataPrep:
     """
       Returns a DataFrame containing statistics of the input data.
 
-      Parameters
-      -------
-      `data` : `pd.DataFrame`
-          The input DataFrame.
+      Parameters:
+          data pd.DataFrame:
+              The input DataFrame.
 
-      Returns
-      -------
-      `pd.DataFrame`
+      Returns:
           A DataFrame containing the calculated statistics.
       """
     return self.statistics_of_data(data)
@@ -70,11 +67,6 @@ class DataPrep:
   def clean_data(self) -> None:
     """
       Clean the data by applying specific data preparation steps.
-
-      Returns
-      -------
-      `None`
-
       """
     if self.dataprep_functions is not None:
       for prep_function in self.dataprep_functions:
@@ -86,14 +78,11 @@ class DataPrep:
     """
       Calculate statistics for the input data.
 
-      Parameters
-      -------
-      `data` : `pd.DataFrame`
-          The input DataFrame.
+      Parameters:
+          data pd.DataFrame:
+              The input DataFrame.
 
-      Returns
-      -------
-      `pd.DataFrame`
+      Returns:
           A DataFrame containing the calculated statistics.
 
       """
@@ -131,14 +120,11 @@ class DataPrep:
     """
       Concatenate two DataPrep objects.
 
-      Parameters
-      -------
-      `secondary_data` : `DataPrep`
-          The secondary DataPrep object to be concatenated to the current one.
+      Parameters:
+          secondary_data DataPrep:
+              The secondary DataPrep object to be concatenated to the current one.
 
-      Returns
-      -------
-      `DataPrep`
+      Returns:
           The concatenated DataPrep objects.
       """
     combined_data = pd.concat([self.data, secondary_data.data], axis=axis)
@@ -151,7 +137,7 @@ class MetaData:
 Class for storing the metadata for the dataframe.
 
 Attributes:
-  metadata  dict[str, dict[str, Any]]:
+  metadata dict[str, dict[str, Any]]:
       A dictionary of metadata for each column of data.
 
 Methods:
@@ -180,14 +166,11 @@ Methods:
     """
     Get the units schema of the column data.
 
-    Parameters
-    ----------
-    `col` : `str`
-        The column to get the units schema of.
+    Parameters:
+        col str:
+            The column to get the units schema of.
 
-    Returns
-    -------
-    `viz_enums.UnitsSchema`
+    Returns:
         The units schema of the column data.
     """
     return self.metadata[col][viz_schema.MetaDataSchema.UNITS]
@@ -196,14 +179,11 @@ Methods:
     """
     Get the SI units of the column data.
 
-    Parameters
-    ----------
-    `col` : `str`
-        The column to get the SI units of.
+    Parameters:
+        col str:
+            The column to get the SI units of.
 
-    Returns
-    -------
-    `viz_enums.SIUnits`
+    Returns:
         The SI units of the column data.
     """
     return self.metadata[col][viz_schema.MetaDataSchema.PREFIX]
@@ -213,14 +193,11 @@ Methods:
     """
     Get the frequency schema of the column data.
 
-    Parameters
-    ----------
-    `col` : `str`
-        The column to get the frequency schema of.
+    Parameters:
+        col str:
+            The column to get the frequency schema of.
 
-    Returns
-    -------
-    `viz_schema.FrequencySchema`
+    Returns:
         The frequency schema of the column data.
     """
     return self.metadata[viz_schema.MetaDataSchema.FRAME][
@@ -230,14 +207,11 @@ Methods:
     """
     Get the data type of the column.
 
-    Parameters
-    ----------
-    `col` : `str`
-        The column to get the data type of.
+    Parameters:
+        col str:
+            The column to get the data type of.
 
-    Returns
-    -------
-    `viz_enums.DataType`
+    Returns:
         The data type of the column.
     """
     return self.metadata[col][viz_schema.MetaDataSchema.TYPE]
@@ -258,9 +232,7 @@ Methods:
     """
     Get the label for the x-axis of the plot.
 
-    Returns
-    -------
-    `str`
+    Returns:
         The label for the x-axis of the plot.
     """
     return f'{self.metadata[viz_schema.MetaDataSchema.FRAME][viz_schema.MetaDataSchema.INDEX_COLS][0]} (Timestep: {self.freq})'
@@ -269,14 +241,11 @@ Methods:
     """
     Get the label for the y-axis of the plot.
 
-    Parameters
-    ----------
-    `col` : `str`
-        The column to get the label for.
+    Parameters:
+        col str:
+            The column to get the label for.
 
-    Returns
-    -------
-    `str`
+    Returns:
         The label for the y-axis of the plot.
     """
     return f'{self.units(col).label} ({self.siunits(col).label}{self.units(col).units})'
@@ -285,14 +254,11 @@ Methods:
     """
     Get the title of the plot.
 
-    Parameters
-    ----------
-    `col` : `str`
-        The column to get the title for.
+    Parameters:
+        col str:
+            The column to get the title for.
 
-    Returns
-    -------
-    `str`
+    Returns:
         The title of the plot.
     """
     freq_col = self.column_from_freq
@@ -327,14 +293,11 @@ Methods:
     """
     Get the legend of the plot.
 
-    Parameters
-    ----------
-    `col` : `str`
-        The column to get the legend for.
+    Parameters:
+        col str:
+            The column to get the legend for.
 
-    Returns
-    -------
-    `str`
+    Returns:
         The legend of the plot.
     """
     return self.metadata[col][viz_schema.MetaDataSchema.LEGEND]
@@ -427,16 +390,11 @@ class DataManip:
     """
     Rescale the values of the column data.
 
-    Parameters
-    ----------
-    `column` : `str`
-        The column to rescale.  
-    `multiplier` : `float`
-        The multiplier to rescale the column data by.  
-
-    Returns
-    -------
-    `None`
+    Parameters:
+        column str:
+            The column to rescale.  
+        multiplier float:
+            The multiplier to rescale the column data by.
     """
     self.data[column] = self.data[column] * multiplier
 
@@ -444,16 +402,11 @@ class DataManip:
     """
     Rescale the units of the column data.
 
-    Parameters
-    ----------
-    `column` : `str`
-        The column to rescale.  
-    `step` : `int`
-        The step to rescale the column data by.  
-
-    Returns
-    -------
-    `None`
+    Parameters:
+        column str:
+            The column to rescale.  
+        step int:
+            The step to rescale the column data by.  
     """
     si_units_list = list(viz_enums.Prefix)
     for i, unit in enumerate(viz_enums.Prefix):
@@ -485,9 +438,7 @@ class DataManip:
   def column_from_freq(self) -> str:
     """ Get the column name from the frequency.
     
-    Returns
-    -------
-    `str`
+    Returns:
         The column name from the frequency."""
     column_mapping = {
         viz_schema.FrequencySchema.HH: datetime_schema.DateTimeSchema.HALFHOUR,
@@ -502,9 +453,7 @@ class DataManip:
   def dict_of_groupbys(self) -> dict[str, dict[str, list[str]]]:
     """ Get the dictionary of groupby columns.
 
-    Returns
-    -------
-    `dict[str, dict[str, list[str]]]`
+    Returns:
         The dictionary of groupby columns.
     """
     freq_col = self.column_from_freq
@@ -559,27 +508,22 @@ class DataManip:
     """
     Filter the data by given year, month, day or date.
 
-    Parameters
-    -------
-    `year` : `list[int]`
-        The years to filter by.  
-    `season` : `list[int]`
-        The seasons to filter by (1: Winter, 2: Spring, 3: Summer, 4: Autumn).  
-    `month` : `list[int]`
-        The months to filter by.  
-    `day` : `list[int]`
-        The days to filter by.  
-    `date` : `list[datetime.date]`
-        The dates to filter by.  
-    `inplace` : `bool`
-        Whether to filter the data in place or return a new DataFrame.  
+    Parameters:
+        year list[int]:
+            The years to filter by.  
+        season list[int]:
+            The seasons to filter by (1: Winter, 2: Spring, 3: Summer, 4: Autumn).  
+        month list[int]:
+            The months to filter by.  
+        day list[int]:
+            The days to filter by.  
+        date list[datetime.date]:
+            The dates to filter by.  
+        inplace bool:
+            Whether to filter the data in place or return a new DataFrame.  
 
-    Returns
-    -------
-    `pd.DataFrame`
-        The filtered DataFrame.  
-    `None`
-        If inplace is True filtered data is set to self.data.  
+    Returns:
+            The filtered DataFrame. If inplace is True filtered data is set to self.data.  
     """
 
     filt = pd.Series(True, index=self.data.index)
@@ -620,16 +564,13 @@ class DataManip:
     """
     Group the data by given column/s and aggregate by a given function.
 
-    Parameters
-    ----------
-    `func` : `str`
-        Numpy function to be used for aggregation.  
-    `groupby_type` : `Callable[[pd.DataFrame], pd.Series]`
-        The key for dict_of_groupbys used to return groupby columns.  
+    Parameters:
+        func str:
+            Numpy function to be used for aggregation.  
+        groupby_type Callable[[pd.DataFrame], pd.Series]:
+            The key for dict_of_groupbys used to return groupby columns.  
 
-    Returns
-    -------
-    `pd.DataFrame | pd.Series`
+    Returns:
         The grouped and aggregated data.
     """
     col_list = self.data.columns.tolist()
@@ -653,16 +594,13 @@ class DataManip:
     """
     Populate the legend column of the metadata.
 
-    Parameters
-    ----------
-    `dataf` : `pd.DataFrame`
-        The grouped and aggregated data.  
-    `gb_col_data` : `dict[str, list[str]]`
-        The dictionary of groupby columns.  
+    Parameters:
+        dataf pd.DataFrame:
+            The grouped and aggregated data.  
+        gb_col_data dict[str, list[str]]:
+            The dictionary of groupby columns.  
       
-    Returns
-    -------
-    `list[str]`
+    Returns:
         The list of legend values.
     """
 
@@ -688,16 +626,13 @@ class DataManip:
     """
     Update the metadata for the grouped data.
 
-    Parameters
-    ----------
-    `grouped_data` : `pd.DataFrame`
-        The grouped and aggregated data.  
-    `gb_col_data` : `dict[str, list[str]]`
-        The dictionary of groupby columns.  
+    Parameters:
+        grouped_data pd.DataFrame:
+            The grouped and aggregated data.  
+        gb_col_data dict[str, list[str]]:
+            The dictionary of groupby columns.  
 
-    Returns
-    -------
-    `dict[str, dict[str, str | list[str]]]`
+    Returns:
         The updated metadata.  
     """
     new_meta_data = self.metadata.metadata.copy()
@@ -721,16 +656,13 @@ class DataManip:
     """
     Resample the data by given frequency and aggregate by a given function.
 
-    Parameters
-    ----------
-    `freq` : `str`
-        The frequency to be used for resampling.  
-    `func` : `Callable[[pd.DataFrame], pd.Series]`
-        Numpy function to be used for aggregation.  
+    Parameters:
+        freq str:
+            The frequency to be used for resampling.  
+        func Callable[[pd.DataFrame], pd.Series]:
+            Numpy function to be used for aggregation.  
 
-    Returns
-    -------
-    `pd.DataFrame | pd.Series`
+    Returns:
         The resampled and aggregated data.
     """
     resampled_data: pd.DataFrame = self.data.resample(freq).agg(func.__name__)
@@ -749,16 +681,13 @@ class DataManip:
     """
     Rolling window function.
 
-    Parameters
-    ----------
-    `window` : `int`
-        The window size.  
-    `func` : `Callable[[pd.DataFrame], pd.Series]`
-        Numpy function to be used for aggregation.  
+    Parameters:
+        window int:
+            The window size. 
+        func Callable[[pd.DataFrame], pd.Series]:
+            Numpy function to be used for aggregation.  
 
-    Returns
-    -------
-    `pd.DataFrame | pd.Series`
+    Returns:
         The rolled and aggregated data.
     """
     rolling_data = self.data.rolling(window).agg(func)
@@ -772,14 +701,11 @@ class DataManip:
     """
       Return the DataManip either as its self or as a new variable.
 
-      Parameters
-      ----------
-      `data` : `pd.DataFrame`
+      Parameters:
+        data pd.DataFrame:
           The data to be set.
       
-      Returns
-      -------
-      `pd.DataFrame`
+      Returns:
           The data.
       """
     if inplace:

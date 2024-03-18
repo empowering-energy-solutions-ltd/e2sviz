@@ -141,9 +141,7 @@ class DataViz:
     """
     Returns the plot factory used for plotting the specific plot type.
 
-    Returns
-    -------
-    `dict[str, Callable]`
+    Returns:
       The plot factory used for plotting the specific plot type.
     """
     return {
@@ -161,15 +159,9 @@ class DataViz:
     Plots the data through the chosen viz_selector.
     Options: `line_plot`, `stacked_plot`, `corr_plot`, `bar_plot`, `dt_bar_plot`, `box_plot`, `pie_chart`
 
-    Parameters
-    ----------
-    `plot_kind` : `str`
-      The kind of plot to be plotted.
-
-    Returns
-    -------
-    `None`
-      Figure is saved to the container object of the viz_selector.
+    Parameters:
+        plot_kind str:
+            The kind of plot to be plotted.
     """
     plot_data = self.structured_data()
     dict_kwargs = self.create_dict_kwargs()
@@ -186,11 +178,6 @@ class DataViz:
   def show_viz(self) -> Any:
     """
     Shows the visualisation.
-
-    Returns
-    -------
-    `Any`
-      The visualisation currently matplotlib or plotly.
     """
     return self.viz_selector.show()
 
@@ -198,15 +185,9 @@ class DataViz:
     """
     Saves the figure.
 
-    Parameters
-    ----------
-    `save_path` : `Path`
-      The path to save the figure along.
-
-    Returns
-    -------
-    `None`
-      The figure is saved to the path.
+    Parameters:
+        save_path Path:
+            The path to save the figure along.
     """
     self.viz_selector.save(save_path)
 
@@ -214,9 +195,7 @@ class DataViz:
     """
     Returns the data in a structured format.
     
-    Returns
-    -------
-    `pd.DataFrame`
+    Returns:
       The data in a structured format.
     """
     data_copy = self.data.copy()
@@ -229,9 +208,7 @@ class DataViz:
     """
 			Creates the dict of dicts of kwargs for each column.
 
-			Returns
-			-------
-			`dict[str, dict[str, Any]]`
+			Returns:
 				The dict of dicts of kwargs for each column.
 			"""
     dict_kwargs = {}
@@ -252,14 +229,11 @@ class DataViz:
     """
     Process grouped data and pivot if needed.
 
-    Parameters
-    ----------
-    `data_copy` : `pd.DataFrame`
-        The data to be processed.
+    Parameters:
+        data_copy pd.DataFrame:
+            The data to be processed.
 
-    Returns
-    -------
-    `pd.DataFrame`
+    Returns:
         The processed data.
     """
     reindexed_df = data_copy.reset_index()
@@ -276,14 +250,11 @@ class DataViz:
     """
     Format the index of the data based on the number of index columns in the metadata.
 
-    Parameters
-    ----------
-    `dataf` : `pd.DataFrame`
-        The data to be formatted.
+    Parameters:
+        dataf pd.DataFrame:
+            The data to be formatted.
     
-    Returns
-    -------
-    `pd.DataFrame`
+    Returns:
         The formatted data.
     """
     if len(self.metadata.metadata[viz_schema.MetaDataSchema.FRAME][
@@ -299,14 +270,11 @@ class DataViz:
     """
     Adjust index to be a continuous variable.
     
-    Parameters
-    ----------
-    `time_data` : `pd.DataFrame`
-        The data to be adjusted.
+    Parameters:
+        time_data pd.DataFrame:
+            The data to be adjusted.
         
-    Returns
-    -------
-    `pd.Series`
+    Returns:
         The adjusted index.
     """
     return time_data['Day of week'] + (
@@ -316,14 +284,11 @@ class DataViz:
     """
     Remove the index columns from the data after they've been reset.
 
-    Parameters
-    ----------
-    `dataf` : `pd.DataFrame`
-        The data to be processed.
+    Parameters:
+        dataf pd.DataFrame:
+            The data to be processed.
 
-    Returns
-    -------
-    `pd.DataFrame`
+    Returns:
         The processed data.
     """
     return dataf.drop(columns=self.metadata.metadata[
@@ -334,14 +299,11 @@ class DataViz:
     """
     Pivot the data based on the metadata grouped columns.
 
-    Parameters
-    ----------
-    `dataf` : `pd.DataFrame`
-        The data to be pivoted.
+    Parameters:
+        dataf pd.DataFrame:
+            The data to be pivoted.
 
-    Returns
-    -------
-    `pd.DataFrame`
+    Returns:
         The pivoted data.
     """
     legend_cols = []

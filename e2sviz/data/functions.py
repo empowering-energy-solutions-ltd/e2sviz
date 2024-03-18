@@ -12,14 +12,11 @@ TIMESTEP_SCHEMA_DICT: dict[enums.TimeStep, str] = {
 def get_season(month: int) -> str:
   """Returns the season for a given month.
   
-  Parameters
-  ----------
-  `month` : `int`
-      The month to get the season for.
+  Parameters:
+      month int:
+          The month to get the season for.
       
-  Returns
-  -------
-  `str`
+  Returns:
       The season for the given month."""
   if 3 <= month <= 5:  #March, April and May
     return enums.Season.SPRING.name
@@ -35,14 +32,11 @@ def add_time_features(dataf: pd.DataFrame) -> pd.DataFrame:
   """
   Add time features to the dataframe. The features added are, Hour, Day of week, Day of year, Month, Year, Weekday flag, Half hour, Date, Week, Season & Season number.
 
-  Parameters
-  ----------
-  `dataf` : `pd.DataFrame`
+  Parameters:
+    dataf pd.DataFrame:
       The dataframe to add time features to.
 
-  Returns
-  -------
-  `pd.DataFrame`
+  Returns:
       The dataframe with the time features added.
   """
   new_dataf = dataf.copy()
@@ -84,23 +78,21 @@ def get_avg_week_by_season_df(
     target_col: str,
     timestep: enums.TimeStep = enums.TimeStep.HALFHOUR,
     func=np.mean) -> pd.DataFrame:
-  """ Takes a timeseries dataframe that has added time_features and returns a dataframe 
+  """ 
+  Takes a timeseries dataframe that has added time_features and returns a dataframe 
   of average weeks for each season. Good for use with data that has a seasonal pattern.
   
-  Parameters
-  ----------
-  `dataf` : `pd.DataFrame`
-      The dataframe to get the average week by season for.  
-  `target_col` : `str`
-      The column to get the average week by season for.  
-  `timestep` : `Optional[enums.TimeStep]`
-      The timestep of the data. Default is `enums.TimeStep.HALFHOUR`.  
-  `func` : `Optional[Callable]`
-      The function to use to aggregate the data. Default is `np.mean`.  
+  Parameters:
+    dataf pd.DataFrame:
+        The dataframe to get the average week by season for.  
+    target_col str:
+        The column to get the average week by season for.  
+    timestep Optional[enums.TimeStep]:
+        The timestep of the data. Default is `enums.TimeStep.HALFHOUR`.  
+    func Optional[Callable]:
+        The function to use to aggregate the data. Default is `np.mean`.  
   
-  Returns
-  -------
-  `pd.DataFrame`
+  Returns:
       A dataframe of average weeks for each season.
   """
   groupby_cols = [
@@ -117,16 +109,13 @@ def format_avg_week_index(dataf: pd.DataFrame,
                           timestep: enums.TimeStep) -> pd.Index:
   """Formats the index of the average week dataframe to be a tidier index. 
   
-  Parameters
-  ----------
-  `dataf` : `pd.DataFrame`
-      The dataframe to format the index for.
-  `timestep` : `enums.TimeStep`
-      The timestep of the data.
+  Parameters:
+    dataf pd.DataFrame:
+        The dataframe to format the index for.
+    timestep enums.TimeStep:
+        The timestep of the data.
   
-  Returns
-  -------
-  `pd.Index`
+  Returns:
       The formatted index.
   """
   if timestep is enums.TimeStep.HALFHOUR:
