@@ -19,7 +19,7 @@ def custom_plot(x: Any,
   """ 
   Create a custom plot using matplotlib.
 
-  Parameters:
+  Arguments:
       x Any:
           x-axis values  
       y Any:
@@ -44,7 +44,7 @@ def custom_plot_from_df(dataf: pd.DataFrame,
   """
   Create a custom plot using matplotlib from a DataFrame.
   
-  Parameters:
+  Arguments:
       dataf pd.DataFrame:
           Data to plot  
       ax plt.Axes:
@@ -136,7 +136,7 @@ class MatPlotLibPlot():
     """
     Get the keyword arguments for a column
     
-    Parameters:
+    Arguments:
         column str:
             Column name  
         dict_kwargs dict[str, dict[str, str]]:
@@ -151,7 +151,7 @@ class MatPlotLibPlot():
     """
     Set the keyword arguments for a plot
     
-    Parameters:
+    Arguments:
         ax plt.Axes:
             Matplotlib axes  
         kwargs dict[str, str]:
@@ -167,7 +167,7 @@ class MatPlotLibPlot():
     """
     Plot a single line plot.
 
-    Parameters:
+    Arguments:
         dataf pd.DataFrame:
             Data to plot.  
         dict_kwargs dict[str, dict[str, str]]:
@@ -190,7 +190,7 @@ class MatPlotLibPlot():
     """
     Plot a stacked line plot
 
-    Parameters:
+    Arguments:
         dataf pd.DataFrame:
             Data to plot  
         plot_columns list[str]:
@@ -222,7 +222,7 @@ class MatPlotLibPlot():
     """
     Plot a correlation matrix
     
-    Parameters:
+    Arguments:
         data pd.DataFrame:
             Data to plot  
         plot_columns list[str]:
@@ -242,7 +242,7 @@ class MatPlotLibPlot():
     """
     Plot a bar plot
     
-    Parameters:
+    Arguments:
         data pd.DataFrame
             Data to plot  
         dict_kwargs dict[str, dict[str, str]]
@@ -273,7 +273,7 @@ class MatPlotLibPlot():
     """
     Plot a bar plot
 
-    Parameters:
+    Arguments:
         dataf pd.DataFrame:
             Data to plot  
         plot_columns list[str]:
@@ -311,7 +311,7 @@ class MatPlotLibPlot():
     """
     Plot a box plot
     
-    Parameters:
+    Arguments:
         data pd.DataFrame:
             Data to plot  
         plot_columns list[str]:
@@ -340,7 +340,7 @@ class MatPlotLibPlot():
     """
     Plot a pie chart
 
-    Parameters:
+    Arguments:
         data pd.Series:
             Data to plot  
         plot_columns list[str]:
@@ -409,7 +409,7 @@ class PlotlyPlot():
     """
     Set the plotly figure settings
 
-    Parameters:
+    Arguments:
         fig go.Figure
             Plotly figure
 
@@ -432,7 +432,7 @@ class PlotlyPlot():
     """
     Get the keyword arguments for a column
     
-    Parameters:
+    Arguments:
         column str:
             Column name  
         dict_kwargs dict[str, dict[str, str]]:
@@ -447,7 +447,7 @@ class PlotlyPlot():
     """
     Set the keyword arguments for a plot
     
-    Parameters:
+    Arguments:
         fig go.Figure:
             Plotly figure  
         kwargs dict[str, str]:
@@ -468,7 +468,7 @@ class PlotlyPlot():
     """
     Plot a single line plot
 
-    Parameters:
+    Arguments:
         dataf pd.DataFrame:
             Dataframe to plot  
         plot_columns list[str]:
@@ -511,7 +511,7 @@ class PlotlyPlot():
     """
     Plot a stacked line plot
 
-    Parameters:
+    Arguments:
         dataf pd.DataFrame:
             Dataframe to plot.  
         plot_columns list[str]:
@@ -556,7 +556,7 @@ class PlotlyPlot():
     """
     Plot a correlation matrix
 
-    Parameters:
+    Arguments:
         dataf pd.DataFrame:
             Dataframe to plot.  
         plot_columns list[str]:
@@ -598,7 +598,7 @@ class PlotlyPlot():
     """
     Plot a bar plot using Plotly
 
-    Parameters:
+    Arguments:
       dataf pd.DataFrame:
           Data to plot  
       plot_columns list[str]:
@@ -635,7 +635,7 @@ class PlotlyPlot():
     """
     Plot a datetime bar plot using Plotly.
 
-    Parameters:
+    Arguments:
         dataf pd.DataFrame:
             Data to plot  
         plot_columns list[str]:
@@ -671,7 +671,7 @@ class PlotlyPlot():
     """
     Create a box plot.
 
-    Parameters:
+    Arguments:
       dataf pd.DataFrame:
           Data to plot  
       plot_columns list[str]:
@@ -703,7 +703,7 @@ class PlotlyPlot():
     """
     Create a pie chart.
 
-    Parameters:
+    Arguments:
         data pd.Series:
             Data to plot  
         plot_columns list[str]:
@@ -731,7 +731,7 @@ class PlotlyPlot():
   def save(self, save_path: Path):
     """ Saves the plot 
     
-    Parameters:
+    Arguments:
     `save_path Path`
         Path to save the plot"""
     self.container.write_html(save_path)

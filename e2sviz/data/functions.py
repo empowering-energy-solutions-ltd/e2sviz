@@ -12,7 +12,7 @@ TIMESTEP_SCHEMA_DICT: dict[enums.TimeStep, str] = {
 def get_season(month: int) -> str:
   """Returns the season for a given month.
   
-  Parameters:
+  Arguments:
       month int:
           The month to get the season for.
       
@@ -32,7 +32,7 @@ def add_time_features(dataf: pd.DataFrame) -> pd.DataFrame:
   """
   Add time features to the dataframe. The features added are, Hour, Day of week, Day of year, Month, Year, Weekday flag, Half hour, Date, Week, Season & Season number.
 
-  Parameters:
+  Arguments:
     dataf pd.DataFrame:
       The dataframe to add time features to.
 
@@ -82,7 +82,7 @@ def get_avg_week_by_season_df(
   Takes a timeseries dataframe that has added time_features and returns a dataframe 
   of average weeks for each season. Good for use with data that has a seasonal pattern.
   
-  Parameters:
+  Arguments:
     dataf pd.DataFrame:
         The dataframe to get the average week by season for.  
     target_col str:
@@ -109,7 +109,7 @@ def format_avg_week_index(dataf: pd.DataFrame,
                           timestep: enums.TimeStep) -> pd.Index:
   """Formats the index of the average week dataframe to be a tidier index. 
   
-  Parameters:
+  Arguments:
     dataf pd.DataFrame:
         The dataframe to format the index for.
     timestep enums.TimeStep:

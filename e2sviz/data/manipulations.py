@@ -15,20 +15,17 @@ def create_seasonal_average_week(season: enums.Season,
   """
   Create a seasonal average week for the specified season.
 
-  Parameters
-  ----------
-  `season` : `enums.Season`
-      The season for which to calculate the average week.  
-  `dataf` : `pd.DataFrame`
-      The input DataFrame.  
-  `target_col` : `str | None`
-      The target column for aggregation. If None, the first column of the DataFrame is used, by default None.  
-  `func` : `callable`
-      The aggregation function to use, by default np.mean.
+  Arguments:
+      season enums.Season:
+          The season for which to calculate the average week.  
+      dataf pd.DataFrame:
+          The input DataFrame.  
+      target_col str | None:
+          The target column for aggregation. If None, the first column of the DataFrame is used, by default None.  
+      func callable:
+          The aggregation function to use, by default np.mean.
 
-  Returns
-  -------
-  `pd.DataFrame`
+  Returns:
       The seasonal average week.
 
   """
@@ -55,14 +52,11 @@ def seasonal_avg_week_plot_data(
   """
   Prepare data for the seasonal average week plot.
 
-  Parameters
-  ----------
-  `plot_data` : `pd.DataFrame`
-      The input DataFrame.
+  Arguments:
+      plot_data pd.DataFrame:
+          The input DataFrame.
 
-  Returns
-  -------
-  `tuple[pd.Index, pd.DataFrame, pd.DataFrame, pd.DataFrame]`
+  Returns:
       A tuple containing the datetime index and the average, maximum, and minimum seasonal average week data.
 
   """
@@ -82,14 +76,11 @@ def get_seasonal_week(data: pd.DataFrame) -> list[pd.DataFrame]:
   """
   Get weekly data for each season.
 
-  Parameters
-  ----------
-  `data` : `pd.DataFrame`
-      The input DataFrame.
+  Arguments:
+      data pd.DataFrame:
+          The input DataFrame.
 
-  Returns
-  -------
-  `list[pd.DataFrame]`
+  Returns:
       A list of DataFrames containing the weekly data for each season.
 
   """
@@ -114,18 +105,15 @@ class ResampleManipulator():
     """
     Format the data by resampling.
 
-    Parameters
-    ----------
-    `data` : `np.ndarray | pd.DataFrame`
-        The input data.  
-    `split_by` : `str`
-        The resampling method.  
-    `aggregation` : `str`
-        The aggregation method.  
+    Arguments:
+        data np.ndarray | pd.DataFrame:
+            The input data.  
+        split_by str:
+            The resampling method.  
+        aggregation str:
+            The aggregation method.  
 
-    Returns
-    -------
-    `np.ndarray | pd.DataFrame`
+    Returns:
         The resampled data.
 
     """
@@ -156,20 +144,17 @@ class GroupbyManipulator():
     """
     Format the data by grouping.
 
-    Parameters
-    ----------
-    `data` : `np.ndarray | pd.DataFrame`
-        The input data.  
-    `groupby` : `list[int | str]`
-        The columns to group by.  
-    `agg` : `str`
-        The aggregation method.  
-    `target` : `int | str | None`
-        The column to aggregate, by default None.  
+    Arguments:
+        data np.ndarray | pd.DataFrame:
+            The input data.  
+        groupby list[int | str]:
+            The columns to group by.  
+        agg str:
+            The aggregation method.  
+        target int | str | None:
+            The column to aggregate, by default None.  
 
-    Returns
-    -------
-    `np.ndarray | pd.DataFrame`
+    Returns:
         The grouped data.
 
     """
@@ -200,20 +185,17 @@ class EquationManipulator():
     """
     Format the data by applying equations.
 
-    Parameters
-    ----------
-    `data` : `np.ndarray  pd.DataFrame`
-        The input data.  
-    `target_col` : `str | int`
-        The target column to aggregate.  
-    `func` : `str`
-        The aggregation function as a string.  
-    `new_col` : `str | float`
-        The name for the new column, by default 'New column'.  
+    Arguments:
+        data np.ndarray  pd.DataFrame:
+            The input data.  
+        target_col str | int:
+            The target column to aggregate.  
+        func str:
+            The aggregation function as a string.  
+        new_col str | float:
+            The name for the new column, by default 'New column'.  
 
-    Returns
-    -------
-    `np.ndarray | pd.DataFrame`
+    Returns:
         The data with a new column of aggregated values.
 
     """
@@ -241,18 +223,15 @@ class CombineColumnManipulator():
     """
     Format the data by combining columns.
 
-    Parameters
-    ----------
-    `data` : `np.ndarray | pd.DataFrame`
-        The input data.  
-    `col_1` : `str | int`
-        The first column to combine.  
-    `col_2` : `str | int`
-        The second column to combine.  
+    Arguments:
+        data np.ndarray | pd.DataFrame:
+            The input data.  
+        col_1 str | int:
+            The first column to combine.  
+        col_2 str | int:
+            The second column to combine.  
 
-    Returns
-    -------
-    `np.ndarray | pd.DataFrame`
+    Returns:
         The data with a new column containing the combined values.
 
     """
@@ -272,14 +251,11 @@ def find_week_in_season(loop_data: pd.DataFrame) -> list[pd.DataFrame]:
   """
   Find the week in each season of the year.
 
-  Parameters
-  ----------
-  `loop_data` : `pd.DataFrame`
-      The input DataFrame.
+  Arguments:
+      loop_data pd.DataFrame:
+          The input DataFrame.
 
-  Returns
-  -------
-  `list[pd.DataFrame]`
+  Returns:
       A list of DataFrames containing the weekly data for each season.
 
   """

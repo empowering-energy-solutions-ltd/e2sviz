@@ -159,7 +159,7 @@ class DataViz:
     Plots the data through the chosen viz_selector.
     Options: `line_plot`, `stacked_plot`, `corr_plot`, `bar_plot`, `dt_bar_plot`, `box_plot`, `pie_chart`
 
-    Parameters:
+    Arguments:
         plot_kind str:
             The kind of plot to be plotted.
     """
@@ -185,7 +185,7 @@ class DataViz:
     """
     Saves the figure.
 
-    Parameters:
+    Arguments:
         save_path Path:
             The path to save the figure along.
     """
@@ -229,7 +229,7 @@ class DataViz:
     """
     Process grouped data and pivot if needed.
 
-    Parameters:
+    Arguments:
         data_copy pd.DataFrame:
             The data to be processed.
 
@@ -250,7 +250,7 @@ class DataViz:
     """
     Format the index of the data based on the number of index columns in the metadata.
 
-    Parameters:
+    Arguments:
         dataf pd.DataFrame:
             The data to be formatted.
     
@@ -270,7 +270,7 @@ class DataViz:
     """
     Adjust index to be a continuous variable.
     
-    Parameters:
+    Arguments:
         time_data pd.DataFrame:
             The data to be adjusted.
         
@@ -284,7 +284,7 @@ class DataViz:
     """
     Remove the index columns from the data after they've been reset.
 
-    Parameters:
+    Arguments:
         dataf pd.DataFrame:
             The data to be processed.
 
@@ -299,7 +299,7 @@ class DataViz:
     """
     Pivot the data based on the metadata grouped columns.
 
-    Parameters:
+    Arguments:
         dataf pd.DataFrame:
             The data to be pivoted.
 

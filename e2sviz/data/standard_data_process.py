@@ -55,7 +55,7 @@ class DataPrep:
     """
       Returns a DataFrame containing statistics of the input data.
 
-      Parameters:
+      Arguments:
           data pd.DataFrame:
               The input DataFrame.
 
@@ -78,7 +78,7 @@ class DataPrep:
     """
       Calculate statistics for the input data.
 
-      Parameters:
+      Arguments:
           data pd.DataFrame:
               The input DataFrame.
 
@@ -120,7 +120,7 @@ class DataPrep:
     """
       Concatenate two DataPrep objects.
 
-      Parameters:
+      Arguments:
           secondary_data DataPrep:
               The secondary DataPrep object to be concatenated to the current one.
 
@@ -166,7 +166,7 @@ Methods:
     """
     Get the units schema of the column data.
 
-    Parameters:
+    Arguments:
         col str:
             The column to get the units schema of.
 
@@ -179,7 +179,7 @@ Methods:
     """
     Get the SI units of the column data.
 
-    Parameters:
+    Arguments:
         col str:
             The column to get the SI units of.
 
@@ -193,7 +193,7 @@ Methods:
     """
     Get the frequency schema of the column data.
 
-    Parameters:
+    Arguments:
         col str:
             The column to get the frequency schema of.
 
@@ -207,7 +207,7 @@ Methods:
     """
     Get the data type of the column.
 
-    Parameters:
+    Arguments:
         col str:
             The column to get the data type of.
 
@@ -241,7 +241,7 @@ Methods:
     """
     Get the label for the y-axis of the plot.
 
-    Parameters:
+    Arguments:
         col str:
             The column to get the label for.
 
@@ -254,7 +254,7 @@ Methods:
     """
     Get the title of the plot.
 
-    Parameters:
+    Arguments:
         col str:
             The column to get the title for.
 
@@ -293,7 +293,7 @@ Methods:
     """
     Get the legend of the plot.
 
-    Parameters:
+    Arguments:
         col str:
             The column to get the legend for.
 
@@ -390,7 +390,7 @@ class DataManip:
     """
     Rescale the values of the column data.
 
-    Parameters:
+    Arguments:
         column str:
             The column to rescale.  
         multiplier float:
@@ -402,7 +402,7 @@ class DataManip:
     """
     Rescale the units of the column data.
 
-    Parameters:
+    Arguments:
         column str:
             The column to rescale.  
         step int:
@@ -508,7 +508,7 @@ class DataManip:
     """
     Filter the data by given year, month, day or date.
 
-    Parameters:
+    Arguments:
         year list[int]:
             The years to filter by.  
         season list[int]:
@@ -564,7 +564,7 @@ class DataManip:
     """
     Group the data by given column/s and aggregate by a given function.
 
-    Parameters:
+    Arguments:
         func str:
             Numpy function to be used for aggregation.  
         groupby_type Callable[[pd.DataFrame], pd.Series]:
@@ -594,7 +594,7 @@ class DataManip:
     """
     Populate the legend column of the metadata.
 
-    Parameters:
+    Arguments:
         dataf pd.DataFrame:
             The grouped and aggregated data.  
         gb_col_data dict[str, list[str]]:
@@ -626,7 +626,7 @@ class DataManip:
     """
     Update the metadata for the grouped data.
 
-    Parameters:
+    Arguments:
         grouped_data pd.DataFrame:
             The grouped and aggregated data.  
         gb_col_data dict[str, list[str]]:
@@ -656,7 +656,7 @@ class DataManip:
     """
     Resample the data by given frequency and aggregate by a given function.
 
-    Parameters:
+    Arguments:
         freq str:
             The frequency to be used for resampling.  
         func Callable[[pd.DataFrame], pd.Series]:
@@ -681,7 +681,7 @@ class DataManip:
     """
     Rolling window function.
 
-    Parameters:
+    Arguments:
         window int:
             The window size. 
         func Callable[[pd.DataFrame], pd.Series]:
@@ -701,7 +701,7 @@ class DataManip:
     """
       Return the DataManip either as its self or as a new variable.
 
-      Parameters:
+      Arguments:
         data pd.DataFrame:
           The data to be set.
       

@@ -17,7 +17,7 @@ def convert_data_types(
   """
   Convert data types between NumPy ndarray and pandas DataFrame.
 
-  Parameters:
+  Arguments:
       data np.ndarray | pd.DataFrame:
           Input data to be converted.  
       columns List[str] | None:
@@ -44,7 +44,7 @@ def retrieve_data(data: npt.NDArray | pd.DataFrame) -> np.ndarray:
   """
   Retrieve the underlying NumPy ndarray from the input data.
 
-  Parameters:
+  Arguments:
       data np.ndarray | pd.DataFrame:
           Input data from which to retrieve the ndarray.
 
@@ -84,7 +84,7 @@ class OutlierRemover:
     """
     Remove outliers from the data.
 
-    Parameters:
+    Arguments:
         data pd.DataFrame:
             Either numpy array or pandas dataframe.
 
@@ -100,7 +100,7 @@ class OutlierRemover:
     """
     Use interquartile range to find outliers.
 
-    Parameters:
+    Arguments:
         values np.ndarray:
             Input array to find outliers.
 
@@ -146,7 +146,7 @@ class FillMissingData():
     """
     Fill missing values in the data.
 
-    Parameters:
+    Arguments:
         data pd.DataFrame:
             Pandas dataframe.
         func str:
@@ -174,7 +174,7 @@ class FillMissingData():
     """
     Fill missing values in the data with column means.
 
-    Parameters:
+    Arguments:
         data pd.DataFrame:
             Input data.
 
@@ -191,7 +191,7 @@ class FillMissingData():
     """
     Fill missing values in the data using rolling mean.
 
-    Parameters:
+    Arguments:
         data pd.DataFrame:
             Input data.
 
@@ -238,7 +238,7 @@ class ConvertColumnDataFormat():
     """
     Reorder data from column wise to row wise.
 
-    Parameters:
+    Arguments:
         data pd.DataFrame:
             Raw data in a dataframe.
 
@@ -258,7 +258,7 @@ class ConvertColumnDataFormat():
     """
     Convert half hourly data to datetime.
 
-    Parameters:
+    Arguments:
         datetime_str str:
             Half hourly data.
 
@@ -275,7 +275,7 @@ class ConvertColumnDataFormat():
     """
     Prepare data for formatting.
 
-    Parameters:
+    Arguments:
         data pd.DataFrame:
             Raw data in a dataframe.
 
@@ -321,7 +321,7 @@ class GenerateDatetime():
     """
     Add datetime column to the data.
 
-    Parameters:
+    Arguments:
         data pd.DataFrame:
             Either numpy array or pandas dataframe.
         start_date Optional[datetime.datetime]:
